@@ -20,6 +20,7 @@ from lggui.viewdockbar import ViewDockBar
 from lggui.toolsdockbar import ToolsDockBar
 
 from lggui.nodegui import NodeGui
+from lggui.linkgui import LinkGui
 
 class MainWindow(QtGui.QMainWindow):
     '''
@@ -33,7 +34,11 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__(parent)
         self.setWindowTitle("Logistic modeling")
         self.setObjectName("MainWindow")
-        self.dirty = False
+        self.dirty = True
+        
+        # All nodes and links will be stored in lists
+        self.nodeslist = []
+        self.linkslist = []
         
         # ==== Creating main graph view
         self.scene = QtGui.QGraphicsScene(self)
@@ -74,6 +79,9 @@ class MainWindow(QtGui.QMainWindow):
                 
         testnode = NodeGui(QtCore.QPointF(100,100),self)
         self.scene.addItem(testnode)
+        testlink = LinkGui(QtCore.QPointF(100,100),QtCore.QPointF(300,200),self)
+        self.scene.addItem(testlink)
+        #self.scene.addWidget(QWidget, flags=0)
         
         
     # ==== Slots and handlers to handle actions ====
@@ -111,9 +119,18 @@ class MainWindow(QtGui.QMainWindow):
             # Saving settings
             settings = QtCore.QSettings()
             
+            event.accept()
         else:
             event.ignore()
             
+    def nextTurn(self):
+        for node in self.nodeslist :
+            node.nextTurn()
+        
+        for link in self.linkslist :
+            link.nextTurn()
+    
+    
     def okToContinue(self):
         if self.dirty:
             reply = QtGui.QMessageBox.question(self,
@@ -154,6 +171,6 @@ class MainWindow(QtGui.QMainWindow):
             else:
                 target.addAction(action)
             
-            
+    
             
             

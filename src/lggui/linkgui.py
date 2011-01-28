@@ -1,4 +1,10 @@
 '''
+Created on 26.01.2011
+
+@author: gena
+'''
+
+'''
 Created on 25.01.2011
 
 @author: gena
@@ -8,40 +14,35 @@ from PyQt4 import QtCore,QtGui
 #from ltcore.actions import LtActions
 from lgcore.signals import *
 
-class NodeGui(QtGui.QGraphicsView):
+class LinkGui(QtGui.QGraphicsItem):
     '''
     This class containes all gui functionality for
-    node
-    '''
-    Rect = QtCore.QRectF(-30, -20, 60, 40)
+    link between two nodes
     
-    def __init__(self,position,parent=None):
-        super(NodeGui, self).__init__()
-        
-        self.color = QtGui.QColor(255, 0, 0)
+    the position is treated as link beginning,
+    the target is treated like line direction
+    size and angle will be calculated according to this values
+    
+    '''
+    
+    def __init__(self,position,target,parent=None):
+        super(LinkGui, self).__init__()
+        self.color = QtGui.QColor(0, 255, 0)
         self.parent = parent
-        self.setPos(position)
+        self.move(position,target)
         #self.brush = QtCore.Qt.NoPen
         self.acceptDrops()
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
         QtGui.QGraphicsItem.ItemIsMovable|QtGui.QGraphicsItem.ItemIsFocusable)
         
-        #List of linked lines
-        self.links=[]
-        
-        self.butt = QtGui.QPushButton("Test")
-        layout = QtGui.QHBoxLayout()
-        layout.addWidget(self.butt)
-        #self.setLayout(layout)
-        
-        self.proxy = QtGui.QGraphicsProxyWidget(self)
-        
-        self.proxy.setLayout()
-        
         self.setFocus()
         
-    def moveEvent(self, event):
-        pass
+    def move(self,position=None,target=None):
+        if position :
+            self.setPos(position)
+        if target is not None :
+            self.direction = target - position
+        self.update()
         
     def mouseDoubleClickEvent(self, event):
         #dialog = TextItemDlg(self, self.parentWidget())
@@ -70,21 +71,23 @@ class NodeGui(QtGui.QGraphicsView):
         else:
             QtGui.QGraphicsItem.keyPressEvent(self, event)
 
-    
 
     def boundingRect(self):
-        return self.Rect
+        return QtCore.QRectF(QtCore.QPointF(0,0),self.direction)
 
     def shape(self):
         path = QtGui.QPainterPath()
-        path.addEllipse(self.Rect)
+        path.moveTo(QtCore.QPointF(0,0))
+        path.lineTo(self.direction)
+        path.addEllipse(self.direction,3,3)
         return path
 
 
     def paint(self, painter, option, widget=None):
-        painter.setPen(QtCore.Qt.SolidLine)
+        painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(0,0,255)), 2.5))
         painter.setBrush(QtGui.QBrush(self.color))
-        painter.drawRect(self.Rect)
+        painter.drawLine(QtCore.QPointF(0,0),self.direction)
+        painter.drawEllipse(self.direction,3,3)
 
 '''
     def contextMenuEvent(self, event):
