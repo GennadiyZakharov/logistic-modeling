@@ -25,11 +25,16 @@ class LinkGui(QtGui.QGraphicsItem):
     
     '''
     
-    def __init__(self,position,target,parent=None):
+    def __init__(self,input,output,parent=None):
+        '''
+        Input and output assumed to be nodegui type
+        '''
         super(LinkGui, self).__init__()
         self.color = QtGui.QColor(0, 255, 0)
         self.parent = parent
-        self.move(position,target)
+        self.input = input
+        self.output = output
+        self.move()
         #self.brush = QtCore.Qt.NoPen
         self.acceptDrops()
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
@@ -37,11 +42,10 @@ class LinkGui(QtGui.QGraphicsItem):
         
         self.setFocus()
         
-    def move(self,position=None,target=None):
-        if position :
-            self.setPos(position)
-        if target is not None :
-            self.direction = target - position
+    def move(self):
+        self.position = self.input.pos()
+        self.setPos(self.position)
+        self.direction = self.output.pos() - self.position
         self.update()
         
     def mouseDoubleClickEvent(self, event):
@@ -79,7 +83,7 @@ class LinkGui(QtGui.QGraphicsItem):
         path = QtGui.QPainterPath()
         path.moveTo(QtCore.QPointF(0,0))
         path.lineTo(self.direction)
-        path.addEllipse(self.direction,3,3)
+        path.addEllipse(self.direction,5,5)
         return path
 
 

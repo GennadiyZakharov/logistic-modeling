@@ -4,6 +4,10 @@ Created on 25.01.2011
 @author: gena
 '''
 
+
+#TODO: arrow has to be repainted
+
+
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
@@ -32,6 +36,7 @@ class MainWindow(QtGui.QMainWindow):
         Constructor
         '''
         super(MainWindow, self).__init__(parent)
+        
         self.setWindowTitle("Logistic modeling")
         self.setObjectName("MainWindow")
         self.dirty = True
@@ -77,11 +82,15 @@ class MainWindow(QtGui.QMainWindow):
         videoMenu = self.menuBar().addMenu("&Video")
                 
                 
-        testnode = NodeGui(QtCore.QPointF(100,100),self)
-        self.scene.addItem(testnode)
-        testlink = LinkGui(QtCore.QPointF(100,100),QtCore.QPointF(300,200),self)
+        testnode1 = NodeGui(QtCore.QPointF(100,100),self)
+        self.scene.addItem(testnode1)
+        testnode2 = NodeGui(QtCore.QPointF(200,200),self)
+        self.scene.addItem(testnode2)
+        
+        testlink = LinkGui(testnode1,testnode2,self)
         self.scene.addItem(testlink)
-        #self.scene.addWidget(QWidget, flags=0)
+        testnode1.addLink(testlink)
+        testnode2.addLink(testlink)
         
         
     # ==== Slots and handlers to handle actions ====

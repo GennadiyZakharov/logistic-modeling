@@ -8,12 +8,9 @@ Created on
 import sys
 
 from PyQt4.QtGui import QApplication,QIcon
+from os.path import join, abspath, pardir
 
-#print(sys.path) TODO: append sys path
-
-# sys.path.append("../ltcore")
-# sys.path.append("../ltgui")
-# print(sys.path)
+sys.path.append(abspath(join(pardir, 'src')))
 
 from lggui.mainwindow import MainWindow
 
