@@ -14,4 +14,4 @@ signalTriggered = SIGNAL("triggered()")
 
 # ==== Custom signals ====
 
-
+signalNodeMoved = SIGNAL("nodeMoved")

@@ -8,16 +8,20 @@ from PyQt4 import QtCore,QtGui
 #from ltcore.actions import LtActions
 from lgcore.signals import *
 
-class NodeGui(QtGui.QGraphicsView):
+class NodeGui(QtGui.QGraphicsItem, QtGui.QWidget):
     '''
     This class containes all gui functionality for
     node
     '''
-    Rect = QtCore.QRectF(-30, -20, 60, 40)
+    Rect = QtCore.QRectF(0, 0, 80, 70)
     
-    def __init__(self,position,parent=None):
-        super(NodeGui, self).__init__()
+    def __init__(self,position,parent=None,scene=None):
         
+        super(NodeGui, self).__init__()
+        '''
+        QtGui.QGraphicsItem.__init__(parent)
+        QtGui.QWidget.__init__(parent)
+        '''
         self.color = QtGui.QColor(255, 0, 0)
         self.parent = parent
         self.setPos(position)
@@ -30,18 +34,26 @@ class NodeGui(QtGui.QGraphicsView):
         self.links=[]
         
         self.butt = QtGui.QPushButton("Test")
-        layout = QtGui.QHBoxLayout()
-        layout.addWidget(self.butt)
+        #layout = QtGui.QHBoxLayout()
+        #layout.addWidget(self.butt)
+        
         #self.setLayout(layout)
         
         self.proxy = QtGui.QGraphicsProxyWidget(self)
+        self.proxy.setWidget(self.butt)
+        self.proxy.setPos(QtCore.QPointF(0,30))
         
-        self.proxy.setLayout()
+        #self.proxy.setLayout()
         
         self.setFocus()
-        
+    
+    def addLink(self,link):
+        self.links.append(link)
+        #QtCore.QObject.connect(self, signalNodeMoved,link.on_NodeMoved)
+    
     def moveEvent(self, event):
-        pass
+        for link in self.links :
+            link.move()
         
     def mouseDoubleClickEvent(self, event):
         #dialog = TextItemDlg(self, self.parentWidget())
