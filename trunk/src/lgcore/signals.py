@@ -12,6 +12,8 @@ signalValueChanged = SIGNAL("valueChanged(int)")
 signalStateChanged = SIGNAL("stateChanged(int)")
 signalTriggered = SIGNAL("triggered()")
 
+signalChanged = SIGNAL('changed(QRectF)')  
+
 # ==== Custom signals ====
 
 signalNodeMoved = SIGNAL("nodeMoved")

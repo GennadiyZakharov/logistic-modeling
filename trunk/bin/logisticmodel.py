@@ -7,6 +7,8 @@ Created on
 '''
 import sys
 
+#125/75
+
 from PyQt4.QtGui import QApplication,QIcon
 from os.path import join, abspath, pardir
 
