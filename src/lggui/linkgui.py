@@ -25,7 +25,7 @@ class LinkGui(QtGui.QGraphicsItem):
     
     '''
     
-    def __init__(self,input,output,parent=None):
+    def __init__(self,input,output,parent=None,scene=None):
         '''
         Input and output assumed to be nodegui type
         '''
@@ -34,13 +34,25 @@ class LinkGui(QtGui.QGraphicsItem):
         self.parent = parent
         self.input = input
         self.output = output
+        self.scene = scene
         self.move()
         #self.brush = QtCore.Qt.NoPen
         self.acceptDrops()
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
         QtGui.QGraphicsItem.ItemIsMovable|QtGui.QGraphicsItem.ItemIsFocusable)
         
+        #QtCore.QObject.connect(self.scene, QtCore.pyqtSignal(self.scene.changed()), self.move)
+        #self.scene.changed.connect(self.move)
+        
         self.setFocus()
+        '''
+    def sceneEvent(self,event):
+        print('event')
+        return super(LinkGui, self).sceneEvent(event)
+        '''
+    def dropEvent(self, event):
+        print 'drop'
+        return super(LinkGui, self).dropEvent(event)
         
     def move(self):
         self.position = self.input.pos()

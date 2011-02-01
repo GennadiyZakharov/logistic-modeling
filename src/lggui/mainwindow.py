@@ -20,22 +20,27 @@ import sys,os
 from PyQt4 import QtCore,QtGui
 
 from lgcore.signals import *
+from lgcore.lgactions import LgActions
 from lggui.viewdockbar import ViewDockBar
 from lggui.toolsdockbar import ToolsDockBar
 
 from lggui.nodegui import NodeGui
 from lggui.linkgui import LinkGui
+from lggraphicsscene import LgGraphicsScene
 
 class MainWindow(QtGui.QMainWindow):
     '''
     classdocs
     '''
+    __version__ = '0.2'
 
     def __init__(self,parent=None):
         '''
         Constructor
         '''
         super(MainWindow, self).__init__(parent)
+        
+        self.lgActions = LgActions(self)
         
         self.setWindowTitle("Logistic modeling")
         self.setObjectName("MainWindow")
@@ -46,7 +51,7 @@ class MainWindow(QtGui.QMainWindow):
         self.linkslist = []
         
         # ==== Creating main graph view
-        self.scene = QtGui.QGraphicsScene(self)
+        self.scene = LgGraphicsScene(self)
         #self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         self.view = QtGui.QGraphicsView()
         self.view.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -74,20 +79,27 @@ class MainWindow(QtGui.QMainWindow):
         self.viewDockBar=ViewDockBar() 
         viewDockWidget.setWidget(self.viewDockBar)
         
-        
-        # Creating file menu
+        # ==== Creating Menu
+        # ---- File menu
         fileMenu = self.menuBar().addMenu("&File")
+        self.lgActions.addActions(fileMenu, self.lgActions.fileActions)
+        self.connect(self.lgActions.fileQuitAction, signalTriggered,self.close)
         
-        # Creating video menu
-        videoMenu = self.menuBar().addMenu("&Video")
+        # ---- Mode menu 
+        modeMenu = self.menuBar().addMenu("&Mode")
+        self.lgActions.addActions(modeMenu, self.lgActions.modeActions)
                 
+        # ----Help menu
+        helpMenu = self.menuBar().addMenu("&Help")
+        self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
+        self.connect(self.lgActions.helpAboutAction, signalTriggered,self.on_HelpAbout)
                 
-        testnode1 = NodeGui(QtCore.QPointF(100,100),self)
+        testnode1 = NodeGui(QtCore.QPointF(100,100),self,self.scene)
         self.scene.addItem(testnode1)
-        testnode2 = NodeGui(QtCore.QPointF(200,200),self)
+        testnode2 = NodeGui(QtCore.QPointF(200,200),self,self.scene)
         self.scene.addItem(testnode2)
         
-        testlink = LinkGui(testnode1,testnode2,self)
+        testlink = LinkGui(testnode1,testnode2,self.scene,self.scene)
         self.scene.addItem(testlink)
         testnode1.addLink(testlink)
         testnode2.addLink(testlink)
@@ -138,6 +150,17 @@ class MainWindow(QtGui.QMainWindow):
         
         for link in self.linkslist :
             link.nextTurn()
+            
+    def on_HelpAbout(self):
+        QtGui.QMessageBox.about(self, "About Logistic Modeller",
+        """<b>Logistic Modeller</b> v %s
+        <p>Copyright &copy; 2007 Qtrac Ltd.
+        All rights reserved.
+        <p>This application can be used to perform
+        simple image manipulations.
+        <p>Python %s - Qt %s - PyQt %s""" % (
+                        self.__version__, sys.platform,
+                        QtCore.QT_VERSION_STR, QtCore.PYQT_VERSION_STR))
     
     
     def okToContinue(self):
@@ -155,30 +178,7 @@ class MainWindow(QtGui.QMainWindow):
 
     # ==== Service Methods
     
-    # This method can help in action adding
-    def createAction(self, text, slot=None, shortcut=None, icon=None,
-                    tip=None, checkable=False, signal="triggered()"):
-        action = QtGui.QAction(text, self)
-        if icon is not None:
-            action.setIcon(QtGui.QIcon(":/%s.png" % icon))
-        if shortcut is not None:
-            action.setShortcut(shortcut)
-        if tip is not None:
-            action.setToolTip(tip)
-            action.setStatusTip(tip)
-        if slot is not None:
-            self.connect(action, SIGNAL(signal), slot)  
-        if checkable:
-            action.setCheckable(True)
-        return action
-    
-    # Method to add All actions from the list
-    def addActions(self, target, actions):
-        for action in actions:
-            if action is None:
-                target.addSeparator()
-            else:
-                target.addAction(action)
+
             
     
             

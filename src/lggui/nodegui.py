@@ -8,7 +8,7 @@ from PyQt4 import QtCore,QtGui
 #from ltcore.actions import LtActions
 from lgcore.signals import *
 
-class NodeGui(QtGui.QGraphicsItem, QtGui.QWidget):
+class NodeGui(QtGui.QGraphicsItem):
     '''
     This class containes all gui functionality for
     node
@@ -18,10 +18,7 @@ class NodeGui(QtGui.QGraphicsItem, QtGui.QWidget):
     def __init__(self,position,parent=None,scene=None):
         
         super(NodeGui, self).__init__()
-        '''
-        QtGui.QGraphicsItem.__init__(parent)
-        QtGui.QWidget.__init__(parent)
-        '''
+
         self.color = QtGui.QColor(255, 0, 0)
         self.parent = parent
         self.setPos(position)
@@ -51,9 +48,13 @@ class NodeGui(QtGui.QGraphicsItem, QtGui.QWidget):
         self.links.append(link)
         #QtCore.QObject.connect(self, signalNodeMoved,link.on_NodeMoved)
     
-    def moveEvent(self, event):
+    def dropEvent(self, event):
+        print "Drop"
         for link in self.links :
             link.move()
+            
+    def moveEvent(self, event):
+        print "Move"
         
     def mouseDoubleClickEvent(self, event):
         #dialog = TextItemDlg(self, self.parentWidget())
