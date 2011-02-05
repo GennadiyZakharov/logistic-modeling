@@ -15,5 +15,9 @@ signalTriggered = SIGNAL("triggered()")
 signalChanged = SIGNAL('changed(QRectF)')  
 
 # ==== Custom signals ====
+# ---- Core signals ----
+signalNextTurn = SIGNAL("nextTurn()")
+signalCost = SIGNAL("cost(int)")
 
-signalNodeMoved = SIGNAL("nodeMoved")
+signalNodeMoved = SIGNAL("nodeMoved()")
+
