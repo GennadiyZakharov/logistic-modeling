@@ -12,7 +12,11 @@ signalValueChanged = SIGNAL("valueChanged(int)")
 signalStateChanged = SIGNAL("stateChanged(int)")
 signalTriggered = SIGNAL("triggered()")
 
-signalChanged = SIGNAL('changed(QRectF)')  
+signalChanged = SIGNAL('changed') 
+
+signalxChanged = SIGNAL('xChanged()') 
+signalyChanged = SIGNAL('yChanged()')
+
 
 # ==== Custom signals ====
 # ---- Core signals ----

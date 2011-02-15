@@ -8,7 +8,7 @@ from PyQt4 import QtCore,QtGui
 #from ltcore.actions import LtActions
 from lgcore.signals import *
 
-class NodeGui(QtGui.QGraphicsItem):
+class NodeGui(QtGui.QGraphicsObject):
     '''
     This class containes all gui functionality for
     node
@@ -17,8 +17,10 @@ class NodeGui(QtGui.QGraphicsItem):
     
     def __init__(self,position,parent=None,scene=None):
         
-        super(NodeGui, self).__init__()
-
+        #super(NodeGui, self).__init__()
+        QtGui.QGraphicsItem.__init__(self)
+        QtCore.QObject.__init__(self) 
+        
         self.color = QtGui.QColor(255, 0, 0)
         self.parent = parent
         self.setPos(position)
@@ -52,10 +54,12 @@ class NodeGui(QtGui.QGraphicsItem):
         print "Drop"
         for link in self.links :
             link.move()
-            
-    def moveEvent(self, event):
-        print "Move"
-        
+    '''        
+    def itemChange(self, change, variant):
+        #if change != QGraphicsItem.ItemSelectedChange:
+        self.emit(signalChanged,self.pos())
+        return QtGui.QGraphicsTextItem.itemChange(self, change, variant)
+       ''' 
     def mouseDoubleClickEvent(self, event):
         #dialog = TextItemDlg(self, self.parentWidget())
         #dialog.exec_()
@@ -90,7 +94,7 @@ class NodeGui(QtGui.QGraphicsItem):
 
     def shape(self):
         path = QtGui.QPainterPath()
-        path.addEllipse(self.Rect)
+        path.addRect(self.Rect)
         return path
 
 
