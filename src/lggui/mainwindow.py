@@ -104,6 +104,10 @@ class MainWindow(QtGui.QMainWindow):
         testnode1.addLink(testlink)
         testnode2.addLink(testlink)
         
+        self.connect(testnode1, signalxChanged,testlink.move)
+        self.connect(testnode1, signalyChanged,testlink.move)
+        self.connect(testnode2, signalxChanged,testlink.move)
+        self.connect(testnode2, signalyChanged,testlink.move)
         
     # ==== Slots and handlers to handle actions ====
 

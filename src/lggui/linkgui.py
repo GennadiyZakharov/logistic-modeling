@@ -14,7 +14,7 @@ from PyQt4 import QtCore,QtGui
 #from ltcore.actions import LtActions
 from lgcore.signals import *
 
-class LinkGui(QtGui.QGraphicsItem):
+class LinkGui(QtGui.QGraphicsObject):
     '''
     This class containes all gui functionality for
     link between two nodes
@@ -49,16 +49,19 @@ class LinkGui(QtGui.QGraphicsItem):
     def sceneEvent(self,event):
         print('event')
         return super(LinkGui, self).sceneEvent(event)
-        '''
+        
     def dropEvent(self, event):
         print 'drop'
         return super(LinkGui, self).dropEvent(event)
-        
+        '''
     def move(self):
         self.position = self.input.pos()
         self.setPos(self.position)
         self.direction = self.output.pos() - self.position
+        print self.position
+        print self.direction
         self.update()
+
         
     def mouseDoubleClickEvent(self, event):
         #dialog = TextItemDlg(self, self.parentWidget())
@@ -93,9 +96,10 @@ class LinkGui(QtGui.QGraphicsItem):
 
     def shape(self):
         path = QtGui.QPainterPath()
-        path.moveTo(QtCore.QPointF(0,0))
+        #path.moveTo(QtCore.QPointF(0,0))
+        #path.
         path.lineTo(self.direction)
-        path.addEllipse(self.direction,5,5)
+        #path.addEllipse(self.direction,5,5)
         return path
 
 
@@ -103,7 +107,7 @@ class LinkGui(QtGui.QGraphicsItem):
         painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(0,0,255)), 2.5))
         painter.setBrush(QtGui.QBrush(self.color))
         painter.drawLine(QtCore.QPointF(0,0),self.direction)
-        painter.drawEllipse(self.direction,3,3)
+        #painter.drawEllipse(self.direction,3,3)
 
 '''
     def contextMenuEvent(self, event):
