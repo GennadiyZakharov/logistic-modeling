@@ -45,6 +45,11 @@ class NodeGui(QtGui.QGraphicsObject):
         #self.proxy.setLayout()
         
         self.setFocus()
+        
+    def center(self):
+        rect = QtCore.QRectF(self.Rect)
+        rect.moveTo(self.pos())
+        return rect.center()
     
     def addLink(self,link):
         self.links.append(link)

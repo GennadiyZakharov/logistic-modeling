@@ -19,7 +19,7 @@ class LgLink(LgAbstractItem):
         '''
         super(LgLink, self).__init__(cost)
         self.length = length
-        self.goods = [] # List for store goods
+        self.packages = [] # List for store goods
         #self.dist = []
         
     def on_NextTurn(self):
@@ -35,6 +35,6 @@ class LgLink(LgAbstractItem):
         '''
         Add new package to transport
         '''
-        self.goods.append((package,0))
+        self.packages.append([package,0])
         
         

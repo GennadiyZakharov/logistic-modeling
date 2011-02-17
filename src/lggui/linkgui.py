@@ -55,11 +55,9 @@ class LinkGui(QtGui.QGraphicsObject):
         return super(LinkGui, self).dropEvent(event)
         '''
     def move(self):
-        self.position = self.input.pos()
+        self.position = self.input.center()
         self.setPos(self.position)
-        self.direction = self.output.pos() - self.position
-        print self.position
-        print self.direction
+        self.direction = self.output.center() - self.position
         self.update()
 
         
@@ -92,14 +90,13 @@ class LinkGui(QtGui.QGraphicsObject):
 
 
     def boundingRect(self):
-        return QtCore.QRectF(QtCore.QPointF(0,0),self.direction)
+        return QtCore.QRectF(QtCore.QPointF(0,0),self.direction).normalized()
 
     def shape(self):
         path = QtGui.QPainterPath()
-        #path.moveTo(QtCore.QPointF(0,0))
-        #path.
+        path.moveTo(QtCore.QPointF(0,0))
         path.lineTo(self.direction)
-        #path.addEllipse(self.direction,5,5)
+        path.addEllipse(self.direction,5,5)
         return path
 
 
@@ -107,7 +104,7 @@ class LinkGui(QtGui.QGraphicsObject):
         painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(0,0,255)), 2.5))
         painter.setBrush(QtGui.QBrush(self.color))
         painter.drawLine(QtCore.QPointF(0,0),self.direction)
-        #painter.drawEllipse(self.direction,3,3)
+        painter.drawEllipse(self.direction,3,3)
 
 '''
     def contextMenuEvent(self, event):
