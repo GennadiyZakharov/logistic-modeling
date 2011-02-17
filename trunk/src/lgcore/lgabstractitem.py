@@ -20,6 +20,7 @@ class LgAbstractItem(QtCore.QObject):
         self.cost = cost #Cost per turn
         
     def on_NextTurn(self):
-        self.emit(signalCost,self.cost)
+        if self.cost !=0 :
+            self.emit(signalCost,self.cost)
          
         
