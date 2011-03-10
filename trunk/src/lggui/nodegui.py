@@ -8,6 +8,8 @@ from PyQt4 import QtCore,QtGui
 #from ltcore.actions import LtActions
 from lgcore.signals import *
 
+from lggui.nodewidget import NodeWidget
+
 class NodeGui(QtGui.QGraphicsObject):
     '''
     This class containes all gui functionality for
@@ -29,17 +31,12 @@ class NodeGui(QtGui.QGraphicsObject):
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
         QtGui.QGraphicsItem.ItemIsMovable|QtGui.QGraphicsItem.ItemIsFocusable)
         
-        #List of linked lines
-        self.links=[]
+        self.links= []
         
-        self.butt = QtGui.QPushButton("Test")
-        #layout = QtGui.QHBoxLayout()
-        #layout.addWidget(self.butt)
-        
-        #self.setLayout(layout)
+        self.mainwidget = NodeWidget()
         
         self.proxy = QtGui.QGraphicsProxyWidget(self)
-        self.proxy.setWidget(self.butt)
+        self.proxy.setWidget(self.mainwidget)
         self.proxy.setPos(QtCore.QPointF(0,30))
         
         #self.proxy.setLayout()
