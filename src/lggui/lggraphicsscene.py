@@ -18,8 +18,9 @@ class LgGraphicsScene(QtGui.QGraphicsScene):
         '''
         super(LgGraphicsScene, self).__init__()
         
-        
+    '''    
     def dropEvent(self, event):
         #item = self.mouseGrabbedItem()
         print "Dropped"
         return super(LgGraphicsScene, self).dropEvent(event)
+        '''
