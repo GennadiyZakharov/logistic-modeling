@@ -51,11 +51,12 @@ class NodeGui(QtGui.QGraphicsObject):
     def addLink(self,link):
         self.links.append(link)
         #QtCore.QObject.connect(self, signalNodeMoved,link.on_NodeMoved)
-    
+    ''' 
     def dropEvent(self, event):
         print "Drop"
         for link in self.links :
             link.move()
+            '''
     '''        
     def itemChange(self, change, variant):
         #if change != QGraphicsItem.ItemSelectedChange:
