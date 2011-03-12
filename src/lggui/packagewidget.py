@@ -16,15 +16,16 @@ class PackageWidget(QtGui.QListWidgetItem):
     '''
 
 
-    def __init__(self,caption,count=1):
+    def __init__(self,package):
         '''
         Constructor
         '''
-        super(PackageWidget, self).__init__(caption)
+            
+        self.package = package
+        self.caption = package.caption + ' ' + str(package.count)
         
-        self.caption = caption
-        self.count = count
-        self.setIcon(QtGui.QIcon(':/penguin.png'))
+        super(PackageWidget, self).__init__(self.caption)
+        self.setIcon(QtGui.QIcon(package.icon))
         
         
         

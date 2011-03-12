@@ -7,6 +7,7 @@ Created on 08.03.2011
 from PyQt4 import QtCore,QtGui
 #from ltcore.actions import LtActions
 from lgcore.signals import *
+from lgcore.lgpackage import LgPackage
 
 from lggui.packagewidget import PackageWidget
 from lggui.dndmenuListwidget import DnDMenuListWidget
@@ -26,15 +27,16 @@ class NodeWidget(QtGui.QDialog):
         
         self.node = node # This is link to core node, wich represents
             # all node functionality 
-            
-        inputLabel = QtGui.QLabel('Input Packages')
-        outputLabel = QtGui.QLabel('To sorting')
+        
+        self.setWindowTitle(self.node.caption)
+         
+        inputLabel = QtGui.QLabel('Come:')
+        outputLabel = QtGui.QLabel('Destination:')
         self.inputList = DnDMenuListWidget(self)
         self.outputList = DnDTableWidget(self)
         inputLabel.setBuddy(self.inputList)
         outputLabel.setBuddy(self.outputList)
-        
-        storageLabel = QtGui.QLabel('Storage')
+        storageLabel = QtGui.QLabel('Storage:')
         self.storageList = DnDMenuListWidget(self)
         storageLabel.setBuddy(self.storageList)
         
@@ -52,14 +54,22 @@ class NodeWidget(QtGui.QDialog):
         layout.addWidget(self.okBtn, 4, 1)
         
         #vSplitter = QtGui.QSplitter(QtCore.Qt.Vertical)
-
-        self.setWindowTitle('Node control')
-        
+       
         self.setLayout(layout)
         
-        for i in range(5) :
-            item = PackageWidget('Good '+str(i))
+        for package in node.entered :
+            item = PackageWidget(package)
             self.inputList.addItem(item)
+            
+        for package in node.storage :
+            item = PackageWidget(package)
+            self.storageList.addItem(item)
+        '''    
+        for package in node.storage :
+            item = PackageWidget(package)
+            self.storageList.addItem(item)
+        ''' 
+        
         
         
         

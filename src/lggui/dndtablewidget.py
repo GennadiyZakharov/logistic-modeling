@@ -22,7 +22,7 @@ class DnDTableWidget(QtGui.QTableWidget):
         self.setColumnCount(3)
         #self.
         self.setHorizontalHeaderLabels(["Link #1", "Link #2","Link #2"])
-        
+        self.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
         self.setAcceptDrops(True)
         self.setDragEnabled(True)

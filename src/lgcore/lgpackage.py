@@ -10,14 +10,17 @@ from lgcore.lgabstractitem import LgAbstractItem
 
 class LgPackage(LgAbstractItem):
     '''
-    classdocs
+    This is class for package
     '''
 
 
-    def __init__(self,cost=0,):
+    def __init__(self,cost=0,caption='product',count=1,icon=':/penguin.png'):
         '''
         Constructor
         '''
         super(LgPackage, self).__init__(cost)
+        self.caption = caption
+        self.count = count
+        self.icon = icon
         
     

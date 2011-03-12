@@ -21,6 +21,7 @@ from PyQt4 import QtCore,QtGui
 
 from lgcore.signals import *
 from lgcore.lgactions import LgActions
+from lgcore.lgnode import LgNode
 from lggui.viewdockbar import ViewDockBar
 from lggui.toolsdockbar import ToolsDockBar
 
@@ -93,10 +94,12 @@ class MainWindow(QtGui.QMainWindow):
         helpMenu = self.menuBar().addMenu("&Help")
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
         self.connect(self.lgActions.helpAboutAction, signalTriggered,self.on_HelpAbout)
-                
-        testnode1 = NodeGui(QtCore.QPointF(100,100),self,self.scene)
+        
+        node1 = LgNode()
+        node2 = LgNode()    
+        testnode1 = NodeGui(QtCore.QPointF(100,100),node1,self,self.scene)
         self.scene.addItem(testnode1)
-        testnode2 = NodeGui(QtCore.QPointF(500,300),self,self.scene)
+        testnode2 = NodeGui(QtCore.QPointF(500,300),node2,self,self.scene)
         self.scene.addItem(testnode2)
         
         testlink = LinkGui(testnode1,testnode2,self.scene,self.scene)
