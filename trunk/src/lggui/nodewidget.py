@@ -12,29 +12,35 @@ from lggui.packagewidget import PackageWidget
 from lggui.dndmenuListwidget import DnDMenuListWidget
 from lggui.dndtablewidget import DnDTableWidget
 
-class NodeWidget(QtGui.QWidget):
+class NodeWidget(QtGui.QDialog):
     '''
     classdocs
     '''
 
 
-    def __init__(self,parent=None):
+    def __init__(self,node,parent=None):
         '''
         Constructor
         '''
         super(NodeWidget, self).__init__(parent)
         
+        self.node = node # This is link to core node, wich represents
+            # all node functionality 
+            
         inputLabel = QtGui.QLabel('Input Packages')
         outputLabel = QtGui.QLabel('To sorting')
-        self.inputList = DnDMenuListWidget()
-        self.outputList = DnDTableWidget()
+        self.inputList = DnDMenuListWidget(self)
+        self.outputList = DnDTableWidget(self)
         inputLabel.setBuddy(self.inputList)
         outputLabel.setBuddy(self.outputList)
         
         storageLabel = QtGui.QLabel('Storage')
-        self.storageList = DnDMenuListWidget()
+        self.storageList = DnDMenuListWidget(self)
         storageLabel.setBuddy(self.storageList)
         
+        self.okBtn = QtGui.QPushButton('&OK')
+        self.connect(self.okBtn, signalClicked,self.accept)
+                      
         layout = QtGui.QGridLayout()
         layout.addWidget(inputLabel, 0, 0)
         layout.addWidget(outputLabel, 0, 1)
@@ -43,12 +49,17 @@ class NodeWidget(QtGui.QWidget):
         
         layout.addWidget(storageLabel, 2, 0, 1, 2)
         layout.addWidget(self.storageList, 3, 0, 1, 2)
+        layout.addWidget(self.okBtn, 4, 1)
+        
+        #vSplitter = QtGui.QSplitter(QtCore.Qt.Vertical)
+
+        self.setWindowTitle('Node control')
         
         self.setLayout(layout)
         
-        item = PackageWidget('Good 1')
-        
-        self.inputList.addItem(item)
+        for i in range(5) :
+            item = PackageWidget('Good '+str(i))
+            self.inputList.addItem(item)
         
         
         

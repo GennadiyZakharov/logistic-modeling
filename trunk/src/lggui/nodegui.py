@@ -33,15 +33,18 @@ class NodeGui(QtGui.QGraphicsObject):
         
         self.links= []
         
-        self.mainwidget = NodeWidget()
+        self.confBtn = QtGui.QPushButton('conf')
+        self.connect(self.confBtn, signalClicked,self.on_AssignItems)
+        
+        self.mainwidget = NodeWidget(None)
         
         self.proxy = QtGui.QGraphicsProxyWidget(self)
-        self.proxy.setWidget(self.mainwidget)
+        self.proxy.setWidget(self.confBtn)
         self.proxy.setPos(QtCore.QPointF(0,30))
         
         #self.proxy.setLayout()
-        
         self.setFocus()
+    
         
     def center(self):
         rect = QtCore.QRectF(self.Rect)
@@ -105,6 +108,9 @@ class NodeGui(QtGui.QGraphicsObject):
         painter.setPen(QtCore.Qt.SolidLine)
         painter.setBrush(QtGui.QBrush(self.color))
         painter.drawRect(self.Rect)
+        
+    def on_AssignItems(self):
+        self.mainwidget.exec_()
 
 '''
     def contextMenuEvent(self, event):

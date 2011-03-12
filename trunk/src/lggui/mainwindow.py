@@ -96,7 +96,7 @@ class MainWindow(QtGui.QMainWindow):
                 
         testnode1 = NodeGui(QtCore.QPointF(100,100),self,self.scene)
         self.scene.addItem(testnode1)
-        testnode2 = NodeGui(QtCore.QPointF(200,200),self,self.scene)
+        testnode2 = NodeGui(QtCore.QPointF(500,300),self,self.scene)
         self.scene.addItem(testnode2)
         
         testlink = LinkGui(testnode1,testnode2,self.scene,self.scene)
