@@ -17,12 +17,13 @@ class NodeGui(QtGui.QGraphicsObject):
     '''
     Rect = QtCore.QRectF(0, 0, 80, 70)
     
-    def __init__(self,position,parent=None,scene=None):
+    def __init__(self,position,node,parent=None,scene=None):
         
         #super(NodeGui, self).__init__()
         QtGui.QGraphicsItem.__init__(self)
         QtCore.QObject.__init__(self) 
         
+        self.node = node
         self.color = QtGui.QColor(255, 0, 0)
         self.parent = parent
         self.setPos(position)
@@ -36,7 +37,7 @@ class NodeGui(QtGui.QGraphicsObject):
         self.confBtn = QtGui.QPushButton('conf')
         self.connect(self.confBtn, signalClicked,self.on_AssignItems)
         
-        self.mainwidget = NodeWidget(None)
+        self.mainwidget = NodeWidget(self.node,None)
         
         self.proxy = QtGui.QGraphicsProxyWidget(self)
         self.proxy.setWidget(self.confBtn)
