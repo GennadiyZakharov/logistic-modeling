@@ -22,14 +22,16 @@ class DnDMenuListWidget(QtGui.QListWidget):
         
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasFormat("application/x-icon-and-text"):
+        if event.mimeData().hasFormat("application/x-icon-and-text") and \
+                                event.source().parent() is self.parent() :
             event.accept()
         else:
             event.ignore()
 
 
     def dragMoveEvent(self, event):
-        if event.mimeData().hasFormat("application/x-icon-and-text"):
+        if event.mimeData().hasFormat("application/x-icon-and-text") and \
+                                event.source().parent() is self.parent() : 
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
         else:
@@ -37,7 +39,8 @@ class DnDMenuListWidget(QtGui.QListWidget):
 
 
     def dropEvent(self, event):
-        if event.mimeData().hasFormat("application/x-icon-and-text"):
+        if event.mimeData().hasFormat("application/x-icon-and-text")  and \
+                                event.source().parent() is self.parent() :
             data = event.mimeData().data("application/x-icon-and-text")
             stream = QtCore.QDataStream(data, QtCore.QIODevice.ReadOnly)
             text = QtCore.QString()
@@ -66,7 +69,7 @@ class DnDMenuListWidget(QtGui.QListWidget):
         pixmap = icon.pixmap(24, 24)
         drag.setHotSpot(QtCore.QPoint(12, 12))
         drag.setPixmap(pixmap)
-        if (drag.start(QtCore.Qt.MoveAction|QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction):
+        if (drag.start(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction):
             self.takeItem(self.row(item))
 
         

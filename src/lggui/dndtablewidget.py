@@ -20,41 +20,47 @@ class DnDTableWidget(QtGui.QTableWidget):
         super(DnDTableWidget, self).__init__(parent)
         self.setRowCount(5)
         self.setColumnCount(3)
-        self.setHorizontalHeaderLabels(["Column #1", "Column #2"])
+        #self.
+        self.setHorizontalHeaderLabels(["Link #1", "Link #2","Link #2"])
+        
 
         self.setAcceptDrops(True)
         self.setDragEnabled(True)
         self.dragEnabled()
         self.setDragDropMode(QtGui.QAbstractItemView.DragDrop)
+        self.defaultDropAction = QtCore.Qt.MoveAction
         self.setDropIndicatorShown(True)
         self.dropAction = QtCore.Qt.MoveAction
         
         for i in range(self.rowCount()) :
             checkbox = QtGui.QCheckBox()
             self.setCellWidget(i,2,checkbox)
+    
         
-        item = QtGui.QTableWidgetItem('testitem', QtGui.QTableWidgetItem.UserType)
-        item.setIcon(QtGui.QIcon('E:\usb.png'))
-        
-        self.setItem(0,0,item)
-
     def dragEnterEvent(self, event):
-        if event.mimeData().hasFormat("application/x-icon-and-text"):
+        if event.mimeData().hasFormat("application/x-icon-and-text") and \
+                                event.source().parent() is self.parent() :
             event.accept()
         else:
             event.ignore()
 
 
     def dragMoveEvent(self, event):
-        if event.mimeData().hasFormat("application/x-icon-and-text"):
-            event.setDropAction(QtCore.Qt.MoveAction)
-            event.accept()
+        if event.mimeData().hasFormat("application/x-icon-and-text") and \
+                                event.source().parent() is self.parent() :
+            row = self.rowAt(event.pos().y())
+            col = self.columnAt(event.pos().x())
+            if self.item(row, col) is None :
+                event.setDropAction(QtCore.Qt.MoveAction)
+                event.accept()
+            else :
+                event.ignore()   
         else:
             event.ignore()
 
-    
     def dropEvent(self, event):
-        if event.mimeData().hasFormat("application/x-icon-and-text"):
+        if event.mimeData().hasFormat("application/x-icon-and-text") and \
+                                event.source().parent() is self.parent() :          
             data = event.mimeData().data("application/x-icon-and-text")
             stream = QtCore.QDataStream(data, QtCore.QIODevice.ReadOnly)
             text = QtCore.QString()
@@ -63,15 +69,18 @@ class DnDTableWidget(QtGui.QTableWidget):
 
             item = QtGui.QTableWidgetItem(text, QtGui.QTableWidgetItem.Type)
             item.setIcon(icon)
-            print('accept')
-            self.setItem(1,2,item)
+            row = self.rowAt(event.pos().y())
+            col = self.columnAt(event.pos().x())
+            self.setItem(row,col,item)
             event.setDropAction(self.dropAction)
-            event.accept()            
+            event.accept()
         else:
             event.ignore()
     
     def startDrag(self, dropActions):
         item = self.currentItem()
+        if item is None :
+            return
         icon = item.icon()
         data = QtCore.QByteArray()
         stream = QtCore.QDataStream(data, QtCore.QIODevice.WriteOnly)
