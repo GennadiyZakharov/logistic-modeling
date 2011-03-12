@@ -7,6 +7,7 @@ Created on 09.03.2011
 from PyQt4 import QtCore,QtGui
 #from ltcore.actions import LtActions
 from lgcore.signals import *
+from qrc_resources import *
 
 class PackageWidget(QtGui.QListWidgetItem):
     '''
@@ -23,7 +24,7 @@ class PackageWidget(QtGui.QListWidgetItem):
         
         self.caption = caption
         self.count = count
-        self.setIcon(QtGui.QIcon('E:\penguin.png'))
+        self.setIcon(QtGui.QIcon(':/penguin.png'))
         
         
         
