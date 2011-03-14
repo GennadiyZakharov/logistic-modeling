@@ -22,6 +22,8 @@ signalyChanged = SIGNAL('yChanged()')
 # ---- Core signals ----
 signalNextTurn = SIGNAL("nextTurn()")
 signalCost = SIGNAL("cost(int)")
+signalTransport = SIGNAL("transport")
 
+# ---- GUI signals ----
 signalNodeMoved = SIGNAL("nodeMoved()")
 

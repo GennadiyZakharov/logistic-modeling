@@ -39,7 +39,12 @@ class LinkGui(QtGui.QGraphicsObject):
         #self.brush = QtCore.Qt.NoPen
         self.acceptDrops()
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
-        QtGui.QGraphicsItem.ItemIsMovable|QtGui.QGraphicsItem.ItemIsFocusable)
+                      QtGui.QGraphicsItem.ItemIsFocusable)
+        
+        self.connect(self.input, signalxChanged,self.move)
+        self.connect(self.input, signalyChanged,self.move)
+        self.connect(self.output, signalxChanged,self.move)
+        self.connect(self.output, signalyChanged,self.move)
         
         #QtCore.QObject.connect(self.scene, QtCore.pyqtSignal(self.scene.changed()), self.move)
         #self.scene.changed.connect(self.move)
