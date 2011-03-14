@@ -17,6 +17,8 @@ class LgAbstractItem(QtCore.QObject):
         '''
         Constructor
         '''
+        super(LgAbstractItem, self).__init__()
+        
         self.cost = cost #Cost per turn
         
     def on_NextTurn(self):

@@ -22,9 +22,10 @@ from PyQt4 import QtCore,QtGui
 from lgcore.signals import *
 from lgcore.lgactions import LgActions
 from lgcore.lgnode import LgNode
+from lgcore.lglink import LgLink
+
 from lggui.viewdockbar import ViewDockBar
 from lggui.toolsdockbar import ToolsDockBar
-
 from lggui.nodegui import NodeGui
 from lggui.linkgui import LinkGui
 from lggraphicsscene import LgGraphicsScene
@@ -95,23 +96,40 @@ class MainWindow(QtGui.QMainWindow):
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
         self.connect(self.lgActions.helpAboutAction, signalTriggered,self.on_HelpAbout)
         
-        node1 = LgNode()
-        node2 = LgNode()    
-        testnode1 = NodeGui(QtCore.QPointF(100,100),node1,self,self.scene)
-        self.scene.addItem(testnode1)
-        testnode2 = NodeGui(QtCore.QPointF(500,300),node2,self,self.scene)
-        self.scene.addItem(testnode2)
+        # TEST: Creating nodes
+        self.node1 = LgNode(caption = 'Node1')
+        self.node2 = LgNode(caption = 'Node2')
+        self.node3 = LgNode(caption = 'Node3')
         
-        testlink = LinkGui(testnode1,testnode2,self.scene,self.scene)
-        self.scene.addItem(testlink)
-        testnode1.addLink(testlink)
-        testnode2.addLink(testlink)
+        self.link12 = LgLink(self.node1,self.node2,length=2)
+        self.link13 = LgLink(self.node1,self.node3,length=3)
+            
+        gnode1 = NodeGui(QtCore.QPointF(100,100),self.node1,self,self.scene)
+        self.scene.addItem(gnode1)
+        gnode2 = NodeGui(QtCore.QPointF(300,500),self.node2,self,self.scene)
+        self.scene.addItem(gnode2)
+        gnode3 = NodeGui(QtCore.QPointF(500,300),self.node3,self,self.scene)
+        self.scene.addItem(gnode3)
         
-        self.connect(testnode1, signalxChanged,testlink.move)
-        self.connect(testnode1, signalyChanged,testlink.move)
-        self.connect(testnode2, signalxChanged,testlink.move)
-        self.connect(testnode2, signalyChanged,testlink.move)
+        glink12 = LinkGui(gnode1,gnode2,self,self.scene)
+        glink13 = LinkGui(gnode1,gnode3,self,self.scene)
+        self.scene.addItem(glink12)
+        self.scene.addItem(glink13)
+        gnode1.addLink(glink12)
+        gnode2.addLink(glink12)
+        gnode1.addLink(glink13)
+        gnode3.addLink(glink13)
         
+        '''
+        self.connect(gnode1, signalxChanged,glink13.move)
+        self.connect(gnode2, signalxChanged,glink12.move)
+        self.connect(gnode3, signalxChanged,glink13.move)
+        
+        self.connect(gnode1, signalyChanged,glink12.move)
+        self.connect(gnode1, signalyChanged,glink13.move)
+        self.connect(gnode2, signalyChanged,glink12.move)
+        self.connect(gnode3, signalyChanged,glink13.move)
+        '''
     # ==== Slots and handlers to handle actions ====
 
     def fileSave(self):
