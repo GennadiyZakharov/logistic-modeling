@@ -13,6 +13,7 @@ from PyQt4.QtGui import QApplication,QIcon
 from os.path import join, abspath, pardir
 
 sys.path.append(abspath(join(pardir, 'src')))
+sys.path.append(abspath(join(pardir, 'resources')))
 
 from lggui.mainwindow import MainWindow
 

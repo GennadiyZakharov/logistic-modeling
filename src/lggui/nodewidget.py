@@ -64,6 +64,12 @@ class NodeWidget(QtGui.QDialog):
         for package in node.storage :
             item = PackageWidget(package)
             self.storageList.addItem(item)
+        if self.node.links == [] :
+            self.outputList.setEnabled(False)
+        else :
+            self.outputList.setEnabled(True)
+            for link in self.node.links :
+                pass
         '''    
         for package in node.storage :
             item = PackageWidget(package)

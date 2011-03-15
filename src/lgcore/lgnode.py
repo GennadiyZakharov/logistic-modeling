@@ -23,6 +23,7 @@ class LgNode(LgAbstractItem):
         super(LgNode, self).__init__(cost)
         
         self.caption = caption
+        
         # List of links, to which product will be distributed
         self.links = []
         
