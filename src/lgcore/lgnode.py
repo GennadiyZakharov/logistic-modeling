@@ -16,7 +16,7 @@ class LgNode(LgAbstractItem):
     '''
 
 
-    def __init__(self,cost=0,caption='Node'):
+    def __init__(self,caption='Node',storageCapacity=10,cost=0):
         '''
         Constructor
         '''
@@ -30,6 +30,7 @@ class LgNode(LgAbstractItem):
         # lists for all products
         self.entered = [] # products to be distributed
         self.storage = [] # storage to store products for a several time
+        self.storageCapacity = storageCapacity
         
         # TEST:
         for i in range(5) :

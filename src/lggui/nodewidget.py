@@ -57,6 +57,8 @@ class NodeWidget(QtGui.QDialog):
        
         self.setLayout(layout)
         
+        
+        
         for package in node.entered :
             item = PackageWidget(package)
             self.inputList.addItem(item)
@@ -64,18 +66,34 @@ class NodeWidget(QtGui.QDialog):
         for package in node.storage :
             item = PackageWidget(package)
             self.storageList.addItem(item)
+            
+        if self.node.storageCapacity == 0 :
+            self.storageList.setEnabled(False)
+        else :
+            self.storageList.setEnabled(True)
+        
         if self.node.links == [] :
             self.outputList.setEnabled(False)
         else :
             self.outputList.setEnabled(True)
+            self.outputList.setColumnCount(len(self.node.links))
+            captions = []
+            maxCapacity = 0
             for link in self.node.links :
-                pass
+                captions.append(link.caption)
+                maxCapacity = max(maxCapacity,link.capacity)
+            self.outputList.setRowCount(maxCapacity)
+            
+            
+            self.outputList.setHorizontalHeaderLabels(captions)
         '''    
         for package in node.storage :
             item = PackageWidget(package)
             self.storageList.addItem(item)
         ''' 
         
+    def on_nextTurn(self):
+        super(NodeWidget, self).nextTurn()
         
         
         

@@ -13,7 +13,7 @@ class LgLink(LgAbstractItem):
     This class implements all functionality for link
     '''
 
-    def __init__(self,input,output,cost=0,length=1):
+    def __init__(self,input,output,caption='Link',length=1,capacity=5,cost=0):
         '''
         Constructor
         '''
@@ -21,7 +21,9 @@ class LgLink(LgAbstractItem):
         
         self.input  = input
         self.output = output
+        self.caption = caption
         self.length = length
+        self.capacity = capacity
         self.packages = [] # List for store packages
         
         self.input.addLink(self)
