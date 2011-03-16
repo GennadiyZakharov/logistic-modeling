@@ -18,10 +18,10 @@ class DnDTableWidget(QtGui.QTableWidget):
         Constructor
         '''
         super(DnDTableWidget, self).__init__(parent)
+        '''
         self.setRowCount(5)
         self.setColumnCount(3)
-        #self.
-        self.setHorizontalHeaderLabels(["Link #1", "Link #2","Link #2"])
+        #self.'''
         self.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
         self.setAcceptDrops(True)
@@ -31,11 +31,11 @@ class DnDTableWidget(QtGui.QTableWidget):
         self.defaultDropAction = QtCore.Qt.MoveAction
         self.setDropIndicatorShown(True)
         self.dropAction = QtCore.Qt.MoveAction
-        
+        '''
         for i in range(self.rowCount()) :
             checkbox = QtGui.QCheckBox()
             self.setCellWidget(i,2,checkbox)
-    
+        '''
         
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat("application/x-icon-and-text") and \
