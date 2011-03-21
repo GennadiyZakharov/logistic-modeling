@@ -30,6 +30,7 @@ class LinkGui(QtGui.QGraphicsObject):
         '''
         super(LinkGui, self).__init__(parent)
         self.link = link
+        self.connect(self.link, signalUpdateGui, self.on_updateGui)
         
         self.input = input
         self.output = output
@@ -37,7 +38,7 @@ class LinkGui(QtGui.QGraphicsObject):
         self.color = QtGui.QColor(0, 255, 0)
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
                       QtGui.QGraphicsItem.ItemIsFocusable)        
-        self.package = PackageGui(None,parent=self)
+        #self.gPackages = [PackageGui(None,parent=self)]
       
         self.move()      
         
@@ -59,8 +60,19 @@ class LinkGui(QtGui.QGraphicsObject):
         matrix = QtGui.QTransform(cosa,sina,-sina,cosa,0,0)
         self.setTransform(matrix) 
         self.point2 = QtCore.QPointF(self.length,0)
-        self.package.setPos(self.point2/2)  
+        #self.package.setPos(self.point2/2)  
         self.update()
+        
+    def on_updateGui(self):
+        '''
+        Repainting packages
+        '''
+        for gPackage in self.gPackages :
+            if gPackage.package not in self.link.packages :
+                gPackage.setParentItem(None)
+            else :
+                pass
+        
          
     def mouseDoubleClickEvent(self, event):
         #dialog = TextItemDlg(self, self.parentWidget())

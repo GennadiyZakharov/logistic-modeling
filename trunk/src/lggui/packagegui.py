@@ -18,6 +18,7 @@ class PackageGui(QtGui.QGraphicsObject):
         '''
         super(PackageGui, self).__init__(parent)
         self.package = package
+        #self.connect(self.package, signalUpdateGui, self.on_updateGui)
         
         self.color = QtGui.QColor(100, 255, 50)
         self.rect = QtCore.QRectF(-15,-15,30,30)
@@ -29,6 +30,9 @@ class PackageGui(QtGui.QGraphicsObject):
         #dialog = TextItemDlg(self)
         #dialog.exec_()
         self.update()
+        
+    def on_updateGui(self):
+        pass
     
     def boundingRect(self):
         return self.rect

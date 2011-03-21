@@ -23,6 +23,7 @@ class NodeGui(QtGui.QGraphicsObject):
         #QtCore.QObject.__init__(self) 
         
         self.node = node
+        self.connect(self.node, signalUpdateGui, self.on_updateGui)
         self.color = QtGui.QColor(255, 0, 0)
         self.setPos(position)
 
@@ -92,7 +93,8 @@ class NodeGui(QtGui.QGraphicsObject):
         else:
             QtGui.QGraphicsItem.keyPressEvent(self, event)
 
-    
+    def on_updateGui(self):
+        pass    
 
     def boundingRect(self):
         return self.Rect
