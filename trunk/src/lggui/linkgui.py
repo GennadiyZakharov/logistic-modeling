@@ -35,10 +35,10 @@ class LinkGui(QtGui.QGraphicsObject):
         self.input = input
         self.output = output
         
-        self.color = QtGui.QColor(0, 255, 0)
+        self.color = QtGui.QColor(0, 0, 0)
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
                       QtGui.QGraphicsItem.ItemIsFocusable)        
-        #self.gPackages = [PackageGui(None,parent=self)]
+        self.gPackages = {}
       
         self.move()      
         
@@ -60,19 +60,31 @@ class LinkGui(QtGui.QGraphicsObject):
         matrix = QtGui.QTransform(cosa,sina,-sina,cosa,0,0)
         self.setTransform(matrix) 
         self.point2 = QtCore.QPointF(self.length,0)
-        #self.package.setPos(self.point2/2)  
+
+        for p in self.gPackages.keys():
+            self.setPackageUpdateAge(self.gPackages[p], self.link.packages[p])
         self.update()
+        
+    # TODO: Fix error with painting
+    def setPackageUpdateAge(self,gPackage,age):
+        gPackage.setPos(self.point2*(self.length - age)/self.length)
         
     def on_updateGui(self):
         '''
-        Repainting packages
+        Repaint packages
         '''
-        for gPackage in self.gPackages :
-            if gPackage.package not in self.link.packages :
-                gPackage.setParentItem(None)
+        # Remove old packages and updated packages that already exist
+        for p in self.gPackages.keys():
+            if not self.link.packages.has_key(p):                
+                self.gPackages[p].setParentItem(None)
+                self.gPackages.pop(p) # TODO: Check correctness
             else :
-                pass
-        
+                self.setPackageUpdateAge(self.gPackages[p],self.link.packages[p])
+        # Add new packages
+        for p in self.link.packages.keys():
+            if not self.gPackages.has_key(p):
+                self.gPackages[p] = PackageGui(p,self)
+            
          
     def mouseDoubleClickEvent(self, event):
         #dialog = TextItemDlg(self, self.parentWidget())
@@ -94,7 +106,7 @@ class LinkGui(QtGui.QGraphicsObject):
         return path
 
     def paint(self, painter, option, widget=None):
-        painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(0,0,255)), 2.5))
+        painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(205,235,139)), 2.5))
         painter.setBrush(QtGui.QBrush(self.color))
         painter.drawLine(QtCore.QPointF(0,0),self.point2)
         painter.drawEllipse(self.point2,4,4)

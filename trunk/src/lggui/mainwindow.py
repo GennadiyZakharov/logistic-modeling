@@ -23,6 +23,7 @@ from lgcore.signals import *
 from lgcore.lgactions import LgActions
 from lgcore.lgnode import LgNode
 from lgcore.lglink import LgLink
+from lgcore.lgscheme import LgScheme
 
 from lggui.viewdockbar import ViewDockBar
 from lggui.toolsdockbar import ToolsDockBar
@@ -97,12 +98,16 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.lgActions.helpAboutAction, signalTriggered,self.on_HelpAbout)
         
         # TEST: Creating nodes
-        self.node1 = LgNode(caption = 'Node1')
-        self.node2 = LgNode(caption = 'Node2')
-        self.node3 = LgNode(caption = 'Node3')
         
-        self.link12 = LgLink(self.node1,self.node2,length=2)
-        self.link13 = LgLink(self.node1,self.node3,length=3)
+        self.scheme = LgScheme()
+        self.connect(self.toolsDockBar.nextTurnButton,signalClicked,self.scheme.on_NextTurnPressed)
+        
+        self.node1 = LgNode(self.scheme, caption='Node1')
+        self.node2 = LgNode(self.scheme, caption='Node2')
+        self.node3 = LgNode(self.scheme, caption='Node3')
+        
+        self.link12 = LgLink(self.node1, self.node2, self.scheme, length=5)
+        self.link13 = LgLink(self.node1, self.node3, self.scheme, length=5)
             
         gnode1 = NodeGui(QtCore.QPointF(100,100),self.node1)
         self.scene.addItem(gnode1)
