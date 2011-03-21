@@ -20,9 +20,13 @@ signalyChanged = SIGNAL('yChanged()')
 
 # ==== Custom signals ====
 # ---- Core signals ----
-signalNextTurn = SIGNAL("nextTurn()")
+signalNextTurn = SIGNAL("nextTurn")
 signalCost = SIGNAL("cost(int)")
 signalTransport = SIGNAL("transport")
+
+signalUpdateGui = SIGNAL("updateGui")
+signalPackageAdded = SIGNAL("packageAdded")
+signalPackageRemoved = SIGNAL("packageRemoved")
 
 # ---- GUI signals ----
 signalNodeMoved = SIGNAL("nodeMoved()")

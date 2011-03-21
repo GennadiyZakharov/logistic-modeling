@@ -25,6 +25,7 @@ class LgLink(LgAbstractItem):
         self.length = length
         self.capacity = capacity
         self.packages = [] # List for store packages
+        self.ages = [] # packages ages
         
         self.input.addLink(self)
         
@@ -37,6 +38,7 @@ class LgLink(LgAbstractItem):
             item[1] -= 1
             if item[1] == 0 :
                 self.emit(signalTransport,item[0])
+                self.emit(signalPackageRemoved,item[0])
                 self.remove(item)
             # decrease by one age of good
                 
@@ -46,5 +48,6 @@ class LgLink(LgAbstractItem):
         Add new package to transport
         '''
         self.packages.append([package,self.length])
+        self.emit(signalPackageAdded,package)
         
         
