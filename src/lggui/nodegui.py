@@ -19,15 +19,13 @@ class NodeGui(QtGui.QGraphicsObject):
     
     def __init__(self,position,node,parent=None,scene=None):
         
-        #super(NodeGui, self).__init__()
-        QtGui.QGraphicsItem.__init__(self)
-        QtCore.QObject.__init__(self) 
+        super(NodeGui, self).__init__(parent)
+        #QtCore.QObject.__init__(self) 
         
         self.node = node
         self.color = QtGui.QColor(255, 0, 0)
-        self.parent = parent
         self.setPos(position)
-        #self.brush = QtCore.Qt.NoPen
+
         self.acceptDrops()
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
         QtGui.QGraphicsItem.ItemIsMovable|QtGui.QGraphicsItem.ItemIsFocusable)
@@ -35,7 +33,7 @@ class NodeGui(QtGui.QGraphicsObject):
         self.links= []
         
         self.confBtn = QtGui.QPushButton('conf')
-        self.connect(self.confBtn, signalClicked,self.on_AssignItems)
+        QtCore.QObject.connect(self.confBtn, signalClicked,self.on_AssignItems)
         
         self.mainwidget = NodeWidget(self.node,None)
         
