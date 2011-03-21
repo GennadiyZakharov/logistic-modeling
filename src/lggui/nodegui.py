@@ -24,7 +24,7 @@ class NodeGui(QtGui.QGraphicsObject):
         
         self.node = node
         self.connect(self.node, signalUpdateGui, self.on_updateGui)
-        self.color = QtGui.QColor(255, 0, 0)
+        self.color = QtGui.QColor(195, 217, 255)
         self.setPos(position)
 
         self.acceptDrops()

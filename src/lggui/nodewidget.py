@@ -81,7 +81,7 @@ class NodeWidget(QtGui.QDialog):
             maxCapacity = 0
             for link in self.node.links :
                 captions.append(link.caption)
-                maxCapacity = max(maxCapacity,link.capacity)
+                maxCapacity = max(maxCapacity,link.maxCapacity)
             self.outputList.setRowCount(maxCapacity)
             
             

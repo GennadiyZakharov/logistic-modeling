@@ -16,7 +16,7 @@ class LgNode(LgAbstractItem):
     '''
 
 
-    def __init__(self,caption='Node',storageCapacity=10,cost=0):
+    def __init__(self,scheme,caption='Node',storageCapacity=10,cost=0):
         '''
         Constructor
         '''
@@ -31,6 +31,7 @@ class LgNode(LgAbstractItem):
         self.entered = [] # products to be distributed
         self.storage = [] # storage to store products for a several time
         self.storageCapacity = storageCapacity
+        self.connect(scheme,signalNextTurn,self.on_NextTurn)
         
         # TEST:
         for i in range(5) :
@@ -42,7 +43,7 @@ class LgNode(LgAbstractItem):
         self.links.append(link)
         
     def on_NextTurn(self):
-        super(LgNode, self).on_NextTurn(self.cost)        
+        super(LgNode, self).on_NextTurn()        
         
     def on_PackageEntered(self,package):
         self.entered.append(package)

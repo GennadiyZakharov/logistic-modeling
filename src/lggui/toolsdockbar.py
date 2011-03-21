@@ -24,7 +24,7 @@ class ToolsDockBar(QtGui.QWidget):
         layout.addWidget(self.videoSlider)
         self.timeLabel=QtGui.QLabel('N/A')
         layout.addWidget(self.timeLabel)
-        self.nextTurnButt = QtGui.QPushButton("Next Turn")
-        layout.addWidget(self.nextTurnButt)
+        self.nextTurnButton = QtGui.QPushButton("Next Turn")
+        layout.addWidget(self.nextTurnButton)
 
         self.setLayout(layout)
