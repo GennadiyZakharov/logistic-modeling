@@ -1,23 +1,12 @@
-'''
-Created on 25.01.2011
-
-@author: gena
-'''
-
-from PyQt4 import QtCore,QtGui
-#from ltcore.actions import LtActions
-from lgcore.signals import *
-
+from PyQt4 import QtCore, QtGui
+from lgcore.signals import signalUpdateGui, signalClicked
 from lggui.nodewidget import NodeWidget
 
 class NodeGui(QtGui.QGraphicsObject):
-    '''
-    This class containes all gui functionality for
-    node
-    '''
+    '''This class containes all gui functionality for node'''
     Rect = QtCore.QRectF(0, 0, 80, 70)
     
-    def __init__(self,position,node,parent=None,scene=None):
+    def __init__(self, position, node, parent=None, scene=None):
         
         super(NodeGui, self).__init__(parent)
         #QtCore.QObject.__init__(self) 
@@ -28,19 +17,19 @@ class NodeGui(QtGui.QGraphicsObject):
         self.setPos(position)
 
         self.acceptDrops()
-        self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
-        QtGui.QGraphicsItem.ItemIsMovable|QtGui.QGraphicsItem.ItemIsFocusable)
+        self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable | 
+        QtGui.QGraphicsItem.ItemIsMovable | QtGui.QGraphicsItem.ItemIsFocusable)
         
-        self.links= []
+        self.links = []
         
         self.confBtn = QtGui.QPushButton('conf')
-        QtCore.QObject.connect(self.confBtn, signalClicked,self.on_AssignItems)
+        QtCore.QObject.connect(self.confBtn, signalClicked, self.on_AssignItems)
         
-        self.mainwidget = NodeWidget(self.node,None)
+        self.mainwidget = NodeWidget(self.node, None)
         
         self.proxy = QtGui.QGraphicsProxyWidget(self)
         self.proxy.setWidget(self.confBtn)
-        self.proxy.setPos(QtCore.QPointF(0,30))
+        self.proxy.setPos(QtCore.QPointF(0, 30))
         
         #self.proxy.setLayout()
         self.setFocus()
@@ -51,7 +40,7 @@ class NodeGui(QtGui.QGraphicsObject):
         rect.moveTo(self.pos())
         return rect.center()
     
-    def addLink(self,link):
+    def addLink(self, link):
         self.links.append(link)
         #QtCore.QObject.connect(self, signalNodeMoved,link.on_NodeMoved)
     ''' 
@@ -72,7 +61,7 @@ class NodeGui(QtGui.QGraphicsObject):
         self.rotate(180)
         self.update()
     
-    def setBrush(self,value) :
+    def setBrush(self, value) :
         self.brush = value
         
     def keyPressEvent(self, event):
@@ -81,13 +70,13 @@ class NodeGui(QtGui.QGraphicsObject):
         y = self.y()
         if event.modifiers() & QtCore.Qt.ShiftModifier:
             if event.key() == QtCore.Qt.Key_Left:
-                x-= factor
+                x -= factor
             elif event.key() == QtCore.Qt.Key_Right:
-                x+= factor
+                x += factor
             elif event.key() == QtCore.Qt.Key_Up:
-                y-= factor
+                y -= factor
             elif event.key() == QtCore.Qt.Key_Down:
-                y+= factor
+                y += factor
             self.setPos(QtCore.QPointF(x, y))
             self.update()
         else:

@@ -1,22 +1,7 @@
-'''
-Created on 10.03.2011
-
-@author: Gena
-'''
-from PyQt4 import QtCore,QtGui
-#from ltcore.actions import LtActions
-from lgcore.signals import *
+from PyQt4 import QtCore, QtGui
 
 class DnDTableWidget(QtGui.QTableWidget):
-    '''
-    classdocs
-    '''
-
-
-    def __init__(self,parent=None):
-        '''
-        Constructor
-        '''
+    def __init__(self, parent=None):
         super(DnDTableWidget, self).__init__(parent)
         '''
         self.setRowCount(5)
@@ -71,7 +56,7 @@ class DnDTableWidget(QtGui.QTableWidget):
             item.setIcon(icon)
             row = self.rowAt(event.pos().y())
             col = self.columnAt(event.pos().x())
-            self.setItem(row,col,item)
+            self.setItem(row, col, item)
             event.setDropAction(self.dropAction)
             event.accept()
         else:
@@ -92,5 +77,5 @@ class DnDTableWidget(QtGui.QTableWidget):
         pixmap = icon.pixmap(24, 24)
         drag.setHotSpot(QtCore.QPoint(12, 12))
         drag.setPixmap(pixmap)
-        if (drag.start(QtCore.Qt.MoveAction|QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction):
-            self.takeItem(self.row(item),self.column(item))
+        if (drag.start(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction):
+            self.takeItem(self.row(item), self.column(item))

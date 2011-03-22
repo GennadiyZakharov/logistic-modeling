@@ -1,28 +1,15 @@
-'''
-Created on 04.02.2011
-
-@author: gena
-'''
-
 from PyQt4 import QtCore
-from lgcore.signals import *
+from lgcore.signals import signalCost
 
 class LgAbstractItem(QtCore.QObject):
-    '''
-    This is base class for all 
-    '''
+    '''Base class'''
 
-
-    def __init__(self,cost=0):
-        '''
-        Constructor
-        '''
-        super(LgAbstractItem, self).__init__()
-        
-        self.cost = cost #Cost per turn
+    def __init__(self, cost=0):
+        super(LgAbstractItem, self).__init__()        
+        self.cost = cost
         
     def on_NextTurn(self):
-        if self.cost !=0 :
-            self.emit(signalCost,self.cost)
+        if self.cost != 0 :
+            self.emit(signalCost, self.cost)
          
         

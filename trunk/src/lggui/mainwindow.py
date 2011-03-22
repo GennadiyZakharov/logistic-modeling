@@ -1,30 +1,11 @@
-'''
-Created on 25.01.2011
+import sys
+from PyQt4 import QtCore, QtGui
 
-@author: gena
-'''
-
-
-#TODO: arrow has to be repainted
-
-
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-'''
-Created on 13.12.2010
-
-@author: gena
-'''
-import sys,os
-
-from PyQt4 import QtCore,QtGui
-
-from lgcore.signals import *
+from lgcore.signals import signalTriggered, signalClicked
 from lgcore.lgactions import LgActions
 from lgcore.lgnode import LgNode
 from lgcore.lglink import LgLink
 from lgcore.lgscheme import LgScheme
-
 from lggui.viewdockbar import ViewDockBar
 from lggui.toolsdockbar import ToolsDockBar
 from lggui.nodegui import NodeGui
@@ -32,15 +13,7 @@ from lggui.linkgui import LinkGui
 from lggraphicsscene import LgGraphicsScene
 
 class MainWindow(QtGui.QMainWindow):
-    '''
-    classdocs
-    '''
-    __version__ = '0.2'
-
-    def __init__(self,parent=None):
-        '''
-        Constructor
-        '''
+    def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         
         self.lgActions = LgActions(self)
@@ -69,7 +42,7 @@ class MainWindow(QtGui.QMainWindow):
         toolsDockWidget.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
         self.addDockWidget(QtCore.Qt.TopDockWidgetArea, toolsDockWidget)
         #Populating view dockbar
-        self.toolsDockBar=ToolsDockBar() 
+        self.toolsDockBar = ToolsDockBar() 
         toolsDockWidget.setWidget(self.toolsDockBar)
         
         #Creating view dockbar
@@ -79,14 +52,14 @@ class MainWindow(QtGui.QMainWindow):
         viewDockWidget.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, viewDockWidget)
         #Populating view dockbar
-        self.viewDockBar=ViewDockBar() 
+        self.viewDockBar = ViewDockBar() 
         viewDockWidget.setWidget(self.viewDockBar)
         
         # ==== Creating Menu
         # ---- File menu
         fileMenu = self.menuBar().addMenu("&File")
         self.lgActions.addActions(fileMenu, self.lgActions.fileActions)
-        self.connect(self.lgActions.fileQuitAction, signalTriggered,self.close)
+        self.connect(self.lgActions.fileQuitAction, signalTriggered, self.close)
         
         # ---- Mode menu 
         modeMenu = self.menuBar().addMenu("&Mode")
@@ -95,12 +68,12 @@ class MainWindow(QtGui.QMainWindow):
         # ----Help menu
         helpMenu = self.menuBar().addMenu("&Help")
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
-        self.connect(self.lgActions.helpAboutAction, signalTriggered,self.on_HelpAbout)
+        self.connect(self.lgActions.helpAboutAction, signalTriggered, self.on_HelpAbout)
         
         # TEST: Creating nodes
         
         self.scheme = LgScheme()
-        self.connect(self.toolsDockBar.nextTurnButton,signalClicked,self.scheme.on_NextTurnPressed)
+        self.connect(self.toolsDockBar.nextTurnButton, signalClicked, self.scheme.on_NextTurnPressed)
         
         self.node1 = LgNode(self.scheme, caption='Node1')
         self.node2 = LgNode(self.scheme, caption='Node2')
@@ -109,15 +82,15 @@ class MainWindow(QtGui.QMainWindow):
         self.link12 = LgLink(self.node1, self.node2, self.scheme, length=5)
         self.link13 = LgLink(self.node1, self.node3, self.scheme, length=5)
             
-        gnode1 = NodeGui(QtCore.QPointF(100,100),self.node1)
+        gnode1 = NodeGui(QtCore.QPointF(100, 100), self.node1)
         self.scene.addItem(gnode1)
-        gnode2 = NodeGui(QtCore.QPointF(300,500),self.node2)
+        gnode2 = NodeGui(QtCore.QPointF(300, 500), self.node2)
         self.scene.addItem(gnode2)
-        gnode3 = NodeGui(QtCore.QPointF(500,300),self.node3)
+        gnode3 = NodeGui(QtCore.QPointF(500, 300), self.node3)
         self.scene.addItem(gnode3)
         
-        glink12 = LinkGui(self.link12,gnode1,gnode2)
-        glink13 = LinkGui(self.link12,gnode1,gnode3)
+        glink12 = LinkGui(self.link12, gnode1, gnode2)
+        glink13 = LinkGui(self.link12, gnode1, gnode3)
         self.scene.addItem(glink12)
         self.scene.addItem(glink13)
         gnode1.addLink(glink12)
@@ -168,8 +141,7 @@ class MainWindow(QtGui.QMainWindow):
         # Asking user to confirm
         if self.okToContinue():
             # Saving settings
-            settings = QtCore.QSettings()
-            
+            settings = QtCore.QSettings()            
             event.accept()
         else:
             event.ignore()
@@ -198,7 +170,7 @@ class MainWindow(QtGui.QMainWindow):
             reply = QtGui.QMessageBox.question(self,
                                          "Unsaved Changes",
                                          "Save unsaved changes?",
-                                         QtGui.QMessageBox.Yes|QtGui.QMessageBox.No|
+                                         QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | 
                                          QtGui.QMessageBox.Cancel)
             if reply == QtGui.QMessageBox.Cancel:
                 return False

@@ -1,19 +1,6 @@
-'''
-Created on 10.03.2011
-
-@author: Gena
-'''
-from PyQt4 import QtCore,QtGui
-#from ltcore.actions import LtActions
-from lgcore.signals import *
-
+from PyQt4 import QtCore, QtGui
 
 class DnDMenuListWidget(QtGui.QListWidget):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, parent=None):
         super(DnDMenuListWidget, self).__init__(parent)
         self.setAcceptDrops(True)

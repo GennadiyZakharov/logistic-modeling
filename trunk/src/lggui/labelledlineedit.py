@@ -1,14 +1,8 @@
-'''
-Created on 25.01.2011
-
-@author: gena
-'''
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 from future_builtins import *
 
-import sys
 from PyQt4.QtCore import QString
 from PyQt4.QtGui import (QBoxLayout,
         QLabel, QLineEdit, QTextEdit,

@@ -1,31 +1,17 @@
-'''
-Created on 21.03.2011
-
-@author: Gena
-'''
-from PyQt4 import QtCore,QtGui
-#from ltcore.actions import LtActions
-from lgcore.signals import *
-from hashlib import sha512
-from time import time
+from PyQt4 import QtCore, QtGui
 
 class PackageGui(QtGui.QGraphicsObject):
-    '''
-    This class paint package
-    '''
+    '''This class paint package'''
     
-    def __init__(self,package,parent=None):
-        '''
-        Draw package
-        '''
+    def __init__(self, package, parent=None):
         super(PackageGui, self).__init__(parent)
         self.package = package
         #self.connect(self.package, signalUpdateGui, self.on_updateGui)
         
         self.color = QtGui.QColor(255, 255, 136)
-        self.rect = QtCore.QRectF(-15,-15,30,30)
+        self.rect = QtCore.QRectF(-15, -15, 30, 30)
         
-        self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|
+        self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable | 
                       QtGui.QGraphicsItem.ItemIsFocusable)
         
         #self.hashValue = int(sha512(str(time())).hexdigest(), 16) 
@@ -54,6 +40,6 @@ class PackageGui(QtGui.QGraphicsObject):
         return path
 
     def paint(self, painter, option, widget=None):
-        painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(205,235,139)), 1.5))
+        painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(205, 235, 139)), 1.5))
         painter.setBrush(QtGui.QBrush(self.color))
         painter.drawEllipse(self.rect)
