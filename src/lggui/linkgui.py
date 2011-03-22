@@ -32,6 +32,8 @@ class LinkGui(QtGui.QGraphicsObject):
         self.link = link
         self.connect(self.link, signalUpdateGui, self.on_updateGui)
         
+        self.paintOffset = 2/10
+        
         self.input = input
         self.output = output
         
@@ -66,8 +68,9 @@ class LinkGui(QtGui.QGraphicsObject):
         self.update()
         
     # TODO: Fix error with painting
-    def setPackageUpdateAge(self,gPackage,age):
-        gPackage.setPos(self.point2*(self.length - age)/self.length)
+    def setPackageUpdateAge(self, gPackage, age):
+        print self.link.length - age
+        gPackage.setPos( self.point2*(self.link.length - age)/self.link.length )
         
     def on_updateGui(self):
         '''
@@ -84,6 +87,7 @@ class LinkGui(QtGui.QGraphicsObject):
         for p in self.link.packages.keys():
             if not self.gPackages.has_key(p):
                 self.gPackages[p] = PackageGui(p,self)
+                self.setPackageUpdateAge(self.gPackages[p], self.link.packages[p])
             
          
     def mouseDoubleClickEvent(self, event):
