@@ -1,28 +1,11 @@
-'''
-Created on 08.03.2011
-
-@author: Gena
-'''
-
-from PyQt4 import QtCore,QtGui
-#from ltcore.actions import LtActions
-from lgcore.signals import *
-from lgcore.lgpackage import LgPackage
-
+from PyQt4 import QtGui
+from lgcore.signals import signalClicked
 from lggui.packagewidget import PackageWidget
 from lggui.dndmenuListwidget import DnDMenuListWidget
 from lggui.dndtablewidget import DnDTableWidget
 
 class NodeWidget(QtGui.QDialog):
-    '''
-    classdocs
-    '''
-
-
-    def __init__(self,node,parent=None):
-        '''
-        Constructor
-        '''
+    def __init__(self, node, parent=None):
         super(NodeWidget, self).__init__(parent)
         
         self.node = node # This is link to core node, wich represents
@@ -41,7 +24,7 @@ class NodeWidget(QtGui.QDialog):
         storageLabel.setBuddy(self.storageList)
         
         self.okBtn = QtGui.QPushButton('&OK')
-        self.connect(self.okBtn, signalClicked,self.accept)
+        self.connect(self.okBtn, signalClicked, self.accept)
                       
         layout = QtGui.QGridLayout()
         layout.addWidget(inputLabel, 0, 0)
@@ -56,8 +39,6 @@ class NodeWidget(QtGui.QDialog):
         #vSplitter = QtGui.QSplitter(QtCore.Qt.Vertical)
        
         self.setLayout(layout)
-        
-        
         
         for package in node.entered :
             item = PackageWidget(package)
@@ -81,10 +62,8 @@ class NodeWidget(QtGui.QDialog):
             maxCapacity = 0
             for link in self.node.links :
                 captions.append(link.caption)
-                maxCapacity = max(maxCapacity,link.maxCapacity)
-            self.outputList.setRowCount(maxCapacity)
-            
-            
+                maxCapacity = max(maxCapacity, link.maxCapacity)
+            self.outputList.setRowCount(maxCapacity)            
             self.outputList.setHorizontalHeaderLabels(captions)
         '''    
         for package in node.storage :

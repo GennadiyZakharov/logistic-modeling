@@ -1,22 +1,12 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-'''
-Created on 
 
-@author: gena
-'''
 import sys
-
-#125/75
-
-from PyQt4.QtGui import QApplication,QIcon
 from os.path import join, abspath, pardir
+from PyQt4.QtGui import QApplication, QIcon
 
 sys.path.append(abspath(join(pardir, 'src')))
 sys.path.append(abspath(join(pardir, 'resources')))
-
 from lggui.mainwindow import MainWindow
-
 
 def main():
     app = QApplication(sys.argv)
@@ -30,4 +20,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
