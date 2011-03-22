@@ -1,7 +1,6 @@
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from future_builtins import *
 
 from PyQt4.QtCore import QString
 from PyQt4.QtGui import (QBoxLayout,
