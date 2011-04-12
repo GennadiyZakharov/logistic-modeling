@@ -1,5 +1,5 @@
-#LyX 1.6.9 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0.0beta4 created this file. For more info see http://www.lyx.org/
+\lyxformat 412
 \begin_document
 \begin_header
 \textclass article
@@ -7,23 +7,32 @@
 \usepackage{pscyr}
 \usepackage[T2A]{fontenc}
 \usepackage[utf8x]{inputenc}
+\usepackage[a5paper]{geometry}
 \author{Квятковский М. О.}
 \title{Отчет о проделанной работе}
 \end_preamble
 \options 14pt
 \use_default_options true
+\maintain_unincluded_children false
 \language russian
+\language_package default
 \inputencoding utf8x
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -31,21 +40,30 @@
 \use_geometry false
 \use_amsmath 1
 \use_esint 1
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Предметный указатель
+\shortcut idx
+\color #008000
+\end_index
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language french
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -93,15 +111,11 @@ LatexCommand tableofcontents
 \begin_inset Newpage newpage
 \end_inset
 
-Отчет по проекту логистического моделирования
-\begin_inset Newpage newpage
-\end_inset
-
 
 \end_layout
 
 \begin_layout Section
-Обзор (примерно 20 страниц)
+Обзор
 \end_layout
 
 \begin_layout Standard
@@ -285,7 +299,7 @@ key "gadjinskiy"
 \end_layout
 
 \begin_layout Subsubsection
-Развитие логистики как экономической дисциплины
+Развитие логистики
 \end_layout
 
 \begin_layout Standard
@@ -412,7 +426,7 @@ key "gadjinskiy"
 \end_layout
 
 \begin_layout Subsubsection
-ФУНКЦИИ ЛОГИСТИКИ
+Функции логистики
 \end_layout
 
 \begin_layout Standard
@@ -496,7 +510,7 @@ key "gadjinskiy"
 \end_layout
 
 \begin_layout Subsection
-ЛОГИСТИЧЕСКИЕ СИСТЕМЫ 
+Логистические системы
 \end_layout
 
 \begin_layout Standard
@@ -575,15 +589,15 @@ key "gadjinskiy"
 \end_layout
 
 \begin_layout Subsection
-МОДЕЛИРОВАНИЕ В ЛОГИСТИКЕ
+Моделирование в логистике
 \end_layout
 
 \begin_layout Standard
 Моделирование основывается на подобии систем или процес­сов, которое может
  быть полным или частичным.
  Основная цель моделирования - прогноз поведения процесса или системы.
- Ключевой вопрос моделирования «ЧТО БУДЕТ, ЕСЛИ...?» Существенной характеристикой
- любой модели является степень полноты подобия модели моделируемому объекту.
+ Существенной характеристикой любой модели является степень полноты подобия
+ модели моделируемому объекту.
  По этому признаку все модели можно разделить на изоморфные и гомоморфные.
 \end_layout
 
@@ -1121,16 +1135,11 @@ key "gadjinskiy"
 \end_layout
 
 \begin_layout Section
-Исследование (3-5 страниц)
+Исследование
 \end_layout
 
 \begin_layout Subsection
-Общее описание подхода (рассмотрение задач, попытка выделить их общие черты,
- попытка выделить общую нотацию и так далее); 
-\end_layout
-
-\begin_layout Standard
-После рассмотрения во введении основных
+Общее описание подхода
 \end_layout
 
 \begin_layout Subsection
@@ -1139,12 +1148,9 @@ key "gadjinskiy"
 
 \begin_layout Standard
 В результате рассмотрения представленных выше логистических зпадачс, попытаемся
- выделить основные элементы, из которых можно составить модельную ситему.
-\end_layout
-
-\begin_layout Standard
-Субъектом логистической игры является игрок, который принимает решение и
- решает логистическую задачу.
+ выделить основные элементы, из которых можно составить модельную систему.
+ Субъектом логистической игры является игрок, который принимает решение
+ и решает логистическую задачу.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1527,11 +1533,10 @@ la, InvoViz Toolkit, JS Graph IT, jsPlumb) предоставляют возмо
 \end_layout
 
 \begin_layout Section
-Предлагаемая графическая нотация (графический язык) (примерно 10 страниц)
+Предлагаемая графическая нотация
 \end_layout
 
 \begin_layout Standard
-З
 \begin_inset Newpage newpage
 \end_inset
 
