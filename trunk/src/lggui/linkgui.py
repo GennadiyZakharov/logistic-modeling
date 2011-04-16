@@ -14,6 +14,9 @@ class LinkGui(QtGui.QGraphicsObject):
     the target is treated like line direction
     size and angle will be calculated according to this values
     '''
+    arrowSize = 5
+    arrowPoint1 = QtCore.QPointF(-arrowSize,arrowSize)
+    arrowPoint2 = QtCore.QPointF(-arrowSize,-arrowSize) 
     
     def __init__(self, link, input, output, parent=None, scene=None):
         '''Input and output assumed to be nodegui type'''
@@ -86,17 +89,20 @@ class LinkGui(QtGui.QGraphicsObject):
         self.brush = value
         
     def boundingRect(self):
-        return QtCore.QRectF(QtCore.QPointF(0, -2.5), QtCore.QPointF(self.length, 2.5))
+        return QtCore.QRectF(QtCore.QPointF(0, -self.arrowSize), QtCore.QPointF(self.length, self.arrowSize))
 
     def shape(self):
         path = QtGui.QPainterPath()
         path.moveTo(QtCore.QPointF(0, 0))
         path.lineTo(self.point2)
-        path.addEllipse(self.point2, 5, 5)
+        path.lineTo(self.point2+self.arrowPoint1)
+        path.moveTo(self.point2)
+        path.lineTo(self.point2+self.arrowPoint2)
         return path
 
     def paint(self, painter, option, widget=None):
         painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(205, 235, 139)), 2.5))
         painter.setBrush(QtGui.QBrush(self.color))
         painter.drawLine(QtCore.QPointF(0, 0), self.point2)
-        painter.drawEllipse(self.point2, 4, 4)
+        painter.drawLine(self.point2,self.point2+self.arrowPoint1)
+        painter.drawLine(self.point2,self.point2+self.arrowPoint2)
