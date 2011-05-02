@@ -7,12 +7,14 @@ class PackageWidget(QtGui.QListWidgetItem):
     It containes name, count and picture for
     '''
 
-    def __init__(self,package):
+    def __init__(self, package):
+                
         self.package = package
         self.caption = package.caption + ' ' + str(package.count)
-        
-        super(PackageWidget, self).__init__(self.caption)
+        super(PackageWidget, self).__init__(package.caption)
         self.setIcon(QtGui.QIcon(package.icon))
+        
+        
         
         
         
