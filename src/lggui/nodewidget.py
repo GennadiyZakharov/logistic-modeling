@@ -40,16 +40,25 @@ class NodeWidget(QtGui.QDialog):
        
         self.setLayout(layout)
         
-        for package in node.entered :
-            item = PackageWidget(package)
-            self.inputList.addItem(item)
-            
+        
+        '''    
         for package in node.storage :
             item = PackageWidget(package)
             self.storageList.addItem(item)
+        ''' 
+        
+    def on_Update(self):
+        for package in self.node.entered :
+            item = PackageWidget(package)
+            self.inputList.addItem(item)
+            
+        
             
         if self.node.storageCapacity == 0 :
             self.storageList.setEnabled(False)
+            for package in self.node.storage :
+                item = PackageWidget(package)
+                self.storageList.addItem(item)
         else :
             self.storageList.setEnabled(True)
         
@@ -65,14 +74,7 @@ class NodeWidget(QtGui.QDialog):
                 maxCapacity = max(maxCapacity, link.maxCapacity)
             self.outputList.setRowCount(maxCapacity)            
             self.outputList.setHorizontalHeaderLabels(captions)
-        '''    
-        for package in node.storage :
-            item = PackageWidget(package)
-            self.storageList.addItem(item)
-        ''' 
-        
-    def on_nextTurn(self):
-        super(NodeWidget, self).nextTurn()
+    
         
         
         

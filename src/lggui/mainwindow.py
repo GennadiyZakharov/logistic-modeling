@@ -5,6 +5,7 @@ from lgcore.signals import signalTriggered, signalClicked
 from lgcore.lgactions import LgActions
 from lgcore.lgnode import LgNode
 from lgcore.lglink import LgLink
+from lgcore.lgpackage import LgPackage
 from lgcore.lgscheme import LgScheme
 from lggui.viewdockbar import ViewDockBar
 from lggui.toolsdockbar import ToolsDockBar
@@ -75,39 +76,34 @@ class MainWindow(QtGui.QMainWindow):
         self.scheme = LgScheme()
         self.connect(self.toolsDockBar.nextTurnButton, signalClicked, self.scheme.on_NextTurnPressed)
         
-        self.node1 = LgNode(self.scheme, caption='Node1')
-        self.node2 = LgNode(self.scheme, caption='Node2')
-        self.node3 = LgNode(self.scheme, caption='Node3')
+        self.factory = self.scheme.addNode(caption='Factory')
+        self.warehouse = self.scheme.addNode(caption='Warehouse')
+        self.shop1 = self.scheme.addNode(caption='Shop1')
+        self.shop2 = self.scheme.addNode(caption='Shop2')
         
-        self.link12 = LgLink(self.node1, self.node2, self.scheme, length=5)
-        self.link13 = LgLink(self.node1, self.node3, self.scheme, length=5)
-            
-        gnode1 = NodeGui(QtCore.QPointF(100, 100), self.node1)
-        self.scene.addItem(gnode1)
-        gnode2 = NodeGui(QtCore.QPointF(300, 500), self.node2)
-        self.scene.addItem(gnode2)
-        gnode3 = NodeGui(QtCore.QPointF(500, 300), self.node3)
-        self.scene.addItem(gnode3)
+        self.link1 = self.scheme.addLink(self.factory, self.warehouse, length=5)
+        self.link2 = self.scheme.addLink(self.warehouse, self.shop1, length=4)
+        self.link3 = self.scheme.addLink(self.warehouse, self.shop2, length=3)
         
-        glink12 = LinkGui(self.link12, gnode1, gnode2)
-        glink13 = LinkGui(self.link12, gnode1, gnode3)
-        self.scene.addItem(glink12)
-        self.scene.addItem(glink13)
-        gnode1.addLink(glink12)
-        gnode2.addLink(glink12)
-        gnode1.addLink(glink13)
-        gnode3.addLink(glink13)
+        gfactory = NodeGui(self.factory, QtCore.QPointF(300, 100))
+        self.scene.addItem(gfactory)
+        gwarehouse = NodeGui(self.warehouse, QtCore.QPointF(300, 400))
+        self.scene.addItem(gwarehouse)
+        gshop1 = NodeGui(self.shop1, QtCore.QPointF(100, 600))
+        self.scene.addItem(gshop1)
+        gshop2 = NodeGui(self.shop1, QtCore.QPointF(500, 600))
+        self.scene.addItem(gshop2)
         
-        '''
-        self.connect(gnode1, signalxChanged,glink13.move)
-        self.connect(gnode2, signalxChanged,glink12.move)
-        self.connect(gnode3, signalxChanged,glink13.move)
         
-        self.connect(gnode1, signalyChanged,glink12.move)
-        self.connect(gnode1, signalyChanged,glink13.move)
-        self.connect(gnode2, signalyChanged,glink12.move)
-        self.connect(gnode3, signalyChanged,glink13.move)
-        '''
+        glink1 = LinkGui(self.link1, gfactory, gwarehouse)
+        glink2 = LinkGui(self.link2, gwarehouse, gshop1)
+        glink3 = LinkGui(self.link3, gwarehouse, gshop2)
+        self.scene.addItem(glink1)
+        self.scene.addItem(glink2)
+        self.scene.addItem(glink3)
+        
+                
+        self.link1.on_addPackage(LgPackage())
     # ==== Slots and handlers to handle actions ====
 
     def fileSave(self):
@@ -135,6 +131,12 @@ class MainWindow(QtGui.QMainWindow):
         # self.addRecentFile(fname)
         self.filename = fname
         self.fileSave()
+    
+    def on_AddNode(self):
+        pass
+    
+    def on_AddLink(self):
+        pass
     
     # Close Event handler
     def closeEvent(self, event):
