@@ -1,4 +1,5 @@
 from PyQt4 import QtCore, QtGui
+from lgcore.signals import signalItemMoved
 
 class DnDTableWidget(QtGui.QTableWidget):
     def __init__(self, parent=None):
@@ -79,3 +80,4 @@ class DnDTableWidget(QtGui.QTableWidget):
         drag.setPixmap(pixmap)
         if (drag.start(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction):
             self.takeItem(self.row(item), self.column(item))
+            self.emit(signalItemMoved)

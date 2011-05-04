@@ -22,6 +22,9 @@ class LabelledLineEdit(QWidget):
         layout.addWidget(self.label)
         layout.addWidget(self.lineEdit)
         self.setLayout(layout)
+        # Adding links to functions
+        self.text=self.lineEdit.text
+        self.setText=self.lineEdit.setText
 
 class LabelledTextEdit(QWidget):
 

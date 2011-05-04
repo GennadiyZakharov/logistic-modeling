@@ -18,6 +18,7 @@ class LgNode(LgAbstractItem):
         self.entered = [] # products to be distributed
         self.storage = [] # storage to store products for a several time
         self.storageCapacity = storageCapacity
+        self.factories = set()
         
         # TEST:
         '''
@@ -31,7 +32,8 @@ class LgNode(LgAbstractItem):
         
     def produce(self):
         allpackages = self.entered + self.storage
-        pass
+        for factory in self.factories :
+            factory.on_NextTurn(allpackages)
         
     def on_NextTurn(self):
         super(LgNode, self).on_NextTurn()

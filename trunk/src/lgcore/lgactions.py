@@ -40,8 +40,11 @@ class LgActions(QtCore.QObject):
         
         # ---- Item Actions
         self.addNodeAction = self.createAction("Add new node",
-                            None, "filequit", "Add new node to the task")
+                            None, "filequit", "Add new node")
+        self.addLinkAction = self.createAction("Add new link",
+                            None, "filequit", "Add new link to the task")
         
+        self.itemActions = (self.addNodeAction,self.addLinkAction)
         # ---- Help actions
         self.helpAboutAction = self.createAction("About",
                             QtGui.QKeySequence.HelpContents, "filequit", "About Logistic Modeller") 
