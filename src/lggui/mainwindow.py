@@ -11,6 +11,7 @@ from lggui.viewdockbar import ViewDockBar
 from lggui.toolsdockbar import ToolsDockBar
 from lggui.nodegui import NodeGui
 from lggui.linkgui import LinkGui
+from lggui.nodeaddwidget import NodeAddWidget
 from lggraphicsscene import LgGraphicsScene
 
 class MainWindow(QtGui.QMainWindow):
@@ -65,7 +66,13 @@ class MainWindow(QtGui.QMainWindow):
         # ---- Mode menu 
         modeMenu = self.menuBar().addMenu("&Mode")
         self.lgActions.addActions(modeMenu, self.lgActions.modeActions)
-                
+        
+        # ---- Item Menu ----
+        itemMenu = self.menuBar().addMenu("&Item")
+        self.lgActions.addActions(itemMenu, self.lgActions.itemActions)
+        self.connect(self.lgActions.addNodeAction, signalTriggered, self.on_AddNode)
+        self.connect(self.lgActions.addLinkAction, signalTriggered, self.on_AddLink)
+        
         # ----Help menu
         helpMenu = self.menuBar().addMenu("&Help")
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
@@ -133,7 +140,8 @@ class MainWindow(QtGui.QMainWindow):
         self.fileSave()
     
     def on_AddNode(self):
-        pass
+        dialog = NodeAddWidget(self)
+        dialog.exec_()
     
     def on_AddLink(self):
         pass

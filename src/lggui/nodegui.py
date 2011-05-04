@@ -30,7 +30,6 @@ class NodeGui(QtGui.QGraphicsObject):
         self.proxy.setWidget(self.mainwidget)
         self.proxy.setPos(QtCore.QPointF(0, 30))
         '''
-        self.setFocus()
     
         
     def center(self):
@@ -97,10 +96,15 @@ class NodeGui(QtGui.QGraphicsObject):
         painter.setBrush(QtGui.QBrush(self.color))
         painter.drawRect(self.Rect)
         painter.drawText(QtCore.QPoint(10,10),self.node.caption)
+        if self.hasFocus() :
+            painter.setBrush(QtCore.Qt.NoBrush)
+            painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
+            painter.drawRect(self.Rect.adjusted(2, 2, -2, -2))
         
     def on_AssignItems(self):
         self.mainwidget.on_Update()
         self.mainwidget.exec_()
+        
         pass
 
 '''

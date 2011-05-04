@@ -1,7 +1,10 @@
 from PyQt4 import QtCore, QtGui
+from lgcore.signals import signalItemMoved
 
 class DnDMenuListWidget(QtGui.QListWidget):
+    
     def __init__(self, parent=None):
+        
         super(DnDMenuListWidget, self).__init__(parent)
         self.setAcceptDrops(True)
         self.setDragEnabled(True)
@@ -58,5 +61,6 @@ class DnDMenuListWidget(QtGui.QListWidget):
         drag.setPixmap(pixmap)
         if (drag.start(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction):
             self.takeItem(self.row(item))
+            self.emit(signalItemMoved)
 
         

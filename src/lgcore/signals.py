@@ -5,6 +5,9 @@ signalClicked = SIGNAL("clicked()")
 signalValueChanged = SIGNAL("valueChanged(int)")
 signalStateChanged = SIGNAL("stateChanged(int)")
 signalTriggered = SIGNAL("triggered()")
+signalAccepted = SIGNAL("accepted()")
+signalRejected = SIGNAL("rejected()")
+
 
 signalChanged = SIGNAL('changed') 
 
@@ -26,4 +29,5 @@ signalPackageRemoved = SIGNAL("packageRemoved")
 
 # ---- GUI signals ----
 signalNodeMoved = SIGNAL("nodeMoved()")
+signalItemMoved = SIGNAL("itemMoved")
 
