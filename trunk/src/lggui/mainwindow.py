@@ -25,8 +25,8 @@ class MainWindow(QtGui.QMainWindow):
         self.dirty = True
         
         # All nodes and links will be stored in lists
-        self.nodeslist = []
-        self.linkslist = []
+        self.gnodes = {}
+        self.glinks = {}
         
         # ==== Creating main graph view
         self.scene = LgGraphicsScene(self)
@@ -92,23 +92,14 @@ class MainWindow(QtGui.QMainWindow):
         self.link2 = self.scheme.addLink(self.warehouse, self.shop1, length=4)
         self.link3 = self.scheme.addLink(self.warehouse, self.shop2, length=3)
         
-        gfactory = NodeGui(self.factory, QtCore.QPointF(300, 100))
-        self.scene.addItem(gfactory)
-        gwarehouse = NodeGui(self.warehouse, QtCore.QPointF(300, 400))
-        self.scene.addItem(gwarehouse)
-        gshop1 = NodeGui(self.shop1, QtCore.QPointF(100, 600))
-        self.scene.addItem(gshop1)
-        gshop2 = NodeGui(self.shop1, QtCore.QPointF(500, 600))
-        self.scene.addItem(gshop2)
+        gfactory = self.addGNode(self.factory, QtCore.QPointF(300, 100))
+        gwarehouse = self.addGNode(self.warehouse, QtCore.QPointF(300, 400))
+        gshop1 = self.addGNode(self.shop1, QtCore.QPointF(100, 600))
+        gshop2 = self.addGNode(self.shop2, QtCore.QPointF(500, 600))
         
-        
-        glink1 = LinkGui(self.link1, gfactory, gwarehouse)
-        glink2 = LinkGui(self.link2, gwarehouse, gshop1)
-        glink3 = LinkGui(self.link3, gwarehouse, gshop2)
-        self.scene.addItem(glink1)
-        self.scene.addItem(glink2)
-        self.scene.addItem(glink3)
-        
+        self.addGLink(self.link1)
+        self.addGLink(self.link2)
+        self.addGLink(self.link3)        
                 
         self.link1.on_addPackage(LgPackage())
     # ==== Slots and handlers to handle actions ====
@@ -162,6 +153,21 @@ class MainWindow(QtGui.QMainWindow):
         
         for link in self.linkslist :
             link.nextTurn()
+    
+    
+    def addGNode(self, node, pos=None):
+        gnode = NodeGui(node, pos)
+        self.gnodes[node] = gnode
+        self.scene.addItem(gnode)
+        return gnode
+    
+    def addGLink(self, link):
+        ginput = self.gnodes[link.input]
+        goutput = self.gnodes[link.output]
+        glink = LinkGui(link, ginput, goutput)
+        self.glinks[link] = glink
+        self.scene.addItem(glink)
+        return glink   
             
     def on_HelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",
@@ -173,6 +179,7 @@ class MainWindow(QtGui.QMainWindow):
         <p>Python %s - Qt %s - PyQt %s""" % (
                         self.__version__, sys.platform,
                         QtCore.QT_VERSION_STR, QtCore.PYQT_VERSION_STR))
+    
     
     
     def okToContinue(self):

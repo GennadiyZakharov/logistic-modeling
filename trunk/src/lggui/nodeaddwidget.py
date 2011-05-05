@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 
 from lgcore.signals import *
+from lgcore.lgfactory import LgFactory
 from lggui.factoryEditWidget import FactoryEditWidget
 
 
@@ -21,20 +22,20 @@ class NodeAddWidget(QtGui.QDialog):
         self.nameEdit = QtGui.QLineEdit()
         self.nameEdit.textEdited.connect(self.on_updateText)
         nameText = QtGui.QLabel('Node name:')
-        layout.addWidget(nameText,0,0)
-        layout.addWidget(self.nameEdit,0,1)
+        layout.addWidget(nameText, 0, 0)
+        layout.addWidget(self.nameEdit, 0, 1)
         
         self.storageEdit = QtGui.QSpinBox()
         self.storageEdit.setMaximum(10)
         storageText = QtGui.QLabel('Storage Capacity:')
-        layout.addWidget(storageText,1,0)
-        layout.addWidget(self.storageEdit,1,1)
+        layout.addWidget(storageText, 1, 0)
+        layout.addWidget(self.storageEdit, 1, 1)
         
         self.factoryList = QtGui.QListWidget()
-        layout.addWidget(self.factoryList,2,0,2,2)
+        layout.addWidget(self.factoryList, 2, 0, 2, 2)
         addfactoryButton = QtGui.QPushButton('Add Factory')
         addfactoryButton.clicked.connect(self.on_EditFactory)
-        layout.addWidget(addfactoryButton,4,0)
+        layout.addWidget(addfactoryButton, 4, 0)
         
         self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | 
                                            QtGui.QDialogButtonBox.Cancel)
@@ -54,6 +55,7 @@ class NodeAddWidget(QtGui.QDialog):
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(text != '')
         
     def on_EditFactory(self):
+        #if
         dialog = FactoryEditWidget(self)
         if dialog.exec_() :
             pass

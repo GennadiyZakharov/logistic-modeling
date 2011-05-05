@@ -1,3 +1,7 @@
+from hashlib import sha512
+from time import time
+import random
+
 from PyQt4 import QtCore
 from lgcore.signals import signalCost
 
@@ -10,12 +14,20 @@ class LgAbstractItem(QtCore.QObject):
         parent -- usually lgsheme
         cost -- use cost per turn
         '''
-        super(LgAbstractItem, self).__init__(parent)        
+        super(LgAbstractItem, self).__init__(parent)     
+        self.hashValue = int(sha512(str(time() + random.randint(0, 100))).hexdigest(), 16)
+           
         self.cost = cost
         self.caption = caption
         self.owner = owner
         if owner is not None :
             self.connect(self, signalCost, owner.on_Cost)
+            
+    def __hash__(self):
+        return self.hashValue
+    
+    def __str__(self):
+        return 'AbstractItem' + str(self.hashValue)
         
     def on_NextTurn(self):
         if self.cost != 0 :
