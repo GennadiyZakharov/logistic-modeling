@@ -15,10 +15,13 @@ class LgNode(LgAbstractItem):
         self.links = []
         
         # lists for all products
-        self.entered = [] # products to be distributed
-        self.storage = [] # storage to store products for a several time
+        self.entered = set() # products to be distributed
+        self.storage = set() # storage to store products for a several time
         self.storageCapacity = storageCapacity
         self.factories = set()
+        
+    def __str__(self):
+        return 'Node' + str(self.hashValue)
         
         # TEST:
         '''
@@ -31,16 +34,20 @@ class LgNode(LgAbstractItem):
         self.links.append(link)
         
     def produce(self):
-        allpackages = self.entered + self.storage
+        allpackages = self.entered | self.storage
         for factory in self.factories :
             factory.on_NextTurn(allpackages)
+            
+        self.storage &= allpackages # in storage will be all packages, which was in storage before
+        self.entered = allpackages - self.storage 
+        
         
     def on_NextTurn(self):
         super(LgNode, self).on_NextTurn()
         self.produce()
-        if self.entered != [] :
+        if len(self.entered) != 0 :
             self.emit(signalNextTurnNode)
         
     def on_PackageEntered(self, package):
-        self.entered.append(package)
+        self.entered.add(package)
         

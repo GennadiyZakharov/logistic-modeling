@@ -20,6 +20,8 @@ class LgLink(LgAbstractItem):
         
         self.connect(self.input, signalTransport, self.on_addPackage)
         self.connect(self, signalTransport, self.output.on_PackageEntered)
+    def __str__(self):
+        return 'Link' + str(self.hashValue)
         
     def on_NextTurn(self):
         super(LgLink, self).on_NextTurn()

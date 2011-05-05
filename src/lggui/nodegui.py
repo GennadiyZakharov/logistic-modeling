@@ -100,6 +100,12 @@ class NodeGui(QtGui.QGraphicsObject):
             painter.setBrush(QtCore.Qt.NoBrush)
             painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
             painter.drawRect(self.Rect.adjusted(2, 2, -2, -2))
+            
+        if len(self.node.entered) != 0 :
+            painter.setBrush(QtGui.QBrush(QtGui.QColor(255,0,0)))
+            painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
+            painter.drawEllipse(self.Rect.bottomRight()-QtCore.QPointF(15, 15),10,10)
+            
         
     def on_AssignItems(self):
         self.mainwidget.on_Update()
