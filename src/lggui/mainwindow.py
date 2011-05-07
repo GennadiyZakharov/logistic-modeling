@@ -72,6 +72,8 @@ class MainWindow(QtGui.QMainWindow):
         self.lgActions.addActions(itemMenu, self.lgActions.itemActions)
         self.connect(self.lgActions.addNodeAction, signalTriggered, self.on_AddNode)
         self.connect(self.lgActions.addLinkAction, signalTriggered, self.on_AddLink)
+        self.connect(self.lgActions.delNodeAction, signalTriggered, self.delGNode)
+        self.connect(self.lgActions.delLinkAction, signalTriggered, self.delGLink)
         
         # ----Help menu
         helpMenu = self.menuBar().addMenu("&Help")
@@ -168,6 +170,17 @@ class MainWindow(QtGui.QMainWindow):
         self.glinks[link] = glink
         self.scene.addItem(glink)
         return glink   
+    
+    def delGNode(self):
+        gNode = self.scene.focusItem()
+        if gNode is None :
+            return
+        self.scene.removeItem(gNode)
+        self.gnodes.pop(gNode.node)
+        self.scheme.delNode(gNode.node)
+    
+    def delGLink(self):
+        pass
             
     def on_HelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",

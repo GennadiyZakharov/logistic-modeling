@@ -33,6 +33,9 @@ class LgNode(LgAbstractItem):
     def addLink(self, link):
         self.links.append(link)
         
+    def delLink(self, link):
+        self.links.remove(link)
+        
     def produce(self):
         allpackages = self.entered | self.storage
         for factory in self.factories :

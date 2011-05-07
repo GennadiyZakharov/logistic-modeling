@@ -39,6 +39,16 @@ class LgScheme(QtCore.QObject):
         self.connect(self, signalNextTurnLink, link.on_NextTurn)
         return link
     
+    def delLink(self, link):
+        self.link.input.delLink(link)
+        self.links.remove(link)
+        
+    def delNode(self, node):
+        for link in self.links :
+            if (node is link.input) or (node is link.output):
+                self.delLink(link)
+        self.nodes.remove(node)
+    
     def on_NextTurnPressed(self):
         self.emit(signalNextTurnLink) # Move all packages trough links
         self.emit(signalNextTurnNode)
