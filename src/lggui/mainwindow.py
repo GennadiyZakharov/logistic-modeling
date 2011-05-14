@@ -13,6 +13,7 @@ from lggui.nodegui import NodeGui
 from lggui.linkgui import LinkGui
 from lggui.nodeaddwidget import NodeAddWidget
 from lggraphicsscene import LgGraphicsScene
+from lggui.packagegui import PackageGui
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -22,7 +23,7 @@ class MainWindow(QtGui.QMainWindow):
         
         self.setWindowTitle("Logistic modeling")
         self.setObjectName("MainWindow")
-        self.dirty = True
+        self.dirty = False
         
         # All nodes and links will be stored in lists
         self.gnodes = {}
@@ -103,7 +104,7 @@ class MainWindow(QtGui.QMainWindow):
         self.addGLink(self.link2)
         self.addGLink(self.link3)        
                 
-        self.link1.on_addPackage(LgPackage())
+        self.link1.on_addPackage(LgPackage('Linux'))
     # ==== Slots and handlers to handle actions ====
 
     def fileSave(self):
@@ -172,12 +173,12 @@ class MainWindow(QtGui.QMainWindow):
         return glink   
     
     def delGNode(self):
-        gNode = self.scene.focusItem()
+        gNode = self.scene.focusItem()        
         if gNode is None :
             return
-        self.scene.removeItem(gNode)
         self.gnodes.pop(gNode.node)
         self.scheme.delNode(gNode.node)
+        self.scene.removeItem(gNode)
     
     def delGLink(self):
         pass

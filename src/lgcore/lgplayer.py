@@ -16,5 +16,6 @@ class LgPlayer(QtCore.QObject):
         self.money = 1000
         
     def on_Cost(self, cost):
+        # TODO: Change cost to negative
         self.money -= cost
         

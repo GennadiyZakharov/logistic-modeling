@@ -22,6 +22,7 @@ class LgAbstractItem(QtCore.QObject):
         self.owner = owner
         if owner is not None :
             self.connect(self, signalCost, owner.on_Cost)
+        # TODO: Add viewers        
             
     def __hash__(self):
         return self.hashValue
