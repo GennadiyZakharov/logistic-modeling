@@ -19,13 +19,19 @@ class  LgFactory(LgAbstractItem):
         self.consumes = 0
         self.produce = 0
         
+
+    def execute(self, packagelist):
+        # TODO: Add package type
+        if self.currentTurn == 0:
+            self.currentTurn = self.activationInterval
+            for i in range(self.consumes):
+                packagelist.pop()
+            
+            for i in range(self.produce):
+                packagelist.append(LgPackage(self.parent(), self.owner))
+
     def on_NextTurn(self, packagelist):
         self.currentTurn -= 1
-        if self.currentTurn == 0 :
-            self.currentTurn = self.activationInterval
-            for i in range(self.consumes) :
-                packagelist.pop()
-            for i in range(self.produce) :
-                packagelist.append(LgPackage(self.parent(), self.owner))
+        self.execute(packagelist)
         
         

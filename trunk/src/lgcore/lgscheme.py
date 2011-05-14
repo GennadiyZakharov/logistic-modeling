@@ -8,7 +8,7 @@ from lgcore.lgpackage import LgPackage
 
 from lgcore.signals import *
 
-
+# TODO: REname to model
 class LgScheme(QtCore.QObject):
     '''
     This is holder class for all logistic system
@@ -23,7 +23,7 @@ class LgScheme(QtCore.QObject):
         self.players.add(self.teacher)
         self.links = set()
         self.nodes = set()
-        #self.packages = []
+        self.packages = set()
     
     def addNode(self, owner=None, caption='Node', storageCapacity=10, cost=0):
         node = LgNode(self, owner, caption, storageCapacity, cost)
@@ -54,9 +54,9 @@ class LgScheme(QtCore.QObject):
         self.emit(signalNextTurnNode)
     
     
-    def openScheme(self):
+    def openModel(self):
         pass
     
-    def saveScheme(self):
+    def saveModel(self):
         pass
         
