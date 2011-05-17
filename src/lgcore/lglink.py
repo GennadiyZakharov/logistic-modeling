@@ -9,6 +9,7 @@ class LgLink(LgAbstractItem):
                  caption='Link', length=5, maxCapacity=5, cost=0):
         super(LgLink, self).__init__(parent, owner, caption, cost)
         
+        self.kind = 'Link'
         self.input = input
         self.output = output
         self.length = length
@@ -20,8 +21,6 @@ class LgLink(LgAbstractItem):
         
         self.connect(self.input, signalTransport, self.on_addPackage)
         self.connect(self, signalTransport, self.output.on_PackageEntered)
-    def __str__(self):
-        return 'Link' + str(self.hashValue)
         
     def on_NextTurn(self):
         super(LgLink, self).on_NextTurn()

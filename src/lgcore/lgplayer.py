@@ -12,10 +12,11 @@ class LgPlayer(QtCore.QObject):
         Constructor
         '''
         super(LgPlayer, self).__init__(parent)
+        self.kind = 'Player'
         self.name = name
         self.money = 1000
         
     def on_Cost(self, cost):
         # TODO: Change cost to negative
-        self.money -= cost
+        self.money += cost
         

@@ -1,8 +1,8 @@
 from PyQt4 import QtCore, QtGui
 
-class ViewDockBar(QtGui.QWidget):
+class ViewDockWidget(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(ViewDockBar, self).__init__(parent)
+        super(ViewDockWidget, self).__init__(parent)
         
         #Slider and label
         layout = QtGui.QHBoxLayout()

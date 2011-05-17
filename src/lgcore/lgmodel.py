@@ -9,7 +9,7 @@ from lgcore.lgpackage import LgPackage
 from lgcore.signals import *
 
 # TODO: REname to model
-class LgScheme(QtCore.QObject):
+class LgModel(QtCore.QObject):
     '''
     This is holder class for all logistic system
     It contains all nodes, links and packages
@@ -17,7 +17,7 @@ class LgScheme(QtCore.QObject):
     It also  containes all payed data
     '''
     def __init__(self):
-        super(LgScheme, self).__init__()
+        super(LgModel, self).__init__()
         self.players = set()
         self.teacher = LgPlayer('Teacher',self)
         self.players.add(self.teacher)
@@ -25,19 +25,21 @@ class LgScheme(QtCore.QObject):
         self.nodes = set()
         self.packages = set()
     
-    def addNode(self, owner=None, caption='Node', storageCapacity=10, cost=0):
-        node = LgNode(self, owner, caption, storageCapacity, cost)
+    def addPlayer(self, player):
+        self.players.add(player)
+    
+    def delPlayer(self, player):
+        self.players.remove(player)
+    
+    def addNode(self, node):
+        node.setParent(self)
         self.nodes.add(node)
         self.connect(self, signalNextTurnNode, node.on_NextTurn)
-        return node
         
-    def addLink(self, input, output, owner=None, caption='Link', 
-                length=5, maxCapacity=5, cost=0):
-        link = LgLink(input, output, self, owner, caption, 
-                      length, maxCapacity, cost)
+    def addLink(self, link):
+        link.setParent(self)
         self.links.add(link)
         self.connect(self, signalNextTurnLink, link.on_NextTurn)
-        return link
     
     def delLink(self, link):
         self.link.input.delLink(link)

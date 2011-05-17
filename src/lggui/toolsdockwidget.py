@@ -1,8 +1,8 @@
 from PyQt4 import QtCore, QtGui
 
-class ToolsDockBar(QtGui.QWidget):
+class ToolsDockWidget(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(ToolsDockBar, self).__init__(parent)
+        super(ToolsDockWidget, self).__init__(parent)
         
         #Slider and label
         layout = QtGui.QHBoxLayout()

@@ -9,14 +9,14 @@ class  LgFactory(LgAbstractItem):
     '''
 
 
-    def __init__(self, parent=None, owner=None, caption='Item', cost=0):
+    def __init__(self, parent=None, owner=None, caption='Factory', cost=0):
         '''
         Constructor
         '''
-        super(LgAbstractItem, self).__init__(parent, owner, caption, cost)
+        super(LgFactory, self).__init__(parent, owner, caption, cost)
         self.activationInterval = 3
         self.currentTurn = self.activationInterval 
-        self.consumes = 0
+        self.consumes = 1
         self.produce = 0
         
 

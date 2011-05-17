@@ -16,7 +16,8 @@ class LgAbstractItem(QtCore.QObject):
         '''
         super(LgAbstractItem, self).__init__(parent)     
         self.hashValue = int(sha512(str(time() + random.randint(0, 100))).hexdigest(), 16)
-           
+        
+        self.kind = 'AbstractItem'
         self.cost = cost
         self.caption = caption
         self.owner = owner
@@ -28,7 +29,7 @@ class LgAbstractItem(QtCore.QObject):
         return self.hashValue
     
     def __str__(self):
-        return 'AbstractItem' + str(self.hashValue)
+        return self.kind + ' ' + self.caption + ' ' + str(self.hashValue)
         
     def on_NextTurn(self):
         if self.cost != 0 :
