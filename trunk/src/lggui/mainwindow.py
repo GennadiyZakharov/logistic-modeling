@@ -2,22 +2,25 @@ import sys
 from PyQt4 import QtCore, QtGui
 
 from lgcore.signals import signalTriggered, signalClicked
-from lgcore.lgactions import LgActions
+from lggui.lgactions import LgActions
 from lgcore.lgnode import LgNode
 from lgcore.lglink import LgLink
 from lgcore.lgpackage import LgPackage
-from lgcore.lgscheme import LgScheme
-from lggui.viewdockbar import ViewDockBar
-from lggui.toolsdockbar import ToolsDockBar
+from lgcore.lgmodel import LgModel
+from lggui.viewdockwidget import ViewDockWidget
+from lggui.toolsdockwidget import ToolsDockWidget
+from lggui.playerdockwidget import PlayerDockWidget
 from lggui.nodegui import NodeGui
 from lggui.linkgui import LinkGui
-from lggui.nodeaddwidget import NodeAddWidget
+from lggui.nodeeditwidget import NodeEditWidget
 from lggraphicsscene import LgGraphicsScene
 from lggui.packagegui import PackageGui
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        
+        self.model = LgModel()
         
         self.lgActions = LgActions(self)
         
@@ -39,24 +42,35 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.view) 
              
         #Creating tool dockbar
-        toolsDockWidget = QtGui.QDockWidget("Tools", self) # Created and set caption
-        toolsDockWidget.setObjectName("toolsDockWidget")
-        toolsDockWidget.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
-        toolsDockWidget.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, toolsDockWidget)
+        toolsDockBar = QtGui.QDockWidget("Tools", self) # Created and set caption
+        toolsDockBar.setObjectName("toolsDockWidget")
+        toolsDockBar.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
+        toolsDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, toolsDockBar)
         #Populating view dockbar
-        self.toolsDockBar = ToolsDockBar() 
-        toolsDockWidget.setWidget(self.toolsDockBar)
+        self.toolsDockWidget = ToolsDockWidget() 
+        toolsDockBar.setWidget(self.toolsDockWidget)
         
         #Creating view dockbar
-        viewDockWidget = QtGui.QDockWidget("View control", self) # Created and set caption
-        viewDockWidget.setObjectName("viewDockWidget")
-        viewDockWidget.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
-        viewDockWidget.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, viewDockWidget)
+        viewDockBar = QtGui.QDockWidget("View control", self) # Created and set caption
+        viewDockBar.setObjectName("viewDockWidget")
+        viewDockBar.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
+        viewDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, viewDockBar)
         #Populating view dockbar
-        self.viewDockBar = ViewDockBar() 
-        viewDockWidget.setWidget(self.viewDockBar)
+        self.viewDockWidget = ViewDockWidget() 
+        viewDockBar.setWidget(self.viewDockWidget)
+        
+        #Creating player dockbar
+        playerDockBar = QtGui.QDockWidget("Players", self) # Created and set caption
+        playerDockBar.setObjectName("PlayersDockBar")
+        playerDockBar.setAllowedAreas(QtCore.Qt.RightDockWidgetArea)
+        playerDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, playerDockBar)
+        #Populating view dockbar
+        self.playerDockWidget = PlayerDockWidget(self.model,self) 
+        playerDockBar.setWidget(self.playerDockWidget)
+        
         
         # ==== Creating Menu
         # ---- File menu
@@ -83,17 +97,24 @@ class MainWindow(QtGui.QMainWindow):
         
         # TEST: Creating nodes
         
-        self.scheme = LgScheme()
-        self.connect(self.toolsDockBar.nextTurnButton, signalClicked, self.scheme.on_NextTurnPressed)
         
-        self.factory = self.scheme.addNode(caption='Factory')
-        self.warehouse = self.scheme.addNode(caption='Warehouse')
-        self.shop1 = self.scheme.addNode(caption='Shop1')
-        self.shop2 = self.scheme.addNode(caption='Shop2')
+        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.on_NextTurnPressed)
         
-        self.link1 = self.scheme.addLink(self.factory, self.warehouse, length=5)
-        self.link2 = self.scheme.addLink(self.warehouse, self.shop1, length=4)
-        self.link3 = self.scheme.addLink(self.warehouse, self.shop2, length=3)
+        self.factory = LgNode(caption='Factory')
+        self.model.addNode(self.factory)
+        self.warehouse = LgNode(caption='Warehouse')
+        self.model.addNode(self.warehouse)
+        self.shop1 = LgNode(caption='Shop1')
+        self.model.addNode(self.shop1)
+        self.shop2 = LgNode(caption='Shop2')
+        self.model.addNode(self.shop2)
+        
+        self.link1 = LgLink(self.factory, self.warehouse, length=5)
+        self.model.addLink(self.link1)
+        self.link2 = LgLink(self.warehouse, self.shop1, length=4)
+        self.model.addLink(self.link2)
+        self.link3 = LgLink(self.warehouse, self.shop2, length=3)
+        self.model.addLink(self.link3)
         
         gfactory = self.addGNode(self.factory, QtCore.QPointF(300, 100))
         gwarehouse = self.addGNode(self.warehouse, QtCore.QPointF(300, 400))
@@ -134,7 +155,7 @@ class MainWindow(QtGui.QMainWindow):
         self.fileSave()
     
     def on_AddNode(self):
-        dialog = NodeAddWidget(self)
+        dialog = NodeEditWidget(None, self)
         dialog.exec_()
     
     def on_AddLink(self):

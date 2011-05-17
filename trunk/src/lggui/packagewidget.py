@@ -10,7 +10,7 @@ class PackageWidget(QtGui.QListWidgetItem):
     def __init__(self, package):
                 
         self.package = package
-        self.caption = package.caption + ' ' + str(package.count)
+        self.caption = package.caption + ' ' + package.type
         super(PackageWidget, self).__init__(package.caption)
         self.setIcon(QtGui.QIcon(package.icon))
         

@@ -10,7 +10,7 @@ class LgNode(LgAbstractItem):
 
     def __init__(self, parent=None, owner=None, caption='Node', storageCapacity=10, cost=0):
         super(LgNode, self).__init__(parent, owner, caption, cost)
-              
+        self.kind = 'Node'      
         # List of links, to which product will be distributed
         self.links = []
         
@@ -19,9 +19,6 @@ class LgNode(LgAbstractItem):
         self.storage = set() # storage to store products for a several time
         self.storageCapacity = storageCapacity
         self.factories = set()
-        
-    def __str__(self):
-        return 'Node' + str(self.hashValue)
         
         # TEST:
         '''
