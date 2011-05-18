@@ -1,6 +1,7 @@
 from PyQt4 import QtCore, QtGui
 
 from lggui.playereditwidget import PlayerEditWidget
+from lggui.playerlistitem import PlayerListItem
 
 class PlayerDockWidget(QtGui.QWidget):
     def __init__(self, model, parent=None):
@@ -34,16 +35,19 @@ class PlayerDockWidget(QtGui.QWidget):
     def onRemovePlayer(self):
         if self.playerList.currentRow() == -1 :
             return
+        player = self.playerList.currentItem().player
+        self.model.delPlayer(player)
         self.onUpdateList()
     
     def onEditPlayer(self):
         if self.playerList.currentRow() == -1 :
             return
+        dialog = PlayerEditWidget(self.playerList.currentItem().player)
+        dialog.exec_()
         self.onUpdateList()
     
     def onUpdateList(self):
         self.playerList.clear()
         for player in self.model.players :
-            text = '{0:20} {1:10}'.format(player.name,player.money)
-            self.playerList.addItem(text)
+            self.playerList.addItem(PlayerListItem(player))
         

@@ -1,6 +1,6 @@
 from PyQt4 import QtGui
 from lgcore.signals import signalClicked, signalItemMoved
-from lggui.packagewidget import PackageWidget
+from lggui.packagelistitem import PackageListItem
 from lggui.dndmenuListwidget import DnDMenuListWidget
 from lggui.dndtablewidget import DnDTableWidget
 
@@ -57,13 +57,13 @@ class NodeWidget(QtGui.QDialog):
         
     def on_Update(self):
         for package in self.node.entered :
-            item = PackageWidget(package)
+            item = PackageListItem(package)
             self.inputList.addItem(item)
             
         if self.node.storageCapacity == 0 :
             self.storageList.setEnabled(False)
             for package in self.node.storage :
-                item = PackageWidget(package)
+                item = PackageListItem(package)
                 self.storageList.addItem(item)
         else :
             self.storageList.setEnabled(True)

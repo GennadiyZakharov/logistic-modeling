@@ -52,8 +52,11 @@ class FactoryEditWidget(QtGui.QDialog):
         layout.addWidget(produceText,3,0)
         layout.addWidget(self.produceEdit,3,1)
         
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | 
-                                           QtGui.QDialogButtonBox.Cancel)
+        buttons = QtGui.QDialogButtonBox.Ok
+        if factory is None :
+            buttons |= QtGui.QDialogButtonBox.Cancel
+        
+        self.buttonBox = QtGui.QDialogButtonBox(buttons)
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setDefault(True)
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
         
