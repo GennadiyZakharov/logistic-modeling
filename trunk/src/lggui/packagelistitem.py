@@ -1,7 +1,7 @@
 from PyQt4 import QtGui
 from qrc_resources import *
 
-class PackageWidget(QtGui.QListWidgetItem):
+class PackageListItem(QtGui.QListWidgetItem):
     '''
     This is class for package. 
     It containes name, count and picture for
@@ -11,7 +11,7 @@ class PackageWidget(QtGui.QListWidgetItem):
                 
         self.package = package
         self.caption = package.caption + ' ' + package.type
-        super(PackageWidget, self).__init__(package.caption)
+        super(PackageListItem, self).__init__(package.caption)
         self.setIcon(QtGui.QIcon(package.icon))
         
         

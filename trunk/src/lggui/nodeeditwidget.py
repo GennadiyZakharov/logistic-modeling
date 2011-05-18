@@ -4,6 +4,7 @@ from lgcore.signals import *
 from lgcore.lgfactory import LgFactory
 from lgcore.lgnode import LgNode
 from lggui.factoryEditWidget import FactoryEditWidget
+from lggui.factorylistitem import FactoryListItem
 
 
 class NodeEditWidget(QtGui.QDialog):
@@ -23,7 +24,7 @@ class NodeEditWidget(QtGui.QDialog):
         layout = QtGui.QGridLayout()
         
         self.nameEdit = QtGui.QLineEdit(self.node.caption)
-        self.nameEdit.textEdited.connect(self.on_updateText)
+        self.nameEdit.textEdited.connect(self.onNameChanged)
         nameText = QtGui.QLabel('Node name:')
         nameText.setBuddy(self.nameEdit)
         layout.addWidget(nameText, 0, 0)
@@ -39,35 +40,68 @@ class NodeEditWidget(QtGui.QDialog):
         
         self.factoryList = QtGui.QListWidget()
         layout.addWidget(self.factoryList, 2, 0, 2, 2)
-        addfactoryButton = QtGui.QPushButton('Add Factory')
-        addfactoryButton.clicked.connect(self.on_EditFactory)
-        layout.addWidget(addfactoryButton, 4, 0)
-        # TODO: read information about factories 
+        addFactoryButton = QtGui.QPushButton('Add Factory')
+        addFactoryButton.clicked.connect(self.onAddFactory)
+        layout.addWidget(addFactoryButton, 4, 0)
+        removeFactoryButton = QtGui.QPushButton('Remove Factory')
+        removeFactoryButton.clicked.connect(self.onRemoveFactory)
+        layout.addWidget(removeFactoryButton, 5, 0)
+        editFactoryButton = QtGui.QPushButton('Edit Factory')
+        editFactoryButton.clicked.connect(self.onEditFactory)
+        layout.addWidget(editFactoryButton, 4, 1)
         
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | 
-                                           QtGui.QDialogButtonBox.Cancel)
+        self.onUpdateList()
+        
+        buttons = QtGui.QDialogButtonBox.Ok
+        if node is None :
+            buttons |= QtGui.QDialogButtonBox.Cancel
+         
+        self.buttonBox = QtGui.QDialogButtonBox(buttons)
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setDefault(True)
-        self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(False)
+        self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
         
         self.connect(self.buttonBox, signalAccepted,
                      self.accept)
         self.connect(self.buttonBox, signalRejected,
                      self.reject)
         
-        layout.addWidget(self.buttonBox, 5, 0, 1, 2)
+        layout.addWidget(self.buttonBox, 6, 0, 1, 2)
         
         self.setLayout(layout)
         
-        
-        
-    def on_updateText(self, text):
+    def onNameChanged(self, text):
+        self.node.caption = text
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(text != '')
         
-    def on_EditFactory(self):
-        #if
-        dialog = FactoryEditWidget(None, self)
+    def onStorageChamged(self, value):
+        self.node.storageCapacity = value
         
-        if dialog.exec_() :
-            print dialog.factory
+    def onAddFactory(self):
+        dialog = FactoryEditWidget(None, self)
+        if dialog.exec_():
+            self.node.addFactory(dialog.factory)
+            self.onUpdateList()
+    
+    def onRemoveFactory(self):
+        if self.factoryList.currentRow() == -1 :
+            return
+        factory = self.factoryList.currentItem().factory
+        self.node.removeFactory(factory)
+        self.onUpdateList()
+    
+    def onEditFactory(self):
+        if self.factoryList.currentRow() == -1 :
+            return
+        dialog = FactoryEditWidget(self.factoryList.currentItem().factory)
+        dialog.exec_()
+        self.onUpdateList()
+    
+    def onUpdateList(self):
+        self.factoryList.clear()
+        for factory in self.node.factories :
+            self.factoryList.addItem(FactoryListItem(factory))
+            
+    
+        
         
         

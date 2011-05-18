@@ -31,6 +31,7 @@ class MainWindow(QtGui.QMainWindow):
         # All nodes and links will be stored in lists
         self.gnodes = {}
         self.glinks = {}
+        self.activeObject=None
         
         # ==== Creating main graph view
         self.scene = LgGraphicsScene(self)
@@ -183,6 +184,7 @@ class MainWindow(QtGui.QMainWindow):
         gnode = NodeGui(node, pos)
         self.gnodes[node] = gnode
         self.scene.addItem(gnode)
+        #gnode.
         return gnode
     
     def addGLink(self, link):
@@ -194,12 +196,12 @@ class MainWindow(QtGui.QMainWindow):
         return glink   
     
     def delGNode(self):
-        gNode = self.scene.focusItem()        
-        if gNode is None :
+        if self.activeObject is None :
             return
-        self.gnodes.pop(gNode.node)
-        self.scheme.delNode(gNode.node)
-        self.scene.removeItem(gNode)
+        self.gnodes.pop(self.activeObject)
+        self.scheme.delNode(self.activeObject)
+        self.scene.removeItem(self.activeObject)
+        self.activeObject = None
     
     def delGLink(self):
         pass

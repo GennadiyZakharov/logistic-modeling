@@ -35,8 +35,11 @@ class PlayerEditWidget(QtGui.QDialog):
         layout.addWidget(moneyText,1,0)
         layout.addWidget(self.moneyEdit,1,1)
         
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | 
-                                           QtGui.QDialogButtonBox.Cancel)
+        buttons = QtGui.QDialogButtonBox.Ok
+        if player is None :
+            buttons |= QtGui.QDialogButtonBox.Cancel
+        
+        self.buttonBox = QtGui.QDialogButtonBox(buttons)
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setDefault(True)
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
         

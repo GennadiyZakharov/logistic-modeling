@@ -41,6 +41,11 @@ class LgNode(LgAbstractItem):
         self.storage &= allpackages # in storage will be all packages, which was in storage before
         self.entered = allpackages - self.storage 
         
+    def addFactory(self, factory):
+        self.factories.add(factory)
+        
+    def removeFactory(self, factory):
+        self.factories.remove(factory)
         
     def on_NextTurn(self):
         super(LgNode, self).on_NextTurn()
