@@ -8,7 +8,6 @@ from lgcore.lgpackage import LgPackage
 
 from lgcore.signals import *
 
-# TODO: REname to model
 class LgModel(QtCore.QObject):
     '''
     This is holder class for all logistic system
