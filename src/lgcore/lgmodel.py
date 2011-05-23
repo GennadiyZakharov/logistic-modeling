@@ -41,14 +41,25 @@ class LgModel(QtCore.QObject):
         self.connect(self, signalNextTurnLink, link.on_NextTurn)
     
     def delLink(self, link):
-        self.link.input.delLink(link)
+        link.input.delLink(link)
+        link.disconnect(link,signalTransport,link.output.on_PackageEntered)
         self.links.remove(link)
         
     def delNode(self, node):
+        linkstodel = set()
+        print "node to delete"
+        print self.nodes
+        print self.links
         for link in self.links :
             if (node is link.input) or (node is link.output):
-                self.delLink(link)
+                linkstodel.add(link)
+        for link in linkstodel :
+            self.delLink(link)         
+        
         self.nodes.remove(node)
+        
+        print self.nodes
+        print self.links
     
     def on_NextTurnPressed(self):
         self.emit(signalNextTurnLink) # Move all packages trough links

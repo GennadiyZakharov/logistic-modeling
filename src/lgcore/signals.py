@@ -30,4 +30,5 @@ signalPackageRemoved = SIGNAL("packageRemoved")
 # ---- GUI signals ----
 signalNodeMoved = SIGNAL("nodeMoved()")
 signalItemMoved = SIGNAL("itemMoved")
+signalFocusIn = SIGNAL("focusIn")
 
