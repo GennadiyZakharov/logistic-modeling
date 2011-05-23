@@ -56,17 +56,18 @@ class NodeWidget(QtGui.QDialog):
         ''' 
         
     def on_Update(self):
+        self.inputList.clear()
+        self.storageList.clear()
+        self.outputList.clear()
         for package in self.node.entered :
-            item = PackageListItem(package)
-            self.inputList.addItem(item)
+            self.inputList.addItem(PackageListItem(package))
             
         if self.node.storageCapacity == 0 :
             self.storageList.setEnabled(False)
-            for package in self.node.storage :
-                item = PackageListItem(package)
-                self.storageList.addItem(item)
         else :
             self.storageList.setEnabled(True)
+            for package in self.node.storage :
+                self.storageList.addItem(PackageListItem(package))
         
         if self.node.links == [] :
             self.outputList.setEnabled(False)

@@ -1,7 +1,7 @@
 import sys
 from PyQt4 import QtCore, QtGui
 
-from lgcore.signals import signalTriggered, signalClicked
+from lgcore.signals import signalTriggered, signalClicked, signalFocusIn
 from lggui.lgactions import LgActions
 from lgcore.lgnode import LgNode
 from lgcore.lglink import LgLink
@@ -162,6 +162,10 @@ class MainWindow(QtGui.QMainWindow):
     def on_AddLink(self):
         pass
     
+    def onChangeFocus(self, object):
+        print object
+        self.activeObject = object
+    
     # Close Event handler
     def closeEvent(self, event):
         # Asking user to confirm
@@ -184,7 +188,7 @@ class MainWindow(QtGui.QMainWindow):
         gnode = NodeGui(node, pos)
         self.gnodes[node] = gnode
         self.scene.addItem(gnode)
-        #gnode.
+        self.connect(gnode, signalFocusIn, self.onChangeFocus)
         return gnode
     
     def addGLink(self, link):
@@ -198,9 +202,10 @@ class MainWindow(QtGui.QMainWindow):
     def delGNode(self):
         if self.activeObject is None :
             return
-        self.gnodes.pop(self.activeObject)
-        self.scheme.delNode(self.activeObject)
+        node = self.activeObject.node
         self.scene.removeItem(self.activeObject)
+        self.gnodes.pop(node)
+        self.model.delNode(node)
         self.activeObject = None
     
     def delGLink(self):

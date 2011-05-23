@@ -1,5 +1,5 @@
 from PyQt4 import QtCore, QtGui
-from lgcore.signals import signalUpdateGui, signalClicked, signalNextTurnNode
+from lgcore.signals import signalUpdateGui, signalClicked, signalNextTurnNode, signalFocusIn
 from lggui.nodewidget import NodeWidget
 
 class NodeGui(QtGui.QGraphicsObject):
@@ -90,6 +90,9 @@ class NodeGui(QtGui.QGraphicsObject):
         path.addRect(self.Rect)
         return path
 
+    def focusInEvent(self, event) :
+        super(NodeGui, self).focusInEvent(event)
+        self.emit(signalFocusIn, self)
 
     def paint(self, painter, option, widget=None):
         painter.setPen(QtCore.Qt.SolidLine)
