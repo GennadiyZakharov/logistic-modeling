@@ -1,14 +1,14 @@
+from PyQt4 import QtCore
 from hashlib import sha512
+from lgcore.signals import signalNextTurnLink, signalNextTurn
 from time import time
 import random
 
-from PyQt4 import QtCore
 
 class LgPlayer(QtCore.QObject):
     '''
     classdocs
     '''
-
 
     def __init__(self, name, parent=None):
         '''
@@ -21,13 +21,17 @@ class LgPlayer(QtCore.QObject):
         self.name = name
         self.money = 1000
         
-    def on_Cost(self, value):
-        self.money += value
-        
     def __hash__(self):
         return self.hashValue
     
     def __str__(self):
         return self.kind + ' ' + self.caption + ' ' + str(self.hashValue)
+    
+    def onCost(self, value):
+        self.money += value
+        
+    def onNextTurn(self):
+        self.emit(signalNextTurnLink)
+        self.emit(signalNextTurn)
         
         

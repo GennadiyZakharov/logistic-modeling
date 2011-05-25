@@ -1,5 +1,5 @@
 from PyQt4 import QtCore, QtGui
-from lgcore.signals import signalUpdateGui, signalClicked, signalNextTurnNode, signalFocusIn
+from lgcore.signals import signalUpdateGui, signalClicked, signalExecuteDialog, signalFocusIn
 from lggui.nodewidget import NodeWidget
 
 class NodeGui(QtGui.QGraphicsObject):
@@ -13,7 +13,7 @@ class NodeGui(QtGui.QGraphicsObject):
         
         self.node = node
         self.connect(self.node, signalUpdateGui, self.on_updateGui)
-        self.connect(self.node, signalNextTurnNode, self.on_AssignItems)
+        self.connect(self.node, signalExecuteDialog, self.on_AssignItems)
         
         self.color = QtGui.QColor(195, 217, 255)
         self.setPos(position)
@@ -98,7 +98,7 @@ class NodeGui(QtGui.QGraphicsObject):
         painter.setPen(QtCore.Qt.SolidLine)
         painter.setBrush(QtGui.QBrush(self.color))
         painter.drawRect(self.Rect)
-        painter.drawText(QtCore.QPoint(10,10),self.node.caption)
+        painter.drawText(QtCore.QPoint(10,10),self.node.name)
         if self.hasFocus() :
             painter.setBrush(QtCore.Qt.NoBrush)
             painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))

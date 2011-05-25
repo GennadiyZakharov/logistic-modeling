@@ -2,10 +2,12 @@
 from lgcore.lgabstractitem import LgAbstractItem
 
 class LgPackage(LgAbstractItem):
-    def __init__(self, type, parent=None, owner=None, caption='product', cost=0, icon=':/penguin.png'):
-        super(LgPackage, self).__init__(parent, owner, caption, cost)
+    def __init__(self, name='Wood', cost=0, parent=None, owner=None, icon=':/penguin.png'):
+        super(LgPackage, self).__init__(name, parent, cost, owner)
+        
         self.kind = 'Package'
-        self.type = type
         self.icon = icon
+        if owner is not None :
+            self.setOwner(owner)
              
     
