@@ -5,9 +5,9 @@ from lgcore.lgpackage import LgPackage
 class LgLink(LgAbstractItem):
     '''This class implements all functionality for link '''
 
-    def __init__(self, input, output, parent=None, owner=None,
-                 caption='Link', length=5, maxCapacity=5, cost=0):
-        super(LgLink, self).__init__(parent, owner, caption, cost)
+    def __init__(self, input, output, name='Link', parent=None, cost=0, owner=None,
+                 length=5, maxCapacity=5):
+        super(LgLink, self).__init__(name, parent, cost, owner)
         
         self.kind = 'Link'
         self.input = input
@@ -19,11 +19,17 @@ class LgLink(LgAbstractItem):
         
         self.input.addLink(self)
         
-        self.connect(self.input, signalTransport, self.on_addPackage)
-        self.connect(self, signalTransport, self.output.on_PackageEntered)
-        
-    def on_NextTurn(self):
-        super(LgLink, self).on_NextTurn()
+        self.connect(self.input, signalTransport, self.onAddPackage)
+        self.connect(self, signalTransport, self.output.onPackageEntered)
+    
+    def setOwner(self, owner):
+        super(LgLink, self).setOwner(owner, signal=signalNextTurnLink)
+    
+    def removeOwner(self):
+        super(LgLink, self).removeOwner(signal=signalNextTurnLink)
+    
+    def onNextTurn(self):
+        super(LgLink, self).onNextTurn()
         for p in self.packages.keys():
             self.packages[p] -= 1
             if self.packages[p] == 0 :
@@ -34,7 +40,7 @@ class LgLink(LgAbstractItem):
         self.emit(signalUpdateGui)
                 
         
-    def on_addPackage(self, package):
+    def onAddPackage(self, package):
         '''Add new package to transport'''
         if self.currentCapacity > 0:
             self.packages[package] = self.length

@@ -11,7 +11,7 @@ class NodeWidget(QtGui.QDialog):
         self.node = node # This is link to core node, wich represents
             # all node functionality 
         
-        self.setWindowTitle(self.node.caption)
+        self.setWindowTitle(self.node.name)
          
         inputLabel = QtGui.QLabel('Come:')
         outputLabel = QtGui.QLabel('Destination:')
@@ -74,13 +74,13 @@ class NodeWidget(QtGui.QDialog):
         else :
             self.outputList.setEnabled(True)
             self.outputList.setColumnCount(len(self.node.links))
-            captions = []
+            names = []
             maxCapacity = 0
             for link in self.node.links :
-                captions.append(link.caption)
+                names.append(link.name)
                 maxCapacity = max(maxCapacity, link.maxCapacity)
             self.outputList.setRowCount(maxCapacity)            
-            self.outputList.setHorizontalHeaderLabels(captions)
+            self.outputList.setHorizontalHeaderLabels(names)
             
         self.on_distributionChanged()
     

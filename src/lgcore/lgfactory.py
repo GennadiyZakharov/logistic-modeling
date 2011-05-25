@@ -1,5 +1,3 @@
-from PyQt4 import QtCore
-from lgcore.signals import signalCost
 from lgcore.lgabstractitem import LgAbstractItem
 from lgcore.lgpackage import LgPackage
 
@@ -8,30 +6,29 @@ class  LgFactory(LgAbstractItem):
     classdocs
     '''
 
-
-    def __init__(self, parent=None, owner=None, caption='Factory', cost=0):
+    def __init__(self, name='Forest', cost=0, parent=None, owner=None):
         '''
         Constructor
         '''
-        super(LgFactory, self).__init__(parent, owner, caption, cost)
+        super(LgFactory, self).__init__(name, cost, parent, owner)
         self.activationInterval = 3
         self.currentTurn = self.activationInterval 
         self.consumes = 1
-        self.produce = 0
-        
+        self.produce = 0     
 
     def execute(self, packagelist):
         # TODO: Add package type
+        for i in range(self.consumes):
+            packagelist.pop()
+           
+        for i in range(self.produce):
+            packagelist.append(LgPackage(self.parent(), self.owner))
+
+    def onNextTurn(self, packagelist):
+        super(LgFactory, self).onNextTurn()
+        self.currentTurn -= 1
         if self.currentTurn == 0:
             self.currentTurn = self.activationInterval
-            for i in range(self.consumes):
-                packagelist.pop()
-            
-            for i in range(self.produce):
-                packagelist.append(LgPackage(self.parent(), self.owner))
-
-    def on_NextTurn(self, packagelist):
-        self.currentTurn -= 1
-        self.execute(packagelist)
+            self.execute(packagelist)
         
         

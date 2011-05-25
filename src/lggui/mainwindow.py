@@ -97,24 +97,22 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.lgActions.helpAboutAction, signalTriggered, self.on_HelpAbout)
         
         # TEST: Creating nodes
+        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)
         
-        
-        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.on_NextTurnPressed)
-        
-        self.factory = LgNode(caption='Factory')
+        self.factory = LgNode('Factory', owner=self.model.teacher)
         self.model.addNode(self.factory)
-        self.warehouse = LgNode(caption='Warehouse')
+        self.warehouse = LgNode('Warehouse', owner=self.model.teacher)
         self.model.addNode(self.warehouse)
-        self.shop1 = LgNode(caption='Shop1')
+        self.shop1 = LgNode('Shop1', owner=self.model.teacher)
         self.model.addNode(self.shop1)
-        self.shop2 = LgNode(caption='Shop2')
+        self.shop2 = LgNode('Shop2', owner=self.model.teacher)
         self.model.addNode(self.shop2)
         
-        self.link1 = LgLink(self.factory, self.warehouse, length=5)
+        self.link1 = LgLink(self.factory, self.warehouse, 'Road1', length=5, owner=self.model.teacher)
         self.model.addLink(self.link1)
-        self.link2 = LgLink(self.warehouse, self.shop1, length=4)
+        self.link2 = LgLink(self.warehouse, self.shop1, 'Road2', length=4, owner=self.model.teacher)
         self.model.addLink(self.link2)
-        self.link3 = LgLink(self.warehouse, self.shop2, length=3)
+        self.link3 = LgLink(self.warehouse, self.shop2, 'Road3', length=3, owner=self.model.teacher)
         self.model.addLink(self.link3)
         
         gfactory = self.addGNode(self.factory, QtCore.QPointF(300, 100))
@@ -126,7 +124,7 @@ class MainWindow(QtGui.QMainWindow):
         self.addGLink(self.link2)
         self.addGLink(self.link3)        
                 
-        self.link1.on_addPackage(LgPackage('Linux'))
+        self.link1.onAddPackage(LgPackage('Linux'))
     # ==== Slots and handlers to handle actions ====
 
     def fileSave(self):

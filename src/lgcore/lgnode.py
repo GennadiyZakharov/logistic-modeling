@@ -1,6 +1,5 @@
-from lgcore.signals import signalNextTurnNode
-from lgcore.lgpackage import LgPackage
 from lgcore.lgabstractitem import LgAbstractItem
+from lgcore.signals import signalExecuteDialog
 
 class LgNode(LgAbstractItem):
     '''
@@ -8,11 +7,11 @@ class LgNode(LgAbstractItem):
     distribute products for several links
     '''
 
-    def __init__(self, parent=None, owner=None, caption='Node', storageCapacity=10, cost=0):
-        super(LgNode, self).__init__(parent, owner, caption, cost)
+    def __init__(self, name='Node', storageCapacity=0, parent=None, cost=0, owner=None ):
+        super(LgNode, self).__init__(name, parent, cost, owner)
         self.kind = 'Node'      
         # List of links, to which product will be distributed
-        self.links = []
+        self.links = set()
         
         # lists for all products
         self.entered = set() # products to be distributed
@@ -28,7 +27,7 @@ class LgNode(LgAbstractItem):
             #self.destination.append(LgPackage('Oil',count=i))
         '''
     def addLink(self, link):
-        self.links.append(link)
+        self.links.add(link)
         
     def delLink(self, link):
         self.links.remove(link)
@@ -36,7 +35,7 @@ class LgNode(LgAbstractItem):
     def produce(self):
         allpackages = self.entered | self.storage
         for factory in self.factories :
-            factory.on_NextTurn(allpackages)
+            factory.onNextTurn(allpackages)
             
         self.storage &= allpackages # in storage will be all packages, which was in storage before
         self.entered = allpackages - self.storage 
@@ -47,12 +46,12 @@ class LgNode(LgAbstractItem):
     def removeFactory(self, factory):
         self.factories.remove(factory)
         
-    def on_NextTurn(self):
-        super(LgNode, self).on_NextTurn()
+    def onNextTurn(self):
+        super(LgNode, self).onNextTurn()
         self.produce()
         if len(self.entered) != 0 :
-            self.emit(signalNextTurnNode)
+            self.emit(signalExecuteDialog)
         
-    def on_PackageEntered(self, package):
+    def onPackageEntered(self, package):
         self.entered.add(package)
         
