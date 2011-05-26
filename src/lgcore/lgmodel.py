@@ -27,16 +27,14 @@ class LgModel(QtCore.QObject):
     
     def addPlayer(self, player):
         player.setParent(self)
-        self.connect(self, signalNextTurn, player.onNextTurn)
         self.players.append(player)
     
     def delPlayer(self, player):
-        player.SetParent(None)
-        self.disconnect(self, signalNextTurn, player.onNextTurn)
+        player.setParent(None)
         for node in self.nodes :
-            node.viewers.remove(player)
+            node.viewers.discard(player)
             if node.owner is player :
-                node.removeOwner()
+                node.setOwner(None)
         self.players.remove(player)
     
     def addNode(self, node):
@@ -74,7 +72,8 @@ class LgModel(QtCore.QObject):
         self.links.remove(link)
     
     def onNextTurnPressed(self):
-        self.emit(signalNextTurn)
+        for player in self.players :
+            player.onNextTurn()
     
     def openModel(self):
         pass

@@ -34,11 +34,15 @@ class NodeEditWidget(QtGui.QDialog):
         layout.addWidget(self.nameEdit, 0, 1)
         
         self.ownerEdit = QtGui.QComboBox()
+        self.ownerEdit.addItem('<None>')
+        print model.players
         for player in model.players :
             self.ownerEdit.addItem(player.name)
             
         if self.node.owner is not None :
-            self.ownerEdit.setCurrentIndex(model.players.index(self.node.owner))
+            self.ownerEdit.setCurrentIndex(model.players.index(self.node.owner)+1)
+        else :
+            self.ownerEdit.setCurrentIndex(0)
         self.ownerEdit.currentIndexChanged.connect(self.onOwnerChanged)
         ownerText = nameText = QtGui.QLabel('Owner:')
         ownerText.setBuddy(self.ownerEdit)
@@ -138,10 +142,13 @@ class NodeEditWidget(QtGui.QDialog):
             self.node.color = colorEdit.currentColor()
             
     def onOwnerChanged(self, index):
-        self.node.setOwner(self.model.players[index])
+        print index
+        if index !=0 :
+            self.node.setOwner(self.model.players[index-1])
+        else:
+            self.node.setOwner(None)
         
     def onViewersChanged(self):
-        print  self.viewersEdit.selectedItems()
         self.node.viewers.clear()
         for item in self.viewersEdit.selectedItems() : 
             self.node.viewers.add(item.player)

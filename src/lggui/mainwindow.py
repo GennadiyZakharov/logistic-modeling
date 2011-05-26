@@ -172,7 +172,6 @@ class MainWindow(QtGui.QMainWindow):
         pass
     
     def onChangeFocus(self, object):
-        print object
         self.activeObject = object
     
     # Close Event handler
@@ -183,15 +182,7 @@ class MainWindow(QtGui.QMainWindow):
             settings = QtCore.QSettings()            
             event.accept()
         else:
-            event.ignore()
-            
-    def nextTurn(self):
-        for node in self.nodeslist :
-            node.nextTurn()
-        
-        for link in self.linkslist :
-            link.nextTurn()
-    
+            event.ignore()  
     
     def addGNode(self, node):
         gnode = NodeGui(node)

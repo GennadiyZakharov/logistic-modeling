@@ -25,7 +25,7 @@ class LgPlayer(QtCore.QObject):
         return self.hashValue
     
     def __str__(self):
-        return self.kind + ' ' + self.caption + ' ' + str(self.hashValue)
+        return self.kind + ' ' + self.name
     
     def onCost(self, value):
         self.money += value

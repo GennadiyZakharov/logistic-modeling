@@ -13,8 +13,8 @@ class  LgFactory(LgAbstractItem):
         super(LgFactory, self).__init__(name, parent, cost, owner)
         self.activationInterval = 3
         self.currentTurn = self.activationInterval 
-        self.consumes = []
-        self.produce = []   
+        self.consumes = {}
+        self.produce = {} 
 
     def execute(self, packagelist):
         # TODO: Add package type
@@ -30,5 +30,7 @@ class  LgFactory(LgAbstractItem):
         if self.currentTurn == 0:
             self.currentTurn = self.activationInterval
             self.execute(packageList)
+            
+    
         
         
