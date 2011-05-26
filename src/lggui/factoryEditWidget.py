@@ -18,14 +18,16 @@ class FactoryEditWidget(QtGui.QDialog):
         
         self.factory = factory if factory is not None else LgFactory()
         
+        self.setWindowTitle('Edit factory properties')
+        
         layout = QtGui.QGridLayout()
         
         self.nameEdit = QtGui.QLineEdit(self.factory.name)
         self.nameEdit.textEdited.connect(self.onNameChanged)
         nameText = QtGui.QLabel('Factory name:')
         nameText.setBuddy(self.nameEdit)
-        layout.addWidget(nameText,0,0)
-        layout.addWidget(self.nameEdit,0,1)
+        layout.addWidget(nameText, 0, 0)
+        layout.addWidget(self.nameEdit, 0, 1)
          
         self.activateEdit = QtGui.QSpinBox()
         self.activateEdit.setValue(self.factory.activationInterval)
@@ -33,26 +35,34 @@ class FactoryEditWidget(QtGui.QDialog):
         self.activateEdit.valueChanged.connect(self.onActivateChanged)
         activateText = QtGui.QLabel('Activation interval, turns: ')
         activateText.setBuddy(self.activateEdit)
-        layout.addWidget(activateText,1,0)
-        layout.addWidget(self.activateEdit,1,1)
+        layout.addWidget(activateText, 1, 0)
+        layout.addWidget(self.activateEdit, 1, 1)
         
         self.consumeEdit = QtGui.QTableWidget()
         consumeText = QtGui.QLabel('Consumes: ')
-        layout.addWidget(consumeText,2,0)
-        layout.addWidget(self.consumeEdit,3,0,1,2)
-        #self.consumeEdit.cellChanged.connect(self.onConsumeChanged)
-        
-        #self.consumeEdit.setRowCount(10)
+        layout.addWidget(consumeText, 2, 0)
+        layout.addWidget(self.consumeEdit, 3, 0)
         self.consumeEdit.setColumnCount(3)
-        #self.consumeEdit.se
-        self.updateConsumeTable()
-                                     
+        self.updateTable(self.factory.consumes, self.consumeEdit)                             
         addRowButton = QtGui.QPushButton('Add row')
-        addRowButton.clicked.connect(self.onAddRow)
-        layout.addWidget(addRowButton,4,0)
+        addRowButton.clicked.connect(self.onAddRowConsume)
+        layout.addWidget(addRowButton, 5, 0)
         delRowButton = QtGui.QPushButton('Delete row')
-        delRowButton.clicked.connect(self.onDelRow)
-        layout.addWidget(delRowButton,4,1)
+        delRowButton.clicked.connect(self.onDelRowConsume)
+        layout.addWidget(delRowButton, 6, 0)
+        
+        self.produceEdit = QtGui.QTableWidget()
+        produceText = QtGui.QLabel('Produces: ')
+        layout.addWidget(produceText, 2, 1)
+        layout.addWidget(self.produceEdit, 3, 1)
+        self.produceEdit.setColumnCount(3)
+        self.updateTable(self.factory.produces, self.produceEdit)                             
+        addRowButton = QtGui.QPushButton('Add row')
+        addRowButton.clicked.connect(self.onAddRowProduce)
+        layout.addWidget(addRowButton, 5, 1)
+        delRowButton = QtGui.QPushButton('Delete row')
+        delRowButton.clicked.connect(self.onDelRowProduce)
+        layout.addWidget(delRowButton, 6, 1)
         
         buttons = QtGui.QDialogButtonBox.Ok
         if factory is None :
@@ -70,28 +80,45 @@ class FactoryEditWidget(QtGui.QDialog):
         
         self.setLayout(layout)
          
-    def onAddRow(self, name='Wood', mean=0, disp=0):
-        i = self.consumeEdit.rowCount()
-        self.consumeEdit.setRowCount(i+1)
-        self.consumeEdit.setItem(i,0,QtGui.QTableWidgetItem(name))
+    def addRow(self, table, name='Wood', mean=0, disp=0):
+        i = table.rowCount()
+        table.setRowCount(i + 1)
+        table.setItem(i, 0, QtGui.QTableWidgetItem(name))
         meanSpinBox = QtGui.QSpinBox()
         dispSpinBox = QtGui.QSpinBox()
         meanSpinBox.valueChanged.connect(dispSpinBox.setMaximum)
         meanSpinBox.setMaximum(20)
         meanSpinBox.setValue(mean)
         dispSpinBox.setValue(disp)    
-        self.consumeEdit.setCellWidget(i,1,meanSpinBox)
-        self.consumeEdit.setCellWidget(i,2,dispSpinBox)
+        table.setCellWidget(i, 1, meanSpinBox)
+        table.setCellWidget(i, 2, dispSpinBox)
         
-        
-    def onDelRow(self):
-        self.consumeEdit.removeRow(self.consumeEdit.currentRow())
+    def delRow(self, table):
+        table.removeRow(self.consumeEdit.currentRow())
     
-    def updateConsumeTable(self):
+    def onAddRowConsume(self):
+        self.addRow(self.consumeEdit)
+        
+    def onAddRowProduce(self):
+        self.addRow(self.produceEdit)
+        
+    def onDelRowConsume(self):
+        self.delRow(self.consumeEdit)
+    
+    def onDelRowProduce(self):
+        self.delRow(self.produceEdit)
+    
+    def updateTable(self, dict, table):
+        table.clear()
+        for name in dict.keys() :
+            mean, disp = dict[name]
+            self.addRow(table, name, mean, disp)
+            
+    def updateProduceTable(self):
         self.consumeEdit.clear()
         for name in self.factory.consumes.keys() :
-            mean,disp = self.factory.consumes[name]
-            self.onAddRow(name, mean, disp)
+            mean, disp = self.factory.consumes[name]
+            self.addRow(self.consumeEdit, name, mean, disp)
         
     def onNameChanged(self, text):
         self.factory.caption = text
@@ -108,15 +135,16 @@ class FactoryEditWidget(QtGui.QDialog):
         self.factory.name = self.nameEdit.text() 
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
 
-    def accept(self):
-        self.factory.consumes.clear()
-        for row in range(self.consumeEdit.rowCount()) :
-            name = self.consumeEdit.item(row, 0).text()
+    def writeDictionary(self, table, dict):
+        dict.clear()
+        for row in range(table.rowCount()) :
+            name = table.item(row, 0).text()
             if name == '' : continue
-            meanSpinBox = self.consumeEdit.cellWidget(row, 1)
-            dispSpinBox = self.consumeEdit.cellWidget(row, 2)
-            self.factory.consumes[name] = (meanSpinBox.value(),
-                                                      dispSpinBox.value())
+            meanSpinBox = table.cellWidget(row, 1)
+            dispSpinBox = table.cellWidget(row, 2)
+            dict[name] = (meanSpinBox.value(), dispSpinBox.value())
+
+    def accept(self):
+        self.writeDictionary(self.consumeEdit, self.factory.consumes)
+        self.writeDictionary(self.produceEdit, self.factory.produces)
         return super(FactoryEditWidget, self).accept()
-    def onProduceChanged(self, value):
-        pass

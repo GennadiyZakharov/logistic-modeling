@@ -18,6 +18,7 @@ class PlayerEditWidget(QtGui.QDialog):
         self.player = player if player is not None else LgPlayer('root')
         
         layout = QtGui.QGridLayout()
+        self.setWindowTitle('Edit player properties')
         
         self.nameEdit = QtGui.QLineEdit(self.player.name)
         self.nameEdit.textEdited.connect(self.onUpdateName)
