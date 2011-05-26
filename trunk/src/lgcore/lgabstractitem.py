@@ -32,20 +32,16 @@ class LgAbstractItem(QtCore.QObject):
         return self.hashValue
     
     def __str__(self):
-        return self.kind + ' ' + self.name + ' ' + str(self.hashValue)
+        return self.kind + ' ' + self.name
         
-    def setOwner(self, owner, signal=signalNextTurn):
+    def setOwner(self, owner=None, signal=signalNextTurn):
         if self.owner is not None :
-            self.removeOwner()
+            self.disconnect(self, signalCost, self.owner.onCost)
+            self.disconnect(self.owner, signal, self.onNextTurn)
         self.owner = owner
-        self.connect(self, signalCost, self.owner.onCost)
-        self.connect(self.owner, signal, self.onNextTurn)
-    
-    def removeOwner(self, signal=signalNextTurn):
-        if self.owner is None : return
-        self.disconnect(self, signalCost, self.owner.onCost)
-        self.disconnect(self.owner, signal, self.onNextTurn)
-        self.owner=None
+        if self.owner is not None :
+            self.connect(self, signalCost, self.owner.onCost)
+            self.connect(self.owner, signal, self.onNextTurn)
         
     #--------------------------------------------------------
     def onNextTurn(self):

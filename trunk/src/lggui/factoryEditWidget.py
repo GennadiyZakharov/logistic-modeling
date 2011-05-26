@@ -1,7 +1,7 @@
 from PyQt4 import QtGui, QtCore
-
-from lgcore.signals import *
 from lgcore.lgfactory import LgFactory
+from lgcore.signals import *
+
 
 
 class FactoryEditWidget(QtGui.QDialog):
@@ -20,7 +20,7 @@ class FactoryEditWidget(QtGui.QDialog):
         
         layout = QtGui.QGridLayout()
         
-        self.nameEdit = QtGui.QLineEdit(self.factory.caption)
+        self.nameEdit = QtGui.QLineEdit(self.factory.name)
         self.nameEdit.textEdited.connect(self.onNameChanged)
         nameText = QtGui.QLabel('Factory name:')
         nameText.setBuddy(self.nameEdit)
@@ -36,21 +36,23 @@ class FactoryEditWidget(QtGui.QDialog):
         layout.addWidget(activateText,1,0)
         layout.addWidget(self.activateEdit,1,1)
         
-        self.consumeEdit = QtGui.QSpinBox()
-        self.consumeEdit.setValue(self.factory.consumes)
-        self.consumeEdit.setMaximum(20)
-        self.consumeEdit.valueChanged.connect(self.onConsumeChanged)
+        self.consumeEdit = QtGui.QTableWidget()
         consumeText = QtGui.QLabel('Consumes: ')
         layout.addWidget(consumeText,2,0)
-        layout.addWidget(self.consumeEdit,2,1)
+        layout.addWidget(self.consumeEdit,3,0,1,2)
+        #self.consumeEdit.cellChanged.connect(self.onConsumeChanged)
         
-        self.produceEdit = QtGui.QSpinBox()
-        self.produceEdit.setValue(self.factory.produce)
-        self.produceEdit.setMaximum(20)
-        self.produceEdit.valueChanged.connect(self.onProduceChanged)
-        produceText = QtGui.QLabel('Produce: ')
-        layout.addWidget(produceText,3,0)
-        layout.addWidget(self.produceEdit,3,1)
+        #self.consumeEdit.setRowCount(10)
+        self.consumeEdit.setColumnCount(3)
+        #self.consumeEdit.se
+        self.updateConsumeTable()
+                                     
+        addRowButton = QtGui.QPushButton('Add row')
+        addRowButton.clicked.connect(self.onAddRow)
+        layout.addWidget(addRowButton,4,0)
+        delRowButton = QtGui.QPushButton('Delete row')
+        delRowButton.clicked.connect(self.onDelRow)
+        layout.addWidget(delRowButton,4,1)
         
         buttons = QtGui.QDialogButtonBox.Ok
         if factory is None :
@@ -64,9 +66,32 @@ class FactoryEditWidget(QtGui.QDialog):
                      self.accept)
         self.connect(self.buttonBox, signalRejected,
                      self.reject)
-        layout.addWidget(self.buttonBox, 5, 0, 1, 2)
+        layout.addWidget(self.buttonBox, 10, 0, 1, 2)
         
         self.setLayout(layout)
+         
+    def onAddRow(self, name='Wood', mean=0, disp=0):
+        i = self.consumeEdit.rowCount()
+        self.consumeEdit.setRowCount(i+1)
+        self.consumeEdit.setItem(i,0,QtGui.QTableWidgetItem(name))
+        meanSpinBox = QtGui.QSpinBox()
+        dispSpinBox = QtGui.QSpinBox()
+        meanSpinBox.valueChanged.connect(dispSpinBox.setMaximum)
+        meanSpinBox.setMaximum(20)
+        meanSpinBox.setValue(mean)
+        dispSpinBox.setValue(disp)    
+        self.consumeEdit.setCellWidget(i,1,meanSpinBox)
+        self.consumeEdit.setCellWidget(i,2,dispSpinBox)
+        
+        
+    def onDelRow(self):
+        self.consumeEdit.removeRow(self.consumeEdit.currentRow())
+    
+    def updateConsumeTable(self):
+        self.consumeEdit.clear()
+        for name in self.factory.consumes.keys() :
+            mean,disp = self.factory.consumes[name]
+            self.onAddRow(name, mean, disp)
         
     def onNameChanged(self, text):
         self.factory.caption = text
@@ -76,16 +101,22 @@ class FactoryEditWidget(QtGui.QDialog):
         self.factory.activationInterval = value
         self.onUpdateData()
         
-    def onConsumeChanged(self, value):
-        self.factory.consumes = value
-        self.onUpdateData()
-        
-    def onProduceChanged(self, value):
-        self.factory.consumes = value
-        self.onUpdateData()
-        
     def onUpdateData(self):
-        flag = (self.nameEdit.text()!='' and self.activateEdit.value()!=0 and
-                (self.consumeEdit.value()!=0 or self.produceEdit.value()!=0))
-        self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(flag)
+        if self.nameEdit.text() == '' :
+            self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(False)
+            return
+        self.factory.name = self.nameEdit.text() 
+        self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
 
+    def accept(self):
+        self.factory.consumes.clear()
+        for row in range(self.consumeEdit.rowCount()) :
+            name = self.consumeEdit.item(row, 0).text()
+            if name == '' : continue
+            meanSpinBox = self.consumeEdit.cellWidget(row, 1)
+            dispSpinBox = self.consumeEdit.cellWidget(row, 2)
+            self.factory.consumes[name] = (meanSpinBox.value(),
+                                                      dispSpinBox.value())
+        return super(FactoryEditWidget, self).accept()
+    def onProduceChanged(self, value):
+        pass

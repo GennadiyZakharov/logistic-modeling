@@ -11,6 +11,6 @@ class FactoryListItem(QtGui.QListWidgetItem):
         '''
         Constructor
         '''
-        super(FactoryListItem, self).__init__(factory.caption)
+        super(FactoryListItem, self).__init__(factory.name)
         self.factory = factory
         #self.setIcon(QtGui.QIcon())
