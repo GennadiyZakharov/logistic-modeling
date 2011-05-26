@@ -10,11 +10,11 @@ class  LgFactory(LgAbstractItem):
         '''
         Constructor
         '''
-        super(LgFactory, self).__init__(name, cost, parent, owner)
+        super(LgFactory, self).__init__(name, parent, cost, owner)
         self.activationInterval = 3
         self.currentTurn = self.activationInterval 
-        self.consumes = 1
-        self.produce = 0     
+        self.consumes = []
+        self.produce = []   
 
     def execute(self, packagelist):
         # TODO: Add package type
@@ -24,11 +24,11 @@ class  LgFactory(LgAbstractItem):
         for i in range(self.produce):
             packagelist.append(LgPackage(self.parent(), self.owner))
 
-    def onNextTurn(self, packagelist):
+    def onNextTurn(self, packageList):
         super(LgFactory, self).onNextTurn()
         self.currentTurn -= 1
         if self.currentTurn == 0:
             self.currentTurn = self.activationInterval
-            self.execute(packagelist)
+            self.execute(packageList)
         
         

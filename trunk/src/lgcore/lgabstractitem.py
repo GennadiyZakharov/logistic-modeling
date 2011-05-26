@@ -21,9 +21,11 @@ class LgAbstractItem(QtCore.QObject):
         self.kind = 'AbstractItem'
         self.name = name
         self.cost = cost
+        self.pos = QtCore.QPointF(10,10)
         self.owner = None
         if owner is not None :
             self.setOwner(owner)
+        self.viewers = set()
         # TODO: Add viewers        
             
     def __hash__(self):
@@ -40,8 +42,10 @@ class LgAbstractItem(QtCore.QObject):
         self.connect(self.owner, signal, self.onNextTurn)
     
     def removeOwner(self, signal=signalNextTurn):
+        if self.owner is None : return
         self.disconnect(self, signalCost, self.owner.onCost)
         self.disconnect(self.owner, signal, self.onNextTurn)
+        self.owner=None
         
     #--------------------------------------------------------
     def onNextTurn(self):

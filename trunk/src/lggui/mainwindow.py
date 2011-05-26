@@ -86,10 +86,9 @@ class MainWindow(QtGui.QMainWindow):
         # ---- Item Menu ----
         itemMenu = self.menuBar().addMenu("&Item")
         self.lgActions.addActions(itemMenu, self.lgActions.itemActions)
-        self.connect(self.lgActions.addNodeAction, signalTriggered, self.on_AddNode)
-        self.connect(self.lgActions.addLinkAction, signalTriggered, self.on_AddLink)
-        self.connect(self.lgActions.delNodeAction, signalTriggered, self.delGNode)
-        self.connect(self.lgActions.delLinkAction, signalTriggered, self.delGLink)
+        self.connect(self.lgActions.addEditNodeAction, signalTriggered, self.onAddEditNode)
+        self.connect(self.lgActions.addEditLinkAction, signalTriggered, self.onAddEditLink)
+        self.connect(self.lgActions.delObjectAction, signalTriggered, self.onDelObject)
         
         # ----Help menu
         helpMenu = self.menuBar().addMenu("&Help")
@@ -100,12 +99,16 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)
         
         self.factory = LgNode('Factory', owner=self.model.teacher)
+        self.factory.pos = QtCore.QPointF(300, 100)
         self.model.addNode(self.factory)
         self.warehouse = LgNode('Warehouse', owner=self.model.teacher)
+        self.warehouse.pos = QtCore.QPointF(300, 400)
         self.model.addNode(self.warehouse)
         self.shop1 = LgNode('Shop1', owner=self.model.teacher)
+        self.shop1.pos = QtCore.QPointF(100, 600)
         self.model.addNode(self.shop1)
         self.shop2 = LgNode('Shop2', owner=self.model.teacher)
+        self.shop2.pos = QtCore.QPointF(500, 600)
         self.model.addNode(self.shop2)
         
         self.link1 = LgLink(self.factory, self.warehouse, 'Road1', length=5, owner=self.model.teacher)
@@ -115,10 +118,10 @@ class MainWindow(QtGui.QMainWindow):
         self.link3 = LgLink(self.warehouse, self.shop2, 'Road3', length=3, owner=self.model.teacher)
         self.model.addLink(self.link3)
         
-        gfactory = self.addGNode(self.factory, QtCore.QPointF(300, 100))
-        gwarehouse = self.addGNode(self.warehouse, QtCore.QPointF(300, 400))
-        gshop1 = self.addGNode(self.shop1, QtCore.QPointF(100, 600))
-        gshop2 = self.addGNode(self.shop2, QtCore.QPointF(500, 600))
+        self.addGNode(self.factory)
+        self.addGNode(self.warehouse)
+        self.addGNode(self.shop1)
+        self.addGNode(self.shop2)
         
         self.addGLink(self.link1)
         self.addGLink(self.link2)
@@ -153,11 +156,19 @@ class MainWindow(QtGui.QMainWindow):
         self.filename = fname
         self.fileSave()
     
-    def on_AddNode(self):
-        dialog = NodeEditWidget(None, self)
-        dialog.exec_()
+    def onAddEditNode(self):
+        node = self.activeObject.node if isinstance(self.activeObject ,NodeGui) else None 
+        dialog = NodeEditWidget(self.model, node, self)
+        if dialog.exec_() :
+            if node is None :
+                # dialog.node.pos = 
+                self.model.addNode(dialog.node)
+                self.addGNode(dialog.node)
     
-    def on_AddLink(self):
+    def onAddEditLink(self):
+        pass
+    
+    def onDelObject(self):
         pass
     
     def onChangeFocus(self, object):
@@ -182,8 +193,8 @@ class MainWindow(QtGui.QMainWindow):
             link.nextTurn()
     
     
-    def addGNode(self, node, pos=None):
-        gnode = NodeGui(node, pos)
+    def addGNode(self, node):
+        gnode = NodeGui(node)
         self.gnodes[node] = gnode
         self.scene.addItem(gnode)
         self.connect(gnode, signalFocusIn, self.onChangeFocus)

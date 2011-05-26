@@ -1,5 +1,6 @@
+from PyQt4 import QtGui
 from lgcore.lgabstractitem import LgAbstractItem
-from lgcore.signals import signalExecuteDialog
+from lgcore.signals import signalExecuteDialog, signalUpdateGui 
 
 class LgNode(LgAbstractItem):
     '''
@@ -18,7 +19,7 @@ class LgNode(LgAbstractItem):
         self.storage = set() # storage to store products for a several time
         self.storageCapacity = storageCapacity
         self.factories = set()
-        
+        self.color = QtGui.QColor(195, 217, 255)
         # TEST:
         '''
         for i in range(5) :
@@ -54,4 +55,7 @@ class LgNode(LgAbstractItem):
         
     def onPackageEntered(self, package):
         self.entered.add(package)
+        
+    def onPropertiesChanged(self):
+        self.emit(signalUpdateGui)
         

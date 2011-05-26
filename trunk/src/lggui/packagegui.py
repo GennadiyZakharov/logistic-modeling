@@ -8,7 +8,6 @@ class PackageGui(QtGui.QGraphicsObject):
         self.package = package
         #self.connect(self.package, signalUpdateGui, self.on_updateGui)
         
-        self.color = QtGui.QColor(255, 255, 136)
         self.rect = QtCore.QRectF(-15, -15, 30, 30)
         
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable | 
@@ -41,5 +40,5 @@ class PackageGui(QtGui.QGraphicsObject):
 
     def paint(self, painter, option, widget=None):
         painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(205, 235, 139)), 1.5))
-        painter.setBrush(QtGui.QBrush(self.color))
+        painter.setBrush(QtGui.QBrush(self.package.color))
         painter.drawEllipse(self.rect)

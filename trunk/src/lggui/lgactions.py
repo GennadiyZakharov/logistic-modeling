@@ -19,13 +19,11 @@ class LgActions(QtCore.QObject):
                                                 QtGui.QKeySequence.Save, "filesave", "Save task")
         self.fileSaveAsAction = self.createAction("Save &as...",
                                                   QtGui.QKeySequence.SaveAs, "filesaveas", "Save task as")
-        self.filePrintAction = self.createAction("&Print...",
-                                                 QtGui.QKeySequence.Print, "fileprint", "Print scene")
         self.fileQuitAction = self.createAction("&Exit",
                                                 QtGui.QKeySequence.Quit, "filequit", "Close the application")
         
         self.fileActions = (self.fileNewAction, self.fileOpenAction, self.fileSaveAction,
-                            self.fileSaveAsAction, self.filePrintAction, self.fileQuitAction)
+                            self.fileSaveAsAction, None, self.fileQuitAction)
               
         # ==== Mode actons
         self.editModeAction = self.createAction("&Edit Mode", "Ctrl+E" , "modeedit",
@@ -39,17 +37,15 @@ class LgActions(QtCore.QObject):
         self.modeActions = (self.editModeAction, self.playModeAction) 
         
         # ---- Item Actions
-        self.addNodeAction = self.createAction("Add new node",
-                            None, "filequit", "Add new node")
-        self.addLinkAction = self.createAction("Add new link",
-                            None, "filequit", "Add new link to the task")
-        self.delNodeAction = self.createAction("Delete node",
-                            None, "filequit", "Delete node")
-        self.delLinkAction = self.createAction("Delete link",
-                            None, "filequit", "Delete link from the task")
+        self.addEditNodeAction = self.createAction("Add/Edit node",
+                            None, "filequit", "Add/Edit node")
+        self.addEditLinkAction = self.createAction("Add/Edit link",
+                            None, "filequit", "Add/Edit link")
+        self.delObjectAction = self.createAction("Delete object",
+                            None, "filequit", "Delete object")
         
-        self.itemActions = (self.addNodeAction, self.addLinkAction, None, self.delNodeAction,
-                            self.delLinkAction)
+        self.itemActions = (self.addEditNodeAction, self.addEditLinkAction, None, 
+                            self.delObjectAction)
         # ---- Help actions
         self.helpAboutAction = self.createAction("About",
                             QtGui.QKeySequence.HelpContents, "filequit", "About Logistic Modeller") 

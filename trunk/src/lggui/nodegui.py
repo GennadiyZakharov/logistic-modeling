@@ -6,7 +6,7 @@ class NodeGui(QtGui.QGraphicsObject):
     '''This class containes all gui functionality for node'''
     Rect = QtCore.QRectF(0, 0, 80, 70)
     
-    def __init__(self, node, position, parent=None, scene=None):
+    def __init__(self, node, parent=None, scene=None):
         
         super(NodeGui, self).__init__(parent)
         #QtCore.QObject.__init__(self) 
@@ -15,8 +15,8 @@ class NodeGui(QtGui.QGraphicsObject):
         self.connect(self.node, signalUpdateGui, self.on_updateGui)
         self.connect(self.node, signalExecuteDialog, self.on_AssignItems)
         
-        self.color = QtGui.QColor(195, 217, 255)
-        self.setPos(position)
+        
+        self.setPos(node.pos)
 
         self.acceptDrops()
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable | 
@@ -96,7 +96,7 @@ class NodeGui(QtGui.QGraphicsObject):
 
     def paint(self, painter, option, widget=None):
         painter.setPen(QtCore.Qt.SolidLine)
-        painter.setBrush(QtGui.QBrush(self.color))
+        painter.setBrush(QtGui.QBrush(self.node.color))
         painter.drawRect(self.Rect)
         painter.drawText(QtCore.QPoint(10,10),self.node.name)
         if self.hasFocus() :
