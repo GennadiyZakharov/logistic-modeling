@@ -1,4 +1,5 @@
 
+from PyQt4 import QtGui
 from lgcore.lgabstractitem import LgAbstractItem
 
 class LgPackage(LgAbstractItem):
@@ -7,6 +8,7 @@ class LgPackage(LgAbstractItem):
         
         self.kind = 'Package'
         self.icon = icon
+        self.color = QtGui.QColor(255, 255, 136)
         if owner is not None :
             self.setOwner(owner)
              

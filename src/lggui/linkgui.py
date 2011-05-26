@@ -100,8 +100,8 @@ class LinkGui(QtGui.QGraphicsObject):
         return path
 
     def paint(self, painter, option, widget=None):
-        painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(205, 235, 139)), 2.5))
-        painter.setBrush(QtGui.QBrush(self.color))
+        painter.setPen(QtGui.QPen(QtGui.QBrush(self.link.color), 2.5))
+        painter.setBrush(QtGui.QBrush(self.link.color))
         painter.drawLine(QtCore.QPointF(0, 0), self.point2)
         painter.drawLine(self.point2, self.point2 + self.arrowPoint1)
         painter.drawLine(self.point2, self.point2 + self.arrowPoint2)

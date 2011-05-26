@@ -1,6 +1,7 @@
-from lgcore.signals import signalTransport, signalNextTurnLink, signalUpdateGui
+from PyQt4 import QtGui
 from lgcore.lgabstractitem import LgAbstractItem
 from lgcore.lgpackage import LgPackage
+from lgcore.signals import signalTransport, signalNextTurnLink, signalUpdateGui
 
 class LgLink(LgAbstractItem):
     '''This class implements all functionality for link '''
@@ -13,6 +14,7 @@ class LgLink(LgAbstractItem):
         self.input = input
         self.output = output
         self.length = length
+        self.color = QtGui.QColor(205, 235, 139)
         self.maxCapacity = maxCapacity
         self.currentCapacity = self.maxCapacity
         self.packages = {} # Dictionary for store packages

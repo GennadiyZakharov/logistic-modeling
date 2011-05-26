@@ -33,6 +33,10 @@ class LgModel(QtCore.QObject):
     def delPlayer(self, player):
         player.SetParent(None)
         self.disconnect(self, signalNextTurn, player.onNextTurn)
+        for node in self.nodes :
+            node.viewers.remove(player)
+            if node.owner is player :
+                node.removeOwner()
         self.players.remove(player)
     
     def addNode(self, node):
