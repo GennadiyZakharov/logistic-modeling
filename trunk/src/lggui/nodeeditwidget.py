@@ -1,5 +1,4 @@
 from PyQt4 import QtGui, QtCore
-from lgcore.lgfactory import LgFactory
 from lgcore.lgnode import LgNode
 from lgcore.signals import *
 from lggui.factoryEditWidget import FactoryEditWidget
@@ -20,11 +19,12 @@ class NodeEditWidget(QtGui.QDialog):
         Constructor
         '''
         super(NodeEditWidget, self).__init__(parent)
-        
         self.model = model
         self.node = node if node is not None else LgNode()
         
         layout = QtGui.QGridLayout()
+        
+        self.setWindowTitle('Edit node properties')
         
         self.nameEdit = QtGui.QLineEdit(self.node.name)
         self.nameEdit.textEdited.connect(self.onNameChanged)
@@ -68,23 +68,23 @@ class NodeEditWidget(QtGui.QDialog):
         self.storageEdit.setMaximum(10)
         storageText = QtGui.QLabel('Storage Capacity:')
         storageText.setBuddy(self.storageEdit)
-        layout.addWidget(storageText, 4, 0)
-        layout.addWidget(self.storageEdit, 4, 1)
+        layout.addWidget(storageText, 5, 0)
+        layout.addWidget(self.storageEdit, 5, 1)
         
         self.factoryList = QtGui.QListWidget()
-        layout.addWidget(self.factoryList, 5, 0, 2, 2)
+        layout.addWidget(self.factoryList, 7, 0, 2, 2)
         addFactoryButton = QtGui.QPushButton('Add Factory')
         addFactoryButton.clicked.connect(self.onAddFactory)
-        layout.addWidget(addFactoryButton, 6, 0)
+        layout.addWidget(addFactoryButton, 10, 0)
         removeFactoryButton = QtGui.QPushButton('Remove Factory')
         removeFactoryButton.clicked.connect(self.onRemoveFactory)
-        layout.addWidget(removeFactoryButton, 7, 0)
+        layout.addWidget(removeFactoryButton, 11, 0)
         editFactoryButton = QtGui.QPushButton('Edit Factory')
         editFactoryButton.clicked.connect(self.onEditFactory)
-        layout.addWidget(editFactoryButton, 6, 1)
+        layout.addWidget(editFactoryButton, 10, 1)
         
         colorButton = QtGui.QPushButton('Select Color')
-        layout.addWidget(colorButton, 8, 1)
+        layout.addWidget(colorButton, 11, 1)
         colorButton.clicked.connect(self.onSelectColor)
         
         self.onUpdateList()
@@ -99,7 +99,7 @@ class NodeEditWidget(QtGui.QDialog):
                      self.accept)
         self.connect(self.buttonBox, signalRejected,
                      self.reject)
-        layout.addWidget(self.buttonBox, 10, 0, 1, 2)
+        layout.addWidget(self.buttonBox, 15, 0, 1, 2)
         
         self.setLayout(layout)
         
