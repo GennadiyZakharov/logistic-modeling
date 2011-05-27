@@ -76,8 +76,22 @@ class LgModel(QtCore.QObject):
             player.onNextTurn()
     
     def openModel(self):
+        # TODO: Implement
         pass
     
     def saveModel(self):
+        # TODO: Implement
+        pass
+    
+    def getData(self):        
+        # TODO: Implement
+        pass
+    
+    def setData(self, data):
+        # TODO: Implement
+        pass
+    
+    def isFinished(self):
+        # TODO: Implement
         pass
         
