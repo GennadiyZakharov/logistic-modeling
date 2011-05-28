@@ -59,3 +59,6 @@ class LgNode(LgAbstractItem):
     def onPropertiesChanged(self):
         self.emit(signalUpdateGui)
         
+    def onMoved(self, pos):
+        self.pos = pos
+        

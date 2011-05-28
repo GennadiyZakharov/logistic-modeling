@@ -1,5 +1,6 @@
 from PyQt4 import QtCore, QtGui
-from lgcore.signals import signalUpdateGui, signalClicked, signalExecuteDialog, signalFocusIn
+from lgcore.signals import signalUpdateGui, signalClicked, signalExecuteDialog, \
+    signalFocusIn, signalItemMoved
 from lggui.nodewidget import NodeWidget
 
 class NodeGui(QtGui.QGraphicsObject):
@@ -14,10 +15,11 @@ class NodeGui(QtGui.QGraphicsObject):
         self.node = node
         self.connect(self.node, signalUpdateGui, self.on_updateGui)
         self.connect(self.node, signalExecuteDialog, self.on_AssignItems)
-        
-        
-        self.setPos(node.pos)
 
+        self.xChanged.connect(self.onMove)
+        self.yChanged.connect(self.onMove)
+        self.setPos(node.pos)
+        
         self.acceptDrops()
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable | 
         QtGui.QGraphicsItem.ItemIsMovable | QtGui.QGraphicsItem.ItemIsFocusable)
@@ -30,7 +32,9 @@ class NodeGui(QtGui.QGraphicsObject):
         self.proxy.setWidget(self.mainwidget)
         self.proxy.setPos(QtCore.QPointF(0, 30))
         '''
-    
+        
+    def onMove(self):
+        self.emit(signalItemMoved,self.pos()) 
         
     def center(self):
         rect = QtCore.QRectF(self.Rect)
