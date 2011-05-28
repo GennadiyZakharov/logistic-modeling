@@ -64,8 +64,9 @@ class NodeEditWidget(QtGui.QDialog):
         layout.addWidget(self.viewersEdit, 3, 0, 1, 2)
         
         self.storageEdit = QtGui.QSpinBox()
+        self.storageEdit.setMaximum(20)
         self.storageEdit.setValue(self.node.storageCapacity)
-        self.storageEdit.setMaximum(10)
+        self.storageEdit.valueChanged.connect(self.onStorageChanged)
         storageText = QtGui.QLabel('Storage Capacity:')
         storageText.setBuddy(self.storageEdit)
         layout.addWidget(storageText, 5, 0)
@@ -104,10 +105,10 @@ class NodeEditWidget(QtGui.QDialog):
         self.setLayout(layout)
         
     def onNameChanged(self, text):
-        self.node.name = text
+        self.node.name = str(text)
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(text != '')
         
-    def onStorageChamged(self, value):
+    def onStorageChanged(self, value):
         self.node.storageCapacity = value
         
     def onAddFactory(self):

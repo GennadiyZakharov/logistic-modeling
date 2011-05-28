@@ -1,9 +1,10 @@
 from __future__ import division
+from PyQt4 import QtCore, QtGui
+from lgcore.signals import signalUpdateGui, signalxChanged, signalyChanged, \
+    signalFocusIn
+from lggui.packagegui import PackageGui
 from math import sqrt
 
-from PyQt4 import QtCore, QtGui
-from lgcore.signals import signalUpdateGui, signalxChanged, signalyChanged
-from lggui.packagegui import PackageGui
 
 class LinkGui(QtGui.QGraphicsObject):
     '''
@@ -29,7 +30,6 @@ class LinkGui(QtGui.QGraphicsObject):
         self.input = input
         self.output = output
         
-        self.color = QtGui.QColor(0, 0, 0)
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable | 
                       QtGui.QGraphicsItem.ItemIsFocusable)        
         self.gPackages = {}
@@ -77,7 +77,11 @@ class LinkGui(QtGui.QGraphicsObject):
                 self.gPackages[p] = PackageGui(p, self)
                 self.setPackageUpdateAge(self.gPackages[p], self.link.packages[p])
             
-         
+    def focusInEvent(self, event) :
+        super(LinkGui, self).focusInEvent(event)
+        self.emit(signalFocusIn, self)
+    
+     
     def mouseDoubleClickEvent(self, event):
         #dialog = TextItemDlg(self, self.parentWidget())
         #dialog.exec_()
