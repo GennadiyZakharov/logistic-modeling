@@ -27,9 +27,6 @@ class LgLink(LgAbstractItem):
     def setOwner(self, owner):
         super(LgLink, self).setOwner(owner, signal=signalNextTurnLink)
     
-    def removeOwner(self):
-        super(LgLink, self).removeOwner(signal=signalNextTurnLink)
-    
     def onNextTurn(self):
         super(LgLink, self).onNextTurn()
         for p in self.packages.keys():

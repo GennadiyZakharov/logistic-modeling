@@ -48,7 +48,7 @@ class LgModel(QtCore.QObject):
         
     def delNode(self, node):
         node.setParent(None)
-        node.removeOwner()
+        node.setOwner(None)
         linkstodel = set()
         print "node to delete"
         print self.nodes
