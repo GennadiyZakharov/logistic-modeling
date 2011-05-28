@@ -1,18 +1,15 @@
 from PyQt4 import QtCore, QtGui
-from lgcore.lglink import LgLink
-from lgcore.lgmodel import LgModel
-from lgcore.lgnode import LgNode
-from lgcore.lgpackage import LgPackage
+
 from lgcore.signals import signalTriggered, signalClicked, signalFocusIn, \
     signalItemMoved
 from lggraphicsscene import LgGraphicsScene
 from lggui.lgactions import LgActions
 from lggui.linkaddwidget import LinkAddWidget
 from lggui.linkeditwidget import LinkEditWidget
-from lggui.linkgui import LinkGui
 from lggui.nodeeditwidget import NodeEditWidget
+from lggui.linkgui import LinkGui
 from lggui.nodegui import NodeGui
-from lggui.packagegui import PackageGui
+from lgcore.lglink import LgLink
 from lggui.playerdockwidget import PlayerDockWidget
 from lggui.toolsdockwidget import ToolsDockWidget
 from lggui.viewdockwidget import ViewDockWidget
@@ -23,16 +20,12 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         
-        self.model = LgModel()
         
         self.lgActions = LgActions(self)
         
         self.setWindowTitle("Logistic modeling")
         self.setObjectName("MainWindow")
-        self.dirty = False
-        
-        # All nodes and links will be stored in lists
-        
+        self.dirty = False        
         
         # ==== Creating main graph view
         self.scene = LgGraphicsScene(self)
@@ -70,26 +63,24 @@ class MainWindow(QtGui.QMainWindow):
         playerDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, playerDockBar)
         #Populating view dockbar
-        self.playerDockWidget = PlayerDockWidget(self.model,self) 
+        self.playerDockWidget = PlayerDockWidget(self.scene.model,self) 
         playerDockBar.setWidget(self.playerDockWidget)
         
         
         # ==== Creating Menu
         # ---- File menu
         fileMenu = self.menuBar().addMenu("&File")
-        self.lgActions.addActions(fileMenu, self.lgActions.fileActions)
+        self.lgActions.addActions(fileMenu, self.lgActions.fileActionsEditor)
         self.connect(self.lgActions.fileSaveAction, signalTriggered, self.fileSave)
         self.connect(self.lgActions.fileQuitAction, signalTriggered, self.close)
-        
-        # ---- Mode menu 
-        modeMenu = self.menuBar().addMenu("&Mode")
-        self.lgActions.addActions(modeMenu, self.lgActions.modeActions)
         
         # ---- Item Menu ----
         itemMenu = self.menuBar().addMenu("&Item")
         self.lgActions.addActions(itemMenu, self.lgActions.itemActions)
-        self.connect(self.lgActions.addEditNodeAction, signalTriggered, self.onAddEditNode)
-        self.connect(self.lgActions.addEditLinkAction, signalTriggered, self.onAddEditLink)
+        self.connect(self.lgActions.addNodeAction, signalTriggered, self.onAddNode)
+        self.connect(self.lgActions.editNodeAction, signalTriggered, self.onEditNode)
+        self.connect(self.lgActions.addLinkAction, signalTriggered, self.onAddLink)
+        self.connect(self.lgActions.editLinkAction, signalTriggered, self.onEditLink)
         self.connect(self.lgActions.delObjectAction, signalTriggered, self.onDelObject)
         
         # ----Help menu
@@ -98,40 +89,8 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.lgActions.helpAboutAction, signalTriggered, self.on_HelpAbout)
         
         # TEST: Creating nodes
-        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)
+        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.scene.model.onNextTurnPressed)
         
-        factory = LgNode('Factory')
-        factory.pos = QtCore.QPointF(300, 100)
-        self.model.addNode(factory)
-        warehouse = LgNode('Warehouse')
-        warehouse.pos = QtCore.QPointF(300, 400)
-        self.model.addNode(warehouse)
-        shop1 = LgNode('Shop1')
-        shop1.pos = QtCore.QPointF(100, 600)
-        self.model.addNode(shop1)
-        shop2 = LgNode('Shop2')
-        shop2.pos = QtCore.QPointF(500, 600)
-        self.model.addNode(shop2)
-        
-        link1 = LgLink(factory, warehouse, 'Road1', length=5)
-        self.model.addLink(link1)
-        link2 = LgLink(warehouse, shop1, 'Road2', length=4)
-        self.model.addLink(link2)
-        link3 = LgLink(warehouse, shop2, 'Road3', length=3)
-        self.model.addLink(link3)
-        '''
-        self.addGNode(factory)
-        self.addGNode(warehouse)
-        self.addGNode(shop1)
-        self.addGNode(shop2)
-    
-        self.addGLink(link1)
-        self.addGLink(link2)
-        self.addGLink(link3)        
-        '''       
-        link1.onAddPackage(LgPackage('Linux'))
-        
-        self.updateFromModel()
     # ==== Slots and handlers to handle actions ====
 
     def fileSave(self):
@@ -160,43 +119,53 @@ class MainWindow(QtGui.QMainWindow):
         self.filename = fname
         self.fileSave()
     
-    def onAddEditNode(self):
-        node = self.activeObject.node if isinstance(self.activeObject ,NodeGui) else None 
-        dialog = NodeEditWidget(self.model, node, self)
+    def onAddNode(self):
+        self.addEditNode(None)
+        
+    def onEditNode(self):
+        if isinstance(self.scene.activeObject, NodeGui) :
+            self.addEditNode(self.scene.activeObject.node)
+            
+    def onAddLink(self):
+        self.addEditLink(None)
+    
+    #-----    
+    def onEditLink(self):
+        if isinstance(self.scene.activeObject, LinkGui) :
+            self.addEditLink(self.scene.activeObject.link)
+    
+    def addEditNode(self, node):
+        dialog = NodeEditWidget(self.scene.model, node, self)
         if dialog.exec_() :
             if node is None :
                 # dialog.node.pos = 
-                self.model.addNode(dialog.node)
-                self.addGNode(dialog.node)
+                self.scene.model.addNode(dialog.node)
+                self.scene.addGNode(dialog.node)
     
-    def onAddEditLink(self):
-        if isinstance(self.activeObject ,LinkGui) :
-            link = self.activeObject.link
-            addLink = False
-        else :
-            dialog = LinkAddWidget(self.model, self)
+    def addEditLink(self, link):
+        addLink = False
+        if link is None :
+            dialog = LinkAddWidget(self.scene.model, self)
             if dialog.exec_() :
                 link = LgLink(dialog.input, dialog.output)
                 addLink = True
             else :
                 return
-        dialog = LinkEditWidget(self.model, link, self)
+        dialog = LinkEditWidget(self.scene.model, link, self)
         if dialog.exec_() :
             if addLink :
                 #print dialog.link
-                self.model.addLink(dialog.link)
-                self.addGLink(dialog.link)
+                self.scene.model.addLink(dialog.link)
+                self.scene.addGLink(dialog.link)
     
     def onDelObject(self):
-        if isinstance(self.activeObject ,NodeGui) :
-            self.delGNode(self.activeObject)
-            self.activeObject = None
-        elif isinstance(self.activeObject ,LinkGui) :
-            self.delGLink(self.activeObject)
-            self.activeObject = None
+        if isinstance(self.scene.activeObject ,NodeGui) :
+            self.scene.delGNode(self.scene.activeObject)
+            self.scene.activeObject = None
+        elif isinstance(self.scene.activeObject ,LinkGui) :
+            self.scene.delGLink(self.scene.activeObject)
+            self.scene.activeObject = None
     
-    def onChangeFocus(self, object):
-        self.activeObject = object
     
     # Close Event handler
     def closeEvent(self, event):
@@ -208,53 +177,13 @@ class MainWindow(QtGui.QMainWindow):
         else:
             event.ignore()  
     
-    def addGNode(self, node):
-        gnode = NodeGui(node)
-        self.gnodes[node] = gnode
-        self.scene.addItem(gnode)
-        self.connect(gnode, signalFocusIn, self.onChangeFocus)
-        self.connect(gnode, signalItemMoved, node.onMoved)
-        return gnode
-    
-    def addGLink(self, link):
-        print 'adding glink'
-        ginput = self.gnodes[link.input]
-        goutput = self.gnodes[link.output]
-        glink = LinkGui(link, ginput, goutput)
-        print glink
-        self.glinks[link] = glink
-        self.scene.addItem(glink)
-        self.connect(glink, signalFocusIn, self.onChangeFocus)
-        return glink   
-    
-    def delGNode(self, nodeGui):
-        node = nodeGui.node
-        self.scene.removeItem(nodeGui)
-        self.gnodes.pop(node)
-        self.model.delNode(node)
-    
-    def delGLink(self, linkGui):
-        link = linkGui.link
-        self.scene.removeItem(linkGui)
-        self.gnodes.pop(link)
-        self.model.delNode(link)
-        
-    def updateFromModel(self):
-        self.gnodes = {}
-        self.glinks = {}
-        self.activeObject=None
-        for node in self.model.nodes :
-            self.addGNode(node)
-        for link in self.model.links :
-            self.addGLink(link)
+
             
     def on_HelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",
         """<b>Logistic Modeller</b> v %s
-        <p>Copyright &copy; 2007 Qtrac Ltd.
-        All rights reserved.
-        <p>This application can be used to perform
-        simple image manipulations.
+        <p>Co.
+        Publishe under GNU GPL v3.0.
         <p>Python %s - Qt %s - PyQt %s""" % (
                         self.__version__, sys.platform,
                         QtCore.QT_VERSION_STR, QtCore.PYQT_VERSION_STR))

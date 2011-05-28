@@ -101,7 +101,7 @@ class LinkEditWidget(QtGui.QDialog):
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(text != '')
         
     def onLengthChanged(self, value):
-        self.link.storageCapacity = value
+        self.link.length = value
             
     def onCapacityChanged(self, value):
         self.link.maxCapacity = value

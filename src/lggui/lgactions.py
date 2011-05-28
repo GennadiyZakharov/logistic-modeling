@@ -19,12 +19,16 @@ class LgActions(QtCore.QObject):
                                                 QtGui.QKeySequence.Save, "filesave", "Save task")
         self.fileSaveAsAction = self.createAction("Save &as...",
                                                   QtGui.QKeySequence.SaveAs, "filesaveas", "Save task as")
+        self.fileConnectAction = self.createAction("Connect...",
+                                                  None, "fileconnect", "Connect to server")
         self.fileQuitAction = self.createAction("&Exit",
                                                 QtGui.QKeySequence.Quit, "filequit", "Close the application")
         
-        self.fileActions = (self.fileNewAction, self.fileOpenAction, self.fileSaveAction,
-                            self.fileSaveAsAction, None, self.fileQuitAction)
-              
+        self.fileActionsEditor = (self.fileNewAction, self.fileOpenAction, self.fileSaveAction,
+                                  self.fileSaveAsAction, None, self.fileQuitAction)
+        self.fileActionsPlayer = (self.fileOpenAction, self.fileConnectAction, None, self.fileQuitAction)
+        
+        '''
         # ==== Mode actons
         self.editModeAction = self.createAction("&Edit Mode", "Ctrl+E" , "modeedit",
                                                 "Switch to edit mode", True)
@@ -35,16 +39,22 @@ class LgActions(QtCore.QObject):
         editGroup.addAction(self.playModeAction)
         self.editModeAction.setChecked(True)
         self.modeActions = (self.editModeAction, self.playModeAction) 
-        
+        '''
         # ---- Item Actions
-        self.addEditNodeAction = self.createAction("Add/Edit node",
-                            None, "filequit", "Add/Edit node")
-        self.addEditLinkAction = self.createAction("Add/Edit link",
-                            None, "filequit", "Add/Edit link")
+        self.addNodeAction = self.createAction("Add node",
+                            None, "filequit", "Add node")
+        self.editNodeAction = self.createAction("Edit node",
+                            None, "filequit", "Edit node")
+        self.addLinkAction = self.createAction("Add link",
+                            None, "filequit", "Add link")
+        self.editLinkAction = self.createAction("Edit link",
+                            None, "filequit", "Edit link")
+        
         self.delObjectAction = self.createAction("Delete object",
                             None, "filequit", "Delete object")
         
-        self.itemActions = (self.addEditNodeAction, self.addEditLinkAction, None, 
+        self.itemActions = (self.addNodeAction, self.editNodeAction, None,
+                            self.addLinkAction, self.editLinkAction, None, 
                             self.delObjectAction)
         # ---- Help actions
         self.helpAboutAction = self.createAction("About",
