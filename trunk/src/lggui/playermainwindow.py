@@ -21,13 +21,13 @@ import sys
 
 class PlayerMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        super(PlayerMainWindow, self).__init__(parent)
         
         self.model = LgModel()
         
         self.lgActions = LgActions(self)
         
-        self.setWindowTitle("Logistic modeling")
+        self.setWindowTitle("Logistic player")
         self.setObjectName("MainWindow")
         self.dirty = False
         
@@ -160,40 +160,6 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.filename = fname
         self.fileSave()
     
-    def onAddEditNode(self):
-        node = self.activeObject.node if isinstance(self.activeObject ,NodeGui) else None 
-        dialog = NodeEditWidget(self.model, node, self)
-        if dialog.exec_() :
-            if node is None :
-                # dialog.node.pos = 
-                self.model.addNode(dialog.node)
-                self.addGNode(dialog.node)
-    
-    def onAddEditLink(self):
-        if isinstance(self.activeObject ,LinkGui) :
-            link = self.activeObject.link
-            addLink = False
-        else :
-            dialog = LinkAddWidget(self.model, self)
-            if dialog.exec_() :
-                link = LgLink(dialog.input, dialog.output)
-                addLink = True
-            else :
-                return
-        dialog = LinkEditWidget(self.model, link, self)
-        if dialog.exec_() :
-            if addLink :
-                #print dialog.link
-                self.model.addLink(dialog.link)
-                self.addGLink(dialog.link)
-    
-    def onDelObject(self):
-        if isinstance(self.activeObject ,NodeGui) :
-            self.delGNode(self.activeObject)
-            self.activeObject = None
-        elif isinstance(self.activeObject ,LinkGui) :
-            self.delGLink(self.activeObject)
-            self.activeObject = None
     
     def onChangeFocus(self, object):
         self.activeObject = object
@@ -208,45 +174,6 @@ class PlayerMainWindow(QtGui.QMainWindow):
         else:
             event.ignore()  
     
-    def addGNode(self, node):
-        gnode = NodeGui(node)
-        self.gnodes[node] = gnode
-        self.scene.addItem(gnode)
-        self.connect(gnode, signalFocusIn, self.onChangeFocus)
-        self.connect(gnode, signalItemMoved, node.onMoved)
-        return gnode
-    
-    def addGLink(self, link):
-        print 'adding glink'
-        ginput = self.gnodes[link.input]
-        goutput = self.gnodes[link.output]
-        glink = LinkGui(link, ginput, goutput)
-        print glink
-        self.glinks[link] = glink
-        self.scene.addItem(glink)
-        self.connect(glink, signalFocusIn, self.onChangeFocus)
-        return glink   
-    
-    def delGNode(self, nodeGui):
-        node = nodeGui.node
-        self.scene.removeItem(nodeGui)
-        self.gnodes.pop(node)
-        self.model.delNode(node)
-    
-    def delGLink(self, linkGui):
-        link = linkGui.link
-        self.scene.removeItem(linkGui)
-        self.gnodes.pop(link)
-        self.model.delNode(link)
-        
-    def updateFromModel(self):
-        self.gnodes = {}
-        self.glinks = {}
-        self.activeObject=None
-        for node in self.model.nodes :
-            self.addGNode(node)
-        for link in self.model.links :
-            self.addGLink(link)
             
     def on_HelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",
