@@ -1,12 +1,12 @@
 
 from PyQt4 import QtCore
+from cStringIO import StringIO
 from lgcore.lglink import LgLink
 from lgcore.lgnode import LgNode
 from lgcore.lgpackage import LgPackage
 from lgcore.lgplayer import LgPlayer
 from lgcore.signals import signalTransport, signalNextTurn
-
-
+from xml.etree.cElementTree import ElementTree, Element, tostring
 
 class LgModel(QtCore.QObject):
     '''
@@ -18,9 +18,14 @@ class LgModel(QtCore.QObject):
     '''
     def __init__(self):
         super(LgModel, self).__init__()
+        self.clear()   
+        # FIXME: remove stub     
+        teacher = LgPlayer('Teacher',self)
+        self.addPlayer(teacher)
+        
+    def clear(self):
         self.players = []
-        self.teacher = LgPlayer('Teacher',self)
-        self.addPlayer(self.teacher)
+        
         self.links = set()
         self.nodes = set()
         self.packages = set()
@@ -74,22 +79,123 @@ class LgModel(QtCore.QObject):
     def onNextTurnPressed(self):
         for player in self.players :
             player.onNextTurn()
+                
+    def toXML(self):
+        def indent(elem, level=0):
+            i = "\n" + level*"  "
+            if len(elem):
+                if not elem.text or not elem.text.strip():
+                    elem.text = i + "  "
+                for e in elem:
+                    indent(e, level+1)
+                    if not e.tail or not e.tail.strip():
+                        e.tail = i + "  "
+                if not e.tail or not e.tail.strip():
+                    e.tail = i
+            else:
+                if level and (not elem.tail or not elem.tail.strip()):
+                    elem.tail = i
+                    
+        modelElement = Element('model')
+        # Add players
+        playerListElement = Element('playerList')
+        for player in self.players:
+            playerElement = Element('player', {'name': player.name, 'money': str(player.money)})
+            playerListElement.append(playerElement)
+        modelElement.append(playerListElement)
+        # Add nodes
+        nodeListElement = Element('nodeList')
+        for node in self.nodes:
+            nodeElement = Element('node', {'name': node.name, 
+                                           'capacity': str(node.storageCapacity), 
+                                           'color': str(node.color.name())})
+            # Add packages from storage
+            storagePackagesListElement = Element('storagePackagesList')
+            for package in node.storage:
+                packageElement = Element('package', {'name': package.name})
+                storagePackagesListElement.append(packageElement)
+            # Add packages from entered
+            enteredPackagesListElement = Element('enteredPackagesList')
+            for package in node.entered:
+                packageElement = Element('package', {'name': package.name})
+                enteredPackagesListElement.append(packageElement)           
+            # TODO: Add factories
+            factoryListElement = Element('factoryList')
+            for factory in node.factories:
+                factoryElement = Element('factory', {'name': factory.name, 
+                                                     'activationInterval': str(factory.activationInterval),
+                                                     'currentTurn': str(factory.currentTurn)})
+                # Consume
+                consumeListElement = Element('consumeList')
+                for name, value in factory.consumes.items():
+                    consumeElement = Element('consume', {'name': str(name), 'mean': str(value[0]), 'variance': str(value[1])})
+                    consumeListElement.append(consumeElement)
+                factoryElement.append(consumeListElement)
+                # Produce
+                produceListElement = Element('produceList')
+                for name, value in factory.produces.items():
+                    produceElement = Element('produce', {'name': str(name), 'mean': str(value[0]), 'variance': str(value[1])})
+                    produceListElement.append(produceElement)
+                factoryElement.append(produceListElement)
+                # Demand
+                demandListElement = Element('demandList')
+                for name, value in factory.demands.items():
+                    demandElement = Element('demand', {'name': str(name), 'value': str(value)})
+                    demandListElement.append(demandElement)
+                factoryElement.append(demandListElement)
+                # Append factory to list
+                factoryListElement.append(factoryElement)
+            nodeElement.append(factoryListElement)
+            nodeListElement.append(nodeElement)
+        modelElement.append(nodeListElement)
+        # Add links
+        linkListElement = Element('linkList')
+        for link in self.links:
+            linkElement = Element('link', {'inputName': link.input.name, 
+                                           'outputName': link.output.name,
+                                           'length': str(link.length),
+                                           'maxCapacity': str(link.maxCapacity),
+                                           'color': str(link.color.name())})
+            packageListElement = Element('packageList')
+            for package, position in link.packages.items():
+                packageElement = Element('package', {'name': package.name, 'position': str(position)})
+                packageListElement.append(packageElement)
+            linkElement.append(packageListElement)
+            linkListElement.append(linkElement)
+        modelElement.append(linkListElement)
+        indent(modelElement)
+        return tostring(modelElement)
     
-    def openModel(self):
-        # TODO: Implement
-        pass
-    
-    def saveModel(self):
-        # TODO: Implement
-        pass
+    def fromXML(self, source):
+        self.clear()
+        tree = ElementTree()
+        tree.parse(source)
+        modelElement = tree.getroot()
+        # Read players
+        playerListElement = modelElement.find('playerList')
+        for playerElement in list(playerListElement):
+            player = LgPlayer(playerElement.get('name'), parent=self, money=playerElement.get('money'))
+            self.addPlayer(player)
+        # TODO: Read nodes
+        # TODO: Read factories        
+        
+    def openModel(self, filename):
+        self.fromXML(filename)
+         
+    def saveModel(self, filename):
+        with open(filename, 'w') as f:
+            print self.toXML()
+            f.write(self.toXML())
+        #tree.dump(tree.getroot())                
+        #tree.write(filename)
     
     def getData(self):        
-        # TODO: Implement
-        pass
+        return self.toXML()
     
     def setData(self, data):
-        # TODO: Implement
-        pass
+        fileStub = StringIO()
+        fileStub.write(data)
+        self.fromXML(fileStub)
     
     def isFinished(self):
         # TODO: Implement

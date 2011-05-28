@@ -79,6 +79,7 @@ class MainWindow(QtGui.QMainWindow):
         # ---- File menu
         fileMenu = self.menuBar().addMenu("&File")
         self.lgActions.addActions(fileMenu, self.lgActions.fileActions)
+        self.connect(self.lgActions.fileSaveAction, signalTriggered, self.fileSave)
         self.connect(self.lgActions.fileQuitAction, signalTriggered, self.close)
         
         # ---- Mode menu 
@@ -100,24 +101,24 @@ class MainWindow(QtGui.QMainWindow):
         # TEST: Creating nodes
         self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)
         
-        factory = LgNode('Factory', owner=self.model.teacher)
+        factory = LgNode('Factory')
         factory.pos = QtCore.QPointF(300, 100)
         self.model.addNode(factory)
-        warehouse = LgNode('Warehouse', owner=self.model.teacher)
+        warehouse = LgNode('Warehouse')
         warehouse.pos = QtCore.QPointF(300, 400)
         self.model.addNode(warehouse)
-        shop1 = LgNode('Shop1', owner=self.model.teacher)
+        shop1 = LgNode('Shop1')
         shop1.pos = QtCore.QPointF(100, 600)
         self.model.addNode(shop1)
-        shop2 = LgNode('Shop2', owner=self.model.teacher)
+        shop2 = LgNode('Shop2')
         shop2.pos = QtCore.QPointF(500, 600)
         self.model.addNode(shop2)
         
-        link1 = LgLink(factory, warehouse, 'Road1', length=5, owner=self.model.teacher)
+        link1 = LgLink(factory, warehouse, 'Road1', length=5)
         self.model.addLink(link1)
-        link2 = LgLink(warehouse, shop1, 'Road2', length=4, owner=self.model.teacher)
+        link2 = LgLink(warehouse, shop1, 'Road2', length=4)
         self.model.addLink(link2)
-        link3 = LgLink(warehouse, shop2, 'Road3', length=3, owner=self.model.teacher)
+        link3 = LgLink(warehouse, shop2, 'Road3', length=3)
         self.model.addLink(link3)
         
         self.addGNode(factory)
@@ -133,7 +134,7 @@ class MainWindow(QtGui.QMainWindow):
     # ==== Slots and handlers to handle actions ====
 
     def fileSave(self):
-        pass
+        self.model.saveModel('model.xml')
     
     def fileOpen(self):
         pass
