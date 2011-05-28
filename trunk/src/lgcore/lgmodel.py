@@ -1,5 +1,6 @@
 
 from PyQt4 import QtCore
+from PyQt4.QtGui import QColor
 from cStringIO import StringIO
 from lgcore.lglink import LgLink
 from lgcore.lgnode import LgNode
@@ -7,6 +8,8 @@ from lgcore.lgpackage import LgPackage
 from lgcore.lgplayer import LgPlayer
 from lgcore.signals import signalTransport, signalNextTurn
 from xml.etree.cElementTree import ElementTree, Element, tostring
+from lgcore.lgfactory import LgFactory
+from PyQt4.uic.Compiler.qtproxies import QtGui
 
 class LgModel(QtCore.QObject):
     '''
@@ -24,8 +27,7 @@ class LgModel(QtCore.QObject):
         self.addPlayer(teacher)
         
     def clear(self):
-        self.players = []
-        
+        self.players = []        
         self.links = set()
         self.nodes = set()
         self.packages = set()
@@ -110,16 +112,18 @@ class LgModel(QtCore.QObject):
                                            'capacity': str(node.storageCapacity), 
                                            'color': str(node.color.name())})
             # Add packages from storage
-            storagePackagesListElement = Element('storagePackagesList')
+            storagePackageListElement = Element('storagePackageList')
             for package in node.storage:
                 packageElement = Element('package', {'name': package.name})
-                storagePackagesListElement.append(packageElement)
+                storagePackageListElement.append(packageElement)
+            nodeElement.append(storagePackageListElement)
             # Add packages from entered
-            enteredPackagesListElement = Element('enteredPackagesList')
+            enteredPackageListElement = Element('enteredPackageList')
             for package in node.entered:
                 packageElement = Element('package', {'name': package.name})
-                enteredPackagesListElement.append(packageElement)           
-            # TODO: Add factories
+                enteredPackageListElement.append(packageElement)           
+            nodeElement.append(enteredPackageListElement)
+            # Add factories
             factoryListElement = Element('factoryList')
             for factory in node.factories:
                 factoryElement = Element('factory', {'name': factory.name, 
@@ -176,16 +180,93 @@ class LgModel(QtCore.QObject):
         for playerElement in list(playerListElement):
             player = LgPlayer(playerElement.get('name'), parent=self, money=playerElement.get('money'))
             self.addPlayer(player)
-        # TODO: Read nodes
-        # TODO: Read factories        
-        
+        # Read nodes
+        nodeListElement = modelElement.find('nodeList')
+        for nodeElement in list(nodeListElement):
+            # Storage
+            storage = set()
+            storagePackageListElement = nodeElement.find('storagePackageList')
+            for packageElement in list(storagePackageListElement):
+                package = LgPackage(packageElement.get('name'))
+                storage.append(package)
+            # Entered
+            entered = set()
+            enteredPackageListElement = nodeElement.find('enteredPackageList')
+            for packageElement in list(enteredPackageListElement):
+                package = LgPackage(packageElement.get('name'))
+                entered.append(package)
+            # Factories
+            factories = set()
+            factoryListElement = nodeElement.find('factoryList')
+            for factoryElement in list(factoryListElement):
+                # Consumes
+                consumes = {}
+                consumeListElement = factoryElement.find('consumeList')
+                for consumeElement in list(consumeListElement):
+                    consumes[consumeElement.get('name')] = (consumeElement.get('mean'),
+                                                            consumeElement.get('variance'))
+                # Produces
+                produces = {}
+                produceListElement = factoryElement.find('produceList')
+                for produceElement in list(produceListElement):
+                    produces[produceElement.get('name')] = (produceElement.get('mean'),
+                                                            produceElement.get('variance'))
+                # Demands
+                demands = {}
+                demandListElement = factoryElement.find('demandList')
+                for demandElement in list(demandListElement):
+                    demands[demandElement.get('name')] = demandElement.get('value')
+                # Construct factory
+                factory = LgFactory(name=factoryElement.get('name'))
+                factory.consumes = consumes
+                factory.produces = produces
+                factory.demands = demands
+                factory.activationInterval = factoryElement.get('activationInterval')
+                factory.currentTurn = factoryElement.get('currentTurn')
+                factories.add(factory)        
+            # Construct node
+            node = LgNode(nodeElement.get('name'), nodeElement.get('capacity'), self)
+            node.color = QColor(nodeElement.get('color'))
+            node.storage = storage
+            node.entered = entered
+            node.factories = factories
+            self.addNode(node)
+        # Links
+        linkListElement = modelElement.find('linkList')
+        for linkElement in list(linkListElement):
+            # Packages
+            packages = {}
+            packageListElement = linkElement.find('packageList')
+            for packageElement in list(packageListElement):
+                package = LgPackage(packageElement.get('name'))
+                packages[package] = packageElement.get('position')       
+            input = None
+            output = None 
+            inputName = linkElement.get('inputName')
+            outputName = linkElement.get('outputName')
+            for node in self.nodes:
+                if node.name == inputName:
+                    input = node
+                elif node.name == outputName:
+                    output = node
+            if not input or not output:
+                raise Exception('Input or output nodes for link is None!')
+            link = LgLink(input, output, linkElement.get('name'), length=linkElement.get('length'), maxCapacity=linkElement.get('maxCapacity'))
+            link.packages = packages
+            self.addLink(link)
+            
     def openModel(self, filename):
         self.fromXML(filename)
          
     def saveModel(self, filename):
         with open(filename, 'w') as f:
-            print self.toXML()
+            # print self.toXML()
             f.write(self.toXML())
+        # TODO: Remove test
+        #self.openModel(filename)
+        #with open('1%s' % filename, 'w') as f:
+        #    print self.toXML()
+        #    f.write(self.toXML())
         #tree.dump(tree.getroot())                
         #tree.write(filename)
     
@@ -193,9 +274,10 @@ class LgModel(QtCore.QObject):
         return self.toXML()
     
     def setData(self, data):
-        fileStub = StringIO()
-        fileStub.write(data)
-        self.fromXML(fileStub)
+        #fileStub = StringIO()
+        #fileStub.write(data)
+        #self.fromXML(fileStub)
+        self.fromXML(data)
     
     def isFinished(self):
         # TODO: Implement
