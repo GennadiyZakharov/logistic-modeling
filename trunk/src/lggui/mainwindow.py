@@ -1,20 +1,22 @@
-import sys
 from PyQt4 import QtCore, QtGui
-
-from lgcore.signals import signalTriggered, signalClicked, signalFocusIn
-from lggui.lgactions import LgActions
-from lgcore.lgnode import LgNode
 from lgcore.lglink import LgLink
-from lgcore.lgpackage import LgPackage
 from lgcore.lgmodel import LgModel
-from lggui.viewdockwidget import ViewDockWidget
-from lggui.toolsdockwidget import ToolsDockWidget
-from lggui.playerdockwidget import PlayerDockWidget
-from lggui.nodegui import NodeGui
+from lgcore.lgnode import LgNode
+from lgcore.lgpackage import LgPackage
+from lgcore.signals import signalTriggered, signalClicked, signalFocusIn
+from lggraphicsscene import LgGraphicsScene
+from lggui.lgactions import LgActions
+from lggui.linkaddwidget import LinkAddWidget
+from lggui.linkeditwidget import LinkEditWidget
 from lggui.linkgui import LinkGui
 from lggui.nodeeditwidget import NodeEditWidget
-from lggraphicsscene import LgGraphicsScene
+from lggui.nodegui import NodeGui
 from lggui.packagegui import PackageGui
+from lggui.playerdockwidget import PlayerDockWidget
+from lggui.toolsdockwidget import ToolsDockWidget
+from lggui.viewdockwidget import ViewDockWidget
+import sys
+
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -98,36 +100,36 @@ class MainWindow(QtGui.QMainWindow):
         # TEST: Creating nodes
         self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)
         
-        self.factory = LgNode('Factory', owner=self.model.teacher)
-        self.factory.pos = QtCore.QPointF(300, 100)
-        self.model.addNode(self.factory)
-        self.warehouse = LgNode('Warehouse', owner=self.model.teacher)
-        self.warehouse.pos = QtCore.QPointF(300, 400)
-        self.model.addNode(self.warehouse)
-        self.shop1 = LgNode('Shop1', owner=self.model.teacher)
-        self.shop1.pos = QtCore.QPointF(100, 600)
-        self.model.addNode(self.shop1)
-        self.shop2 = LgNode('Shop2', owner=self.model.teacher)
-        self.shop2.pos = QtCore.QPointF(500, 600)
-        self.model.addNode(self.shop2)
+        factory = LgNode('Factory', owner=self.model.teacher)
+        factory.pos = QtCore.QPointF(300, 100)
+        self.model.addNode(factory)
+        warehouse = LgNode('Warehouse', owner=self.model.teacher)
+        warehouse.pos = QtCore.QPointF(300, 400)
+        self.model.addNode(warehouse)
+        shop1 = LgNode('Shop1', owner=self.model.teacher)
+        shop1.pos = QtCore.QPointF(100, 600)
+        self.model.addNode(shop1)
+        shop2 = LgNode('Shop2', owner=self.model.teacher)
+        shop2.pos = QtCore.QPointF(500, 600)
+        self.model.addNode(shop2)
         
-        self.link1 = LgLink(self.factory, self.warehouse, 'Road1', length=5, owner=self.model.teacher)
-        self.model.addLink(self.link1)
-        self.link2 = LgLink(self.warehouse, self.shop1, 'Road2', length=4, owner=self.model.teacher)
-        self.model.addLink(self.link2)
-        self.link3 = LgLink(self.warehouse, self.shop2, 'Road3', length=3, owner=self.model.teacher)
-        self.model.addLink(self.link3)
+        link1 = LgLink(factory, warehouse, 'Road1', length=5, owner=self.model.teacher)
+        self.model.addLink(link1)
+        link2 = LgLink(warehouse, shop1, 'Road2', length=4, owner=self.model.teacher)
+        self.model.addLink(link2)
+        link3 = LgLink(warehouse, shop2, 'Road3', length=3, owner=self.model.teacher)
+        self.model.addLink(link3)
         
-        self.addGNode(self.factory)
-        self.addGNode(self.warehouse)
-        self.addGNode(self.shop1)
-        self.addGNode(self.shop2)
-        
-        self.addGLink(self.link1)
-        self.addGLink(self.link2)
-        self.addGLink(self.link3)        
+        self.addGNode(factory)
+        self.addGNode(warehouse)
+        self.addGNode(shop1)
+        self.addGNode(shop2)
+    
+        self.addGLink(link1)
+        self.addGLink(link2)
+        self.addGLink(link3)        
                 
-        self.link1.onAddPackage(LgPackage('Linux'))
+        link1.onAddPackage(LgPackage('Linux'))
     # ==== Slots and handlers to handle actions ====
 
     def fileSave(self):
@@ -166,10 +168,30 @@ class MainWindow(QtGui.QMainWindow):
                 self.addGNode(dialog.node)
     
     def onAddEditLink(self):
-        pass
+        if isinstance(self.activeObject ,LinkGui) :
+            link = self.activeObject.link
+            addLink = False
+        else :
+            dialog = LinkAddWidget(self.model, self)
+            if dialog.exec_() :
+                link = LgLink(dialog.input, dialog.output)
+                addLink = True
+            else :
+                return
+        dialog = LinkEditWidget(self.model, link, self)
+        if dialog.exec_() :
+            if addLink :
+                #print dialog.link
+                self.model.addLink(dialog.link)
+                self.addGLink(dialog.link)
     
     def onDelObject(self):
-        pass
+        if isinstance(self.activeObject ,NodeGui) :
+            self.delGNode(self.activeObject)
+            self.activeObject = None
+        elif isinstance(self.activeObject ,LinkGui) :
+            self.delGLink(self.activeObject)
+            self.activeObject = None
     
     def onChangeFocus(self, object):
         self.activeObject = object
@@ -192,24 +214,27 @@ class MainWindow(QtGui.QMainWindow):
         return gnode
     
     def addGLink(self, link):
+        print 'adding glink'
         ginput = self.gnodes[link.input]
         goutput = self.gnodes[link.output]
         glink = LinkGui(link, ginput, goutput)
+        print glink
         self.glinks[link] = glink
         self.scene.addItem(glink)
+        self.connect(glink, signalFocusIn, self.onChangeFocus)
         return glink   
     
-    def delGNode(self):
-        if self.activeObject is None :
-            return
-        node = self.activeObject.node
-        self.scene.removeItem(self.activeObject)
+    def delGNode(self, nodeGui):
+        node = nodeGui.node
+        self.scene.removeItem(nodeGui)
         self.gnodes.pop(node)
         self.model.delNode(node)
-        self.activeObject = None
     
-    def delGLink(self):
-        pass
+    def delGLink(self, linkGui):
+        link = linkGui.link
+        self.scene.removeItem(linkGui)
+        self.gnodes.pop(link)
+        self.model.delNode(link)
             
     def on_HelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",

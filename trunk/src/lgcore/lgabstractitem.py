@@ -25,8 +25,7 @@ class LgAbstractItem(QtCore.QObject):
         self.owner = None
         if owner is not None :
             self.setOwner(owner)
-        self.viewers = set()
-        # TODO: Add viewers        
+        self.viewers = set()      
             
     def __hash__(self):
         return self.hashValue
