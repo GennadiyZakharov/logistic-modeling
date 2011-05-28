@@ -10,7 +10,7 @@ class LgPlayer(QtCore.QObject):
     classdocs
     '''
 
-    def __init__(self, name, parent=None):
+    def __init__(self, name, parent=None, money=0):
         '''
         Constructor
         '''
@@ -19,7 +19,7 @@ class LgPlayer(QtCore.QObject):
         
         self.kind = 'Player'
         self.name = name
-        self.money = 1000
+        self.money = money
         
     def __hash__(self):
         return self.hashValue
