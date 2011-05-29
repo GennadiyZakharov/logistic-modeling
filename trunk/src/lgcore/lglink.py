@@ -1,7 +1,8 @@
 from PyQt4 import QtGui
 from lgcore.lgabstractitem import LgAbstractItem
 from lgcore.lgpackage import LgPackage
-from lgcore.signals import signalTransport, signalNextTurnLink, signalUpdateGui
+from lgcore.signals import signalTransport, signalNextTurnLink, signalUpdateGui, \
+    signalCost
 
 class LgLink(LgAbstractItem):
     '''This class implements all functionality for link '''
@@ -31,7 +32,6 @@ class LgLink(LgAbstractItem):
         super(LgLink, self).setOwner(owner, signal=signalNextTurnLink)
     
     def onNextTurn(self):
-        super(LgLink, self).onNextTurn()
         for p in self.packages.keys():
             self.packages[p] -= 1
             if self.packages[p] == 0 :
@@ -47,6 +47,7 @@ class LgLink(LgAbstractItem):
         if self.currentCapacity > 0:
             self.packages[package] = self.length
             self.currentCapacity -= 1
+            self.emit(signalCost, -self.cost)
             self.emit(signalUpdateGui)
         else:
             raise ValueError('Max capacity of link exceeded!')

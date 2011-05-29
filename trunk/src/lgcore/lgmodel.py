@@ -125,7 +125,8 @@ class LgModel(QtCore.QObject):
                                            'color': str(node.color.name()),
                                            'owner': str(ownerText),
                                            'position_x': str(node.pos.x()),
-                                           'position_y': str(node.pos.y())})
+                                           'position_y': str(node.pos.y()),
+                                           'cost': str(node.cost)})
             # Add viewers list
            
             nodeElement.append(writeViewersList(node.viewers))
@@ -148,7 +149,10 @@ class LgModel(QtCore.QObject):
                 factoryElement = Element('factory', {'name': factory.name,
                                                      'activationInterval': str(factory.activationInterval),
                                                      'currentTurn': str(factory.currentTurn),
-                                                     'owner': str(ownerText)})
+                                                     'owner': str(ownerText),
+                                                     'cost': str(factory.cost),
+                                                     'income': str(factory.income),
+                                                     'fee': str(factory.fee)})
                 factoryElement.append(writeViewersList(factory.viewers))
                 # Consume
                 consumeListElement = Element('consumeList')
@@ -183,7 +187,8 @@ class LgModel(QtCore.QObject):
                                            'length': str(link.length),
                                            'maxCapacity': str(link.maxCapacity),
                                            'color': str(link.color.name()),
-                                           'owner': str(ownerText)})
+                                           'owner': str(ownerText),
+                                           'cost': str(link.cost)})
             linkElement.append(writeViewersList(link.viewers))
             packageListElement = Element('packageList')
             for package, position in link.packages.items():
@@ -267,6 +272,9 @@ class LgModel(QtCore.QObject):
                 factory.demands = demands
                 factory.activationInterval = int(factoryElement.get('activationInterval'))
                 factory.currentTurn = int(factoryElement.get('currentTurn'))
+                factory.cost = int(factoryElement.get('cost'))
+                factory.income = int(factoryElement.get('income'))
+                factory.fee = int(factoryElement.get('fee'))
                 factories.add(factory)        
             # Construct node
             ownerText = nodeElement.get('owner')
@@ -277,9 +285,10 @@ class LgModel(QtCore.QObject):
                     break
             node = LgNode(nodeElement.get('name'), int(nodeElement.get('capacity')), self, owner=owner)
             node.color = QColor(nodeElement.get('color'))
+            node.cost = int(nodeElement.get('cost'))
             x = float(nodeElement.get('position_x'))
             y = float(nodeElement.get('position_y'))
-            node.pos = QtCore.QPointF(x, y)
+            node.pos = QtCore.QPointF(x, y)  
             node.viewers = nodeViewers
             node.storage = storage
             node.entered = entered
@@ -317,6 +326,7 @@ class LgModel(QtCore.QObject):
                           length=int(linkElement.get('length')), owner=owner,
                           maxCapacity=int(linkElement.get('maxCapacity')))
             link.color = QColor(linkElement.get('color'))
+            link.cost = int(linkElement.get('cost'))
             link.packages = packages
             link.viewers = linkViewers
             self.addLink(link)

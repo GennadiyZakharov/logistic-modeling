@@ -1,6 +1,6 @@
 from PyQt4 import QtGui
 from lgcore.lgabstractitem import LgAbstractItem
-from lgcore.signals import signalExecuteDialog, signalUpdateGui 
+from lgcore.signals import signalExecuteDialog, signalUpdateGui, signalCost
 
 class LgNode(LgAbstractItem):
     '''
@@ -48,7 +48,7 @@ class LgNode(LgAbstractItem):
         self.factories.remove(factory)
         
     def onNextTurn(self):
-        super(LgNode, self).onNextTurn()
+        self.emit(signalCost, -self.cost*len(self.storage))
         self.produce()
         if len(self.entered) != 0 :
             self.emit(signalExecuteDialog)

@@ -17,7 +17,9 @@ class  LgFactory(LgAbstractItem):
         self.currentTurn = self.activationInterval 
         self.consumes = {}
         self.produces = {}
-        self.demands = {} 
+        self.demands = {}
+        self.income = 0 
+        self.fee = 0
 
     def findPackages(self, name, count, packageSet):
         currentCount = 0
@@ -37,8 +39,8 @@ class  LgFactory(LgAbstractItem):
             packages, deficit = self.findPackages(name, count, packageSet)
             if packages is not None :
                 packageSet -= packages
-                self.emit(signalCost, +100)
-            else : self.emit(signalCost, -100*deficit)
+                self.emit(signalCost, +self.income*len(packages))
+            else : self.emit(signalCost, -self.fee*deficit)
             
         for name in self.produces.keys() :
             mean, disp = self.produces[name]
