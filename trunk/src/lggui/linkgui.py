@@ -23,7 +23,7 @@ class LinkGui(QtGui.QGraphicsObject):
         '''Input and output assumed to be nodegui type'''
         super(LinkGui, self).__init__(parent)
         self.link = link
-        self.connect(self.link, signalUpdateGui, self.on_updateGui)
+        self.connect(self.link, signalUpdateGui, self.onUpdateGui)
         
         self.paintOffset = 2 / 10
         
@@ -40,6 +40,8 @@ class LinkGui(QtGui.QGraphicsObject):
         self.connect(self.input, signalyChanged, self.move)
         self.connect(self.output, signalxChanged, self.move)
         self.connect(self.output, signalyChanged, self.move)
+        
+        self.onUpdateGui()
         
     def move(self):
         self.position = self.input.center()
@@ -62,7 +64,7 @@ class LinkGui(QtGui.QGraphicsObject):
     def setPackageUpdateAge(self, gPackage, age):
         gPackage.setPos(self.point2 * (self.link.length - age) / self.link.length)
         
-    def on_updateGui(self):
+    def onUpdateGui(self):
         '''Repaint packages'''
         # Remove old packages and updated packages that already exist
         for p in self.gPackages.keys():
@@ -76,6 +78,8 @@ class LinkGui(QtGui.QGraphicsObject):
             if not self.gPackages.has_key(p):
                 self.gPackages[p] = PackageGui(p, self)
                 self.setPackageUpdateAge(self.gPackages[p], self.link.packages[p])
+                
+        self.update()
             
     def focusInEvent(self, event) :
         super(LinkGui, self).focusInEvent(event)
