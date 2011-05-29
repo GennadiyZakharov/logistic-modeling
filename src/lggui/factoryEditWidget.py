@@ -64,6 +64,34 @@ class FactoryEditWidget(QtGui.QDialog):
         delRowButton.clicked.connect(self.onDelRowProduce)
         layout.addWidget(delRowButton, 6, 1)
         
+        self.incomeEdit = QtGui.QSpinBox()
+        self.incomeEdit.setMaximum(100)
+        self.incomeEdit.setValue(self.factory.income)
+        self.incomeEdit.valueChanged.connect(self.onIncomeChanged)
+        incomeText = QtGui.QLabel('Consume income per package:')
+        incomeText.setBuddy(self.incomeEdit)
+        layout.addWidget(incomeText, 8, 0)
+        layout.addWidget(self.incomeEdit, 9, 0)
+        
+        self.feeEdit = QtGui.QSpinBox()
+        self.feeEdit.setMaximum(100)
+        self.feeEdit.setValue(self.factory.fee)
+        self.feeEdit.valueChanged.connect(self.onFeeChanged)
+        feeText = QtGui.QLabel('Consume fee per package:')
+        feeText.setBuddy(self.feeEdit)
+        layout.addWidget(feeText, 10, 0)
+        layout.addWidget(self.feeEdit, 11, 0)
+        
+        self.costEdit = QtGui.QSpinBox()
+        self.costEdit.setMaximum(100)
+        self.costEdit.setValue(self.factory.cost)
+        self.costEdit.valueChanged.connect(self.onCostChanged)
+        costText = QtGui.QLabel('Produce cost per tpackage:')
+        costText.setBuddy(self.costEdit)
+        layout.addWidget(costText, 8, 1)
+        layout.addWidget(self.costEdit, 9, 1)
+        
+        
         buttons = QtGui.QDialogButtonBox.Ok
         if factory is None :
             buttons |= QtGui.QDialogButtonBox.Cancel
@@ -76,10 +104,17 @@ class FactoryEditWidget(QtGui.QDialog):
                      self.accept)
         self.connect(self.buttonBox, signalRejected,
                      self.reject)
-        layout.addWidget(self.buttonBox, 10, 0, 1, 2)
+        layout.addWidget(self.buttonBox, 15, 0, 1, 2)
         
         self.setLayout(layout)
-         
+    
+    def onCostChanged(self, value):
+        self.factory.cost = value
+    def onFeeChanged(self, value):
+        self.factory.fee = value
+    def onIncomeChanged(self, value):
+        self.factory.income = value
+    
     def addRow(self, table, name='Wood', mean=0, disp=0):
         i = table.rowCount()
         table.setRowCount(i + 1)

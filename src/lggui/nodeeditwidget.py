@@ -72,6 +72,15 @@ class NodeEditWidget(QtGui.QDialog):
         layout.addWidget(storageText, 5, 0)
         layout.addWidget(self.storageEdit, 5, 1)
         
+        self.costEdit = QtGui.QSpinBox()
+        self.costEdit.setMaximum(100)
+        self.costEdit.setValue(self.node.cost)
+        self.costEdit.valueChanged.connect(self.onCostChanged)
+        costText = QtGui.QLabel('Package storage cost:')
+        costText.setBuddy(self.costEdit)
+        layout.addWidget(costText, 6, 0)
+        layout.addWidget(self.costEdit, 6, 1)
+        
         self.factoryList = QtGui.QListWidget()
         layout.addWidget(self.factoryList, 7, 0, 2, 2)
         addFactoryButton = QtGui.QPushButton('Add Factory')
@@ -110,6 +119,9 @@ class NodeEditWidget(QtGui.QDialog):
         
     def onStorageChanged(self, value):
         self.node.storageCapacity = value
+        
+    def onCostChanged(self, value):
+        self.node.cost = value
         
     def onAddFactory(self):
         dialog = FactoryEditWidget(None, self)

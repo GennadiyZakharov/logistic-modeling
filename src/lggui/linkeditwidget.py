@@ -63,6 +63,15 @@ class LinkEditWidget(QtGui.QDialog):
         layout.addWidget(viewersText, 2, 0)
         layout.addWidget(self.viewersEdit, 3, 0, 1, 2)
         
+        self.costEdit = QtGui.QSpinBox()
+        self.costEdit.setMaximum(100)
+        self.costEdit.setValue(self.link.cost)
+        self.costEdit.valueChanged.connect(self.onCostChanged)
+        costText = QtGui.QLabel('Package transmit cost:')
+        costText.setBuddy(self.costEdit)
+        layout.addWidget(costText, 6, 0)
+        layout.addWidget(self.costEdit, 6, 1)
+        
         self.lengthEdit = QtGui.QSpinBox()
         self.lengthEdit.setMaximum(10)
         self.lengthEdit.setValue(self.link.length)
@@ -78,8 +87,8 @@ class LinkEditWidget(QtGui.QDialog):
         self.capacityEdit.valueChanged.connect(self.onCapacityChanged)
         capacityText = QtGui.QLabel('Capacity:')
         capacityText.setBuddy(self.capacityEdit)
-        layout.addWidget(capacityText, 6, 0)
-        layout.addWidget(self.capacityEdit, 6, 1)
+        layout.addWidget(capacityText, 9, 0)
+        layout.addWidget(self.capacityEdit, 9, 1)
         
         colorButton = QtGui.QPushButton('Select Color')
         layout.addWidget(colorButton, 11, 1)
@@ -99,6 +108,9 @@ class LinkEditWidget(QtGui.QDialog):
     def onNameChanged(self, text):
         self.link.name = str(text)
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(text != '')
+        
+    def onCostChanged(self, value):
+        self.link.cost = value
         
     def onLengthChanged(self, value):
         self.link.length = value
