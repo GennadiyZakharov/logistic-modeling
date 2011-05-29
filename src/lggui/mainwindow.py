@@ -20,12 +20,13 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         
-        
+        self.__version__ = 0.5
         self.lgActions = LgActions(self)
         
         self.setWindowTitle("Logistic modeling")
         self.setObjectName("MainWindow")
-        self.dirty = False        
+        self.dirty = False
+        self.fileName = None        
         
         # ==== Creating main graph view
         self.scene = LgGraphicsScene(self)
@@ -63,7 +64,7 @@ class MainWindow(QtGui.QMainWindow):
         playerDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, playerDockBar)
         #Populating view dockbar
-        self.playerDockWidget = PlayerDockWidget(self.scene.model,self) 
+        self.playerDockWidget = PlayerDockWidget(self.scene.model, self) 
         playerDockBar.setWidget(self.playerDockWidget)
         
         
@@ -71,7 +72,9 @@ class MainWindow(QtGui.QMainWindow):
         # ---- File menu
         fileMenu = self.menuBar().addMenu("&File")
         self.lgActions.addActions(fileMenu, self.lgActions.fileActionsEditor)
+        self.connect(self.lgActions.fileOpenAction, signalTriggered, self.fileOpen)
         self.connect(self.lgActions.fileSaveAction, signalTriggered, self.fileSave)
+        self.connect(self.lgActions.fileSaveAsAction, signalTriggered, self.fileSaveAs)
         self.connect(self.lgActions.fileQuitAction, signalTriggered, self.close)
         
         # ---- Item Menu ----
@@ -86,7 +89,7 @@ class MainWindow(QtGui.QMainWindow):
         # ----Help menu
         helpMenu = self.menuBar().addMenu("&Help")
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
-        self.connect(self.lgActions.helpAboutAction, signalTriggered, self.on_HelpAbout)
+        self.connect(self.lgActions.helpAboutAction, signalTriggered, self.onHelpAbout)
         
         # TEST: Creating nodes
         self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.scene.model.onNextTurnPressed)
@@ -94,45 +97,68 @@ class MainWindow(QtGui.QMainWindow):
     # ==== Slots and handlers to handle actions ====
 
     def fileSave(self):
-        self.model.saveModel('model.xml')
+        print self.dirty
+        if not self.dirty :
+            return
+        if self.fileName is None :
+            self.fileSaveAs()
+        else :
+            self.scene.model.saveModel(self.fileName)
+            self.dirty = False
     
     def fileOpen(self):
-        pass
-    
-    def fileSaveAs(self):
-        if not self.dirty:
-            # Nothing to do
-            return
-        fname = self.filename if self.filename is not None else "."
-        formats = ["*.%s" % unicode(format).lower() \
-                   for format in QtGui.QImageWriter.supportedImageFormats()]
+        fname = self.fileName if self.fileName is not None else "."
+        formats = ["*.lgmodel"]
         # Invoking dialog
-        fname = unicode(QtGui.QFileDialog.getSaveFileName(self,
-                                                    "Image Changer - Save Image", fname,
-                                                    "Image files (%s)" % " ".join(formats)))
+        fname = unicode(QtGui.QFileDialog.getOpenFileName(self,
+                            "LgModeller - Open model", fname,
+                            "Logistic models (%s)" % " ".join(formats)))
         if fname:
             # Default ext
             if "." not in fname:
-                fname += ".png"
+                fname += ".lgmodel"
+
+        self.fileName = fname
+        self.scene.model.openModel(self.fileName)
+        print self.scene.model.toXML()
+        self.scene.updateFromModel()
+    
+    def fileSaveAs(self):
+        if not self.dirty:
+            return
+        fname = self.fileName if self.fileName is not None else "."
+        formats = ["*.lgmodel"]
+        # Invoking dialog
+        fname = unicode(QtGui.QFileDialog.getSaveFileName(self,
+                            "LgModeller - Save model", fname,
+                            "Logistic models (%s)" % " ".join(formats)))
+        if fname:
+            # Default ext
+            if "." not in fname:
+                fname += ".lgmodel"
         # Saving file
         # self.addRecentFile(fname)
-        self.filename = fname
+        self.fileName = fname
         self.fileSave()
     
     def onAddNode(self):
         self.addEditNode(None)
+        self.dirty = True
         
     def onEditNode(self):
         if isinstance(self.scene.activeObject, NodeGui) :
             self.addEditNode(self.scene.activeObject.node)
+            self.dirty = True
             
     def onAddLink(self):
         self.addEditLink(None)
+        self.dirty = True
     
     #-----    
     def onEditLink(self):
         if isinstance(self.scene.activeObject, LinkGui) :
             self.addEditLink(self.scene.activeObject.link)
+            self.dirty = True
     
     def addEditNode(self, node):
         dialog = NodeEditWidget(self.scene.model, node, self)
@@ -159,11 +185,13 @@ class MainWindow(QtGui.QMainWindow):
                 self.scene.addGLink(dialog.link)
     
     def onDelObject(self):
-        if isinstance(self.scene.activeObject ,NodeGui) :
+        if isinstance(self.scene.activeObject, NodeGui) :
             self.scene.delGNode(self.scene.activeObject)
+            self.dirty = True
             self.scene.activeObject = None
-        elif isinstance(self.scene.activeObject ,LinkGui) :
+        elif isinstance(self.scene.activeObject, LinkGui) :
             self.scene.delGLink(self.scene.activeObject)
+            self.dirty = True
             self.scene.activeObject = None
     
     
@@ -176,10 +204,8 @@ class MainWindow(QtGui.QMainWindow):
             event.accept()
         else:
             event.ignore()  
-    
-
             
-    def on_HelpAbout(self):
+    def onHelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",
         """<b>Logistic Modeller</b> v %s
         <p>Co.
@@ -193,7 +219,7 @@ class MainWindow(QtGui.QMainWindow):
     def okToContinue(self):
         if self.dirty:
             reply = QtGui.QMessageBox.question(self,
-                                         "Unsaved Changes",
+                                         "Lg Modeller",
                                          "Save unsaved changes?",
                                          QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | 
                                          QtGui.QMessageBox.Cancel)

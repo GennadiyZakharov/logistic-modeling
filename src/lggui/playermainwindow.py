@@ -6,11 +6,10 @@ from lgcore.lgpackage import LgPackage
 from lgcore.signals import signalTriggered, signalClicked, signalFocusIn, \
     signalItemMoved
 from lggraphicsscene import LgGraphicsScene
+from lggui.connectwidget import ConnectWidget
 from lggui.lgactions import LgActions
-from lggui.linkaddwidget import LinkAddWidget
-from lggui.linkeditwidget import LinkEditWidget
+
 from lggui.linkgui import LinkGui
-from lggui.nodeeditwidget import NodeEditWidget
 from lggui.nodegui import NodeGui
 from lggui.packagegui import PackageGui
 from lggui.playerdockwidget import PlayerDockWidget
@@ -22,14 +21,14 @@ import sys
 class PlayerMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(PlayerMainWindow, self).__init__(parent)
-        
+        self.__version__ = 0.5
         self.model = LgModel()
         
         self.lgActions = LgActions(self)
         
         self.setWindowTitle("Logistic player")
         self.setObjectName("MainWindow")
-        self.dirty = False
+        self.fileName = None
         
         # All nodes and links will be stored in lists
         
@@ -70,101 +69,59 @@ class PlayerMainWindow(QtGui.QMainWindow):
         playerDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, playerDockBar)
         #Populating view dockbar
-        self.playerDockWidget = PlayerDockWidget(self.model,self) 
+        self.playerDockWidget = PlayerDockWidget(self.model, self, False) 
         playerDockBar.setWidget(self.playerDockWidget)
         
         
         # ==== Creating Menu
         # ---- File menu
         fileMenu = self.menuBar().addMenu("&File")
-        self.lgActions.addActions(fileMenu, self.lgActions.fileActions)
-        self.connect(self.lgActions.fileSaveAction, signalTriggered, self.fileSave)
+        self.lgActions.addActions(fileMenu, self.lgActions.fileActionsPlayer)
+        self.connect(self.lgActions.fileOpenAction, signalTriggered, self.fileOpen)
+        self.connect(self.lgActions.fileConnectAction, signalTriggered, self.fileConnect)
         self.connect(self.lgActions.fileQuitAction, signalTriggered, self.close)
         
-        # ---- Mode menu 
-        modeMenu = self.menuBar().addMenu("&Mode")
-        self.lgActions.addActions(modeMenu, self.lgActions.modeActions)
-        
+        '''
         # ---- Item Menu ----
         itemMenu = self.menuBar().addMenu("&Item")
         self.lgActions.addActions(itemMenu, self.lgActions.itemActions)
         self.connect(self.lgActions.addEditNodeAction, signalTriggered, self.onAddEditNode)
         self.connect(self.lgActions.addEditLinkAction, signalTriggered, self.onAddEditLink)
         self.connect(self.lgActions.delObjectAction, signalTriggered, self.onDelObject)
-        
+        '''
         # ----Help menu
         helpMenu = self.menuBar().addMenu("&Help")
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
         self.connect(self.lgActions.helpAboutAction, signalTriggered, self.on_HelpAbout)
         
-        # TEST: Creating nodes
-        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)
-        
-        factory = LgNode('Factory')
-        factory.pos = QtCore.QPointF(300, 100)
-        self.model.addNode(factory)
-        warehouse = LgNode('Warehouse')
-        warehouse.pos = QtCore.QPointF(300, 400)
-        self.model.addNode(warehouse)
-        shop1 = LgNode('Shop1')
-        shop1.pos = QtCore.QPointF(100, 600)
-        self.model.addNode(shop1)
-        shop2 = LgNode('Shop2')
-        shop2.pos = QtCore.QPointF(500, 600)
-        self.model.addNode(shop2)
-        
-        link1 = LgLink(factory, warehouse, 'Road1', length=5)
-        self.model.addLink(link1)
-        link2 = LgLink(warehouse, shop1, 'Road2', length=4)
-        self.model.addLink(link2)
-        link3 = LgLink(warehouse, shop2, 'Road3', length=3)
-        self.model.addLink(link3)
-        '''
-        self.addGNode(factory)
-        self.addGNode(warehouse)
-        self.addGNode(shop1)
-        self.addGNode(shop2)
-    
-        self.addGLink(link1)
-        self.addGLink(link2)
-        self.addGLink(link3)        
-        '''       
-        link1.onAddPackage(LgPackage('Linux'))
-        
-        self.updateFromModel()
+        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)        
+        self.scene.updateFromModel()
     # ==== Slots and handlers to handle actions ====
 
-    def fileSave(self):
-        self.model.saveModel('model.xml')
-    
     def fileOpen(self):
-        pass
-    
-    def fileSaveAs(self):
-        if not self.dirty:
-            # Nothing to do
-            return
-        fname = self.filename if self.filename is not None else "."
-        formats = ["*.%s" % unicode(format).lower() \
-                   for format in QtGui.QImageWriter.supportedImageFormats()]
+        fname = self.fileName if self.fileName is not None else "."
+        formats = ["*.lgmodel"]
         # Invoking dialog
-        fname = unicode(QtGui.QFileDialog.getSaveFileName(self,
-                                                    "Image Changer - Save Image", fname,
-                                                    "Image files (%s)" % " ".join(formats)))
+        fname = unicode(QtGui.QFileDialog.getOpenFileName(self,
+                            "LgModeller - Open model", fname,
+                            "Logistic models (%s)" % " ".join(formats)))
         if fname:
             # Default ext
             if "." not in fname:
-                fname += ".png"
-        # Saving file
-        # self.addRecentFile(fname)
-        self.filename = fname
-        self.fileSave()
+                fname += ".lgmodel"
+
+        self.fileName = fname
+        self.scene.model.openModel(self.fileName)
+        print self.scene.model.toXML()
+        self.scene.updateFromModel()
     
-    
-    def onChangeFocus(self, object):
-        self.activeObject = object
+    def fileConnect(self):
+        dialog = ConnectWidget(self)
+        if dialog.exec_():
+            pass
     
     # Close Event handler
+    '''
     def closeEvent(self, event):
         # Asking user to confirm
         if self.okToContinue():
@@ -174,14 +131,10 @@ class PlayerMainWindow(QtGui.QMainWindow):
         else:
             event.ignore()  
     
-            
+    '''        
     def on_HelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",
         """<b>Logistic Modeller</b> v %s
-        <p>Copyright &copy; 2007 Qtrac Ltd.
-        All rights reserved.
-        <p>This application can be used to perform
-        simple image manipulations.
         <p>Python %s - Qt %s - PyQt %s""" % (
                         self.__version__, sys.platform,
                         QtCore.QT_VERSION_STR, QtCore.PYQT_VERSION_STR))

@@ -23,7 +23,7 @@ class LgModel(QtCore.QObject):
         super(LgModel, self).__init__()
         self.clear()   
         # FIXME: remove stub     
-        teacher = LgPlayer('Teacher',self)
+        teacher = LgPlayer('Teacher', self)
         self.addPlayer(teacher)
         
     def clear(self):
@@ -83,13 +83,20 @@ class LgModel(QtCore.QObject):
             player.onNextTurn()
                 
     def toXML(self):
+        def writeViewersList(viewers):
+            viewerListElement = Element('viewerList')
+            for viewer in viewers:
+                viewerElement = Element('viewer', {'name': viewer.name})
+                viewerListElement.append(viewerElement)
+            return viewerListElement
+        
         def indent(elem, level=0):
-            i = "\n" + level*"  "
+            i = "\n" + level * "  "
             if len(elem):
                 if not elem.text or not elem.text.strip():
                     elem.text = i + "  "
                 for e in elem:
-                    indent(e, level+1)
+                    indent(e, level + 1)
                     if not e.tail or not e.tail.strip():
                         e.tail = i + "  "
                 if not e.tail or not e.tail.strip():
@@ -108,9 +115,16 @@ class LgModel(QtCore.QObject):
         # Add nodes
         nodeListElement = Element('nodeList')
         for node in self.nodes:
-            nodeElement = Element('node', {'name': node.name, 
-                                           'capacity': str(node.storageCapacity), 
-                                           'color': str(node.color.name())})
+            ownerText = node.owner.name if node.owner is not None else '<None>'
+            nodeElement = Element('node', {'name': node.name,
+                                           'capacity': str(node.storageCapacity),
+                                           'color': str(node.color.name()),
+                                           'owner': str(ownerText),
+                                           'position_x': str(node.pos.x()),
+                                           'position_y': str(node.pos.y())})
+            # Add viewers list
+           
+            nodeElement.append(writeViewersList(node.viewers))
             # Add packages from storage
             storagePackageListElement = Element('storagePackageList')
             for package in node.storage:
@@ -126,9 +140,12 @@ class LgModel(QtCore.QObject):
             # Add factories
             factoryListElement = Element('factoryList')
             for factory in node.factories:
-                factoryElement = Element('factory', {'name': factory.name, 
+                ownerText = factory.owner.name if factory.owner is not None else '<None>'
+                factoryElement = Element('factory', {'name': factory.name,
                                                      'activationInterval': str(factory.activationInterval),
-                                                     'currentTurn': str(factory.currentTurn)})
+                                                     'currentTurn': str(factory.currentTurn),
+                                                     'owner': str(ownerText)})
+                factoryElement.append(writeViewersList(factory.viewers))
                 # Consume
                 consumeListElement = Element('consumeList')
                 for name, value in factory.consumes.items():
@@ -155,11 +172,15 @@ class LgModel(QtCore.QObject):
         # Add links
         linkListElement = Element('linkList')
         for link in self.links:
-            linkElement = Element('link', {'inputName': link.input.name, 
+            ownerText = link.owner.name if link.owner is not None else '<None>'
+            linkElement = Element('link', {'name': link.name,
+                                           'inputName': link.input.name,
                                            'outputName': link.output.name,
                                            'length': str(link.length),
                                            'maxCapacity': str(link.maxCapacity),
-                                           'color': str(link.color.name())})
+                                           'color': str(link.color.name()),
+                                           'owner': str(ownerText)})
+            linkElement.append(writeViewersList(link.viewers))
             packageListElement = Element('packageList')
             for package, position in link.packages.items():
                 packageElement = Element('package', {'name': package.name, 'position': str(position)})
@@ -171,6 +192,16 @@ class LgModel(QtCore.QObject):
         return tostring(modelElement)
     
     def fromXML(self, source):
+        def readViewersList(viewerListElement):
+            viewers = set()
+            names = set()
+            for viewerElement in list(viewerListElement) :
+                names.add(viewerElement.get('name'))
+            for player in self.players :
+                if player.name in names :
+                    viewers.add(player)
+            return viewers
+        
         self.clear()
         tree = ElementTree()
         tree.parse(source)
@@ -178,12 +209,13 @@ class LgModel(QtCore.QObject):
         # Read players
         playerListElement = modelElement.find('playerList')
         for playerElement in list(playerListElement):
-            player = LgPlayer(playerElement.get('name'), parent=self, money=playerElement.get('money'))
+            player = LgPlayer(playerElement.get('name'), parent=self, money=int(playerElement.get('money')))
             self.addPlayer(player)
         # Read nodes
         nodeListElement = modelElement.find('nodeList')
         for nodeElement in list(nodeListElement):
             # Storage
+            nodeViewers = readViewersList(nodeElement.find('viewerList'))
             storage = set()
             storagePackageListElement = nodeElement.find('storagePackageList')
             for packageElement in list(storagePackageListElement):
@@ -199,34 +231,52 @@ class LgModel(QtCore.QObject):
             factories = set()
             factoryListElement = nodeElement.find('factoryList')
             for factoryElement in list(factoryListElement):
+                factoryViewers = readViewersList(nodeElement.find('viewerList'))
                 # Consumes
                 consumes = {}
                 consumeListElement = factoryElement.find('consumeList')
                 for consumeElement in list(consumeListElement):
-                    consumes[consumeElement.get('name')] = (consumeElement.get('mean'),
-                                                            consumeElement.get('variance'))
+                    consumes[consumeElement.get('name')] = (int(consumeElement.get('mean')),
+                                                            int(consumeElement.get('variance')))
                 # Produces
                 produces = {}
                 produceListElement = factoryElement.find('produceList')
                 for produceElement in list(produceListElement):
-                    produces[produceElement.get('name')] = (produceElement.get('mean'),
-                                                            produceElement.get('variance'))
+                    produces[produceElement.get('name')] = (int(produceElement.get('mean')),
+                                                            int(produceElement.get('variance')))
                 # Demands
                 demands = {}
                 demandListElement = factoryElement.find('demandList')
                 for demandElement in list(demandListElement):
-                    demands[demandElement.get('name')] = demandElement.get('value')
+                    demands[demandElement.get('name')] = int(demandElement.get('value'))
                 # Construct factory
-                factory = LgFactory(name=factoryElement.get('name'))
+                ownerText = factoryElement.get('owner')
+                owner = None
+                for player in self.players :
+                    if ownerText == player.name :
+                        owner = player
+                        break
+                factory = LgFactory(name=factoryElement.get('name'), owner=owner)
+                factory.viewers = factoryViewers
                 factory.consumes = consumes
                 factory.produces = produces
                 factory.demands = demands
-                factory.activationInterval = factoryElement.get('activationInterval')
-                factory.currentTurn = factoryElement.get('currentTurn')
+                factory.activationInterval = int(factoryElement.get('activationInterval'))
+                factory.currentTurn = int(factoryElement.get('currentTurn'))
                 factories.add(factory)        
             # Construct node
-            node = LgNode(nodeElement.get('name'), nodeElement.get('capacity'), self)
+            ownerText = nodeElement.get('owner')
+            owner = None
+            for player in self.players :
+                if ownerText == player.name :
+                    owner = player
+                    break
+            node = LgNode(nodeElement.get('name'), int(nodeElement.get('capacity')), self, owner=owner)
             node.color = QColor(nodeElement.get('color'))
+            x = float(nodeElement.get('position_x'))
+            y = float(nodeElement.get('position_y'))
+            node.pos = QtCore.QPointF(x, y)
+            node.viewers = nodeViewers
             node.storage = storage
             node.entered = entered
             node.factories = factories
@@ -234,12 +284,13 @@ class LgModel(QtCore.QObject):
         # Links
         linkListElement = modelElement.find('linkList')
         for linkElement in list(linkListElement):
+            linkViewers = readViewersList(linkElement.find('viewerList'))
             # Packages
             packages = {}
             packageListElement = linkElement.find('packageList')
             for packageElement in list(packageListElement):
                 package = LgPackage(packageElement.get('name'))
-                packages[package] = packageElement.get('position')       
+                packages[package] = int(packageElement.get('position'))       
             input = None
             output = None 
             inputName = linkElement.get('inputName')
@@ -251,8 +302,19 @@ class LgModel(QtCore.QObject):
                     output = node
             if not input or not output:
                 raise Exception('Input or output nodes for link is None!')
-            link = LgLink(input, output, linkElement.get('name'), length=linkElement.get('length'), maxCapacity=linkElement.get('maxCapacity'))
+            
+            ownerText = linkElement.get('owner')
+            owner = None
+            for player in self.players :
+                if ownerText == player.name :
+                    owner = player
+                    break
+            link = LgLink(input, output, linkElement.get('name'),
+                          length=int(linkElement.get('length')), owner=owner,
+                          maxCapacity=int(linkElement.get('maxCapacity')))
+            link.color = QColor(linkElement.get('color'))
             link.packages = packages
+            link.viewers = linkViewers
             self.addLink(link)
             
     def openModel(self, filename):

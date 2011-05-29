@@ -24,8 +24,8 @@ class PlayerEditWidget(QtGui.QDialog):
         self.nameEdit.textEdited.connect(self.onUpdateName)
         nameText = QtGui.QLabel('Player name:')
         nameText.setBuddy(self.nameEdit)
-        layout.addWidget(nameText,0,0)
-        layout.addWidget(self.nameEdit,0,1)
+        layout.addWidget(nameText, 0, 0)
+        layout.addWidget(self.nameEdit, 0, 1)
          
         self.moneyEdit = QtGui.QSpinBox()
         self.moneyEdit.setMaximum(10000)
@@ -33,8 +33,8 @@ class PlayerEditWidget(QtGui.QDialog):
         self.moneyEdit.valueChanged.connect(self.onUpdateMoney)
         moneyText = QtGui.QLabel('Money:')
         moneyText.setBuddy(self.moneyEdit)
-        layout.addWidget(moneyText,1,0)
-        layout.addWidget(self.moneyEdit,1,1)
+        layout.addWidget(moneyText, 1, 0)
+        layout.addWidget(self.moneyEdit, 1, 1)
         
         buttons = QtGui.QDialogButtonBox.Ok
         if player is None :
@@ -59,4 +59,4 @@ class PlayerEditWidget(QtGui.QDialog):
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(text != '')
         
     def onUpdateMoney(self, value):
-        self.player.money=value
+        self.player.money = value
