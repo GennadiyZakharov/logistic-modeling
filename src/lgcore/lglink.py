@@ -28,9 +28,6 @@ class LgLink(LgAbstractItem):
     def updateData(self):
         self.emit(signalUpdateGui)
     
-    def setOwner(self, owner):
-        super(LgLink, self).setOwner(owner, signal=signalNextTurnLink)
-    
     def onNextTurn(self):
         for p in self.packages.keys():
             self.packages[p] -= 1

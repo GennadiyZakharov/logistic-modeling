@@ -1,6 +1,6 @@
 from PyQt4 import QtCore
 from hashlib import sha512
-from lgcore.signals import signalNextTurnLink, signalNextTurn
+from lgcore.signals import signalNextTurnLink, signalPlayerTurn
 from time import time
 import random
 
@@ -30,8 +30,7 @@ class LgPlayer(QtCore.QObject):
     def onCost(self, value):
         self.money += value
         
-    def onNextTurn(self):
-        self.emit(signalNextTurnLink)
-        self.emit(signalNextTurn)
-        
+    def onTurn(self):
+        self.emit(signalPlayerTurn)
+        # TODO : wait for end turn button
         
