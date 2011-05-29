@@ -3,7 +3,7 @@ from time import time
 import random
 
 from PyQt4 import QtCore
-from lgcore.signals import signalCost, signalNextTurn
+from lgcore.signals import signalCost
 
 class LgAbstractItem(QtCore.QObject):
     '''Base class'''
@@ -33,14 +33,12 @@ class LgAbstractItem(QtCore.QObject):
     def __str__(self):
         return self.kind + ' ' + self.name
         
-    def setOwner(self, owner=None, signal=signalNextTurn):
+    def setOwner(self, owner=None):
         if self.owner is not None :
             self.disconnect(self, signalCost, self.owner.onCost)
-            self.disconnect(self.owner, signal, self.onNextTurn)
         self.owner = owner
         if self.owner is not None :
             self.connect(self, signalCost, self.owner.onCost)
-            self.connect(self.owner, signal, self.onNextTurn)
         
     #--------------------------------------------------------
     def onNextTurn(self):

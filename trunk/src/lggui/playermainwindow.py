@@ -66,6 +66,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, gameDockBar)
         self.gameWidget = GameWidget() 
         gameDockBar.setWidget(self.gameWidget)
+        self.connect(self.gameWidget.nextTurnButton, signalClicked, self.scene.model.onPlayerTurn)
         
         # ==== Creating Menu
         # ---- File menu
@@ -88,7 +89,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
         self.connect(self.lgActions.helpAboutAction, signalTriggered, self.on_HelpAbout)
         
-        self.connect(self.gameWidget.nextTurnButton, signalClicked, self.scene.model.onNextTurnPressed)        
+                
         self.scene.updateFromModel()
     # ==== Slots and handlers to handle actions ====
 

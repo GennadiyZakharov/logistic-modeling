@@ -1,15 +1,16 @@
 
 from PyQt4 import QtCore
 from PyQt4.QtGui import QColor
+from PyQt4.uic.Compiler.qtproxies import QtGui
 from cStringIO import StringIO
+from lgcore.lgfactory import LgFactory
 from lgcore.lglink import LgLink
 from lgcore.lgnode import LgNode
 from lgcore.lgpackage import LgPackage
 from lgcore.lgplayer import LgPlayer
-from lgcore.signals import signalTransport, signalNextTurn
+from lgcore.signals import signalTransport, signalPrepareNode, \
+    signalNextTurnLink, signalNextTurnNode, signalPlayerTurn
 from xml.etree.cElementTree import ElementTree, Element, tostring
-from lgcore.lgfactory import LgFactory
-from PyQt4.uic.Compiler.qtproxies import QtGui
 
 class LgModel(QtCore.QObject):
     '''
@@ -29,6 +30,7 @@ class LgModel(QtCore.QObject):
         self.nodes = set()
         self.packages = set()
         self.currentTurn = 0
+        self.currentPlayerIndex = 0
     
     def addPlayer(self, player):
         player.setParent(self)
@@ -48,6 +50,8 @@ class LgModel(QtCore.QObject):
     
     def addNode(self, node):
         node.setParent(self)
+        self.connect(self,signalPrepareNode,node.onPrepare)
+        self.connect(self,signalNextTurnNode,node.onNextTurn)
         self.nodes.add(node)
         
     def delNode(self, node):
@@ -63,6 +67,8 @@ class LgModel(QtCore.QObject):
         for link in linkstodel :
             self.delLink(link)         
         
+        self.disconnect(self,signalPrepareNode,node.onPrepare)
+        self.disconnect(self,signalNextTurnNode,node.onNextTurn)
         self.nodes.remove(node)
         
         print self.nodes
@@ -70,6 +76,7 @@ class LgModel(QtCore.QObject):
         
     def addLink(self, link):
         link.setParent(self)
+        self.connect(self,signalNextTurnLink,link.onNextTurn)
         self.links.add(link)
     
     def delLink(self, link):
@@ -78,12 +85,24 @@ class LgModel(QtCore.QObject):
         link.input.delLink(link)
         self.disconnect(self.input, signalTransport, self.onAddPackage)
         self.disconnect(self, signalTransport, self.output.onPackageEntered)
+        self.disconnect(self,signalNextTurnLink,link.onNextTurn)
         self.links.remove(link)
     
-    def onNextTurnPressed(self):
-        for player in self.players :
-            player.onNextTurn()
-                
+    def onNextTurn(self):
+        self.emit(signalPrepareNode)
+        self.emit(signalNextTurnLink)
+        self.emit(signalNextTurnNode)
+        #TODO: check for sevver part
+            
+    def onPlayerTurn(self):         
+        if self.players[self.currentPlayerIndex] == self.players[:-1]:
+            self.currentPlayerIndex = 0
+            self.onNextTurn()            
+        else: 
+            self.currentPlayerIndex += 1
+        # TODO: Add multiplayer
+        self.players[self.currentPlayerIndex].onTurn()
+               
     def toXML(self):
         def writeViewersList(viewers):
             viewerListElement = Element('viewerList')

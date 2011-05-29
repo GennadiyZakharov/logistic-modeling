@@ -14,9 +14,15 @@ signalChanged = SIGNAL('changed')
 
 # ==== Custom signals ====
 # ---- Core model signals ----
-signalCost = SIGNAL("cost(int)") # Sending cost to owner
-signalNextTurn = SIGNAL("nextTurn") # Next turn -- to player node, packages
+signalPrepareNode  = SIGNAL("prepareNode")
 signalNextTurnLink = SIGNAL("nextTurnLink") # Special signal to link
+signalNextTurnNode = SIGNAL("nextTurnNode") # Next turn -- to player node, packages
+signalPlayerTurn   = SIGNAL("playerTurn") # Next turn -- to player node, packages
+
+signalCost = SIGNAL("cost(int)") # Sending cost to owner
+
+
+
 signalTransport = SIGNAL("transport") # Transmit package between elements
 
 # ---- GUI signals ----

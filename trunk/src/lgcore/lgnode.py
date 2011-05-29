@@ -1,6 +1,7 @@
 from PyQt4 import QtGui
 from lgcore.lgabstractitem import LgAbstractItem
-from lgcore.signals import signalExecuteDialog, signalUpdateGui, signalCost
+from lgcore.signals import signalExecuteDialog, signalUpdateGui, signalCost, \
+    signalPlayerTurn
 
 class LgNode(LgAbstractItem):
     '''
@@ -47,12 +48,6 @@ class LgNode(LgAbstractItem):
     def removeFactory(self, factory):
         self.factories.remove(factory)
         
-    def onNextTurn(self):
-        self.emit(signalCost, -self.cost*len(self.storage))
-        self.produce()
-        if len(self.entered) != 0 :
-            self.emit(signalExecuteDialog)
-        
     def onPackageEntered(self, package):
         self.entered.add(package)
         
@@ -68,4 +63,25 @@ class LgNode(LgAbstractItem):
             if factory is not None :
                 demands.update(factory.demands)
         return demands
+    
+    def setOwner(self, owner=None):
+        super(LgNode, self).setOwner(owner)
+        if self.owner is not None :
+            self.disconnect(self.owner, signalPlayerTurn, self.onPlayerTurn)
+        self.owner = owner
+        if self.owner is not None :
+            self.connect(self.owner, signalPlayerTurn, self.onPlayerTurn)
+    
+    def onPrepare(self): #TODO: implement
+        pass
+        #self.entered.clear()
         
+    def onNextTurn(self): #TODO: reimplement
+        self.emit(signalCost, -self.cost*len(self.storage))
+        self.produce()
+    
+    def onPlayerTurn(self):
+        if len(self.entered) != 0 :
+            self.emit(signalExecuteDialog)
+    
+    
