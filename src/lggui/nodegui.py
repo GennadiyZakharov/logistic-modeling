@@ -1,3 +1,4 @@
+from __future__ import division
 from PyQt4 import QtCore, QtGui
 from lgcore.signals import signalUpdateGui, signalClicked, signalExecuteDialog, \
     signalFocusIn, signalItemMoved
@@ -5,7 +6,9 @@ from lggui.nodewidget import NodeWidget
 
 class NodeGui(QtGui.QGraphicsObject):
     '''This class containes all gui functionality for node'''
-    Rect = QtCore.QRectF(0, 0, 80, 70)
+    Rect = QtCore.QRectF(0, 0, 120, 150)
+    NameRect = QtCore.QRectF(0,0,Rect.width(),40)
+    InfoRect = QtCore.QRectF(0,50,Rect.width(),100)
     
     def __init__(self, node, parent=None, scene=None):
         
@@ -102,17 +105,28 @@ class NodeGui(QtGui.QGraphicsObject):
         painter.setPen(QtCore.Qt.SolidLine)
         painter.setBrush(QtGui.QBrush(self.node.color))
         painter.drawRect(self.Rect)
-        painter.drawText(QtCore.QPoint(10,10),self.node.name)
+        painter.setFont(QtGui.QFont('Arial', pointSize=16))
+        painter.drawText(self.NameRect, QtCore.Qt.AlignCenter, self.node.name) 
         if self.hasFocus() :
             painter.setBrush(QtCore.Qt.NoBrush)
             painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
             painter.drawRect(self.Rect.adjusted(2, 2, -2, -2))
-            
+        
+        painter.setFont(QtGui.QFont('Arial', pointSize=12))
+        infoText = 'Storage: {0}\n '.format(len(self.node.storage))
+        demandsText = []
+        demandsDict = self.node.getDemands()
+        if demandsDict != {} :
+            for name,count in demandsDict.items() :
+                demandsText.append('{0} - {1} '.format(name, count))
+            infoText+='\nDemands:\n'+'\n'.join(demandsText)
+        painter.drawText(self.InfoRect, QtCore.Qt.AlignCenter, infoText)
+        
         if len(self.node.entered) != 0 :
             painter.setBrush(QtGui.QBrush(QtGui.QColor(255,0,0)))
             painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
             painter.drawEllipse(self.Rect.bottomRight()-QtCore.QPointF(15, 15),10,10)
-            
+               
         
     def on_AssignItems(self):
         self.mainwidget.on_Update()

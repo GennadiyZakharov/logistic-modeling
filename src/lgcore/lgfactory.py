@@ -14,6 +14,7 @@ class  LgFactory(LgAbstractItem):
         '''
         super(LgFactory, self).__init__(name, parent, cost, owner)
         self.activationInterval = 1
+        self.kind = 'Factory'
         self.currentTurn = self.activationInterval 
         self.consumes = {}
         self.produces = {}
