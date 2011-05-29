@@ -22,15 +22,13 @@ class LgModel(QtCore.QObject):
     def __init__(self):
         super(LgModel, self).__init__()
         self.clear()   
-        # FIXME: remove stub     
-        teacher = LgPlayer('Teacher', self)
-        self.addPlayer(teacher)
         
     def clear(self):
         self.players = []        
         self.links = set()
         self.nodes = set()
         self.packages = set()
+        self.currentTurn = 0
     
     def addPlayer(self, player):
         player.setParent(self)
@@ -336,15 +334,8 @@ class LgModel(QtCore.QObject):
          
     def saveModel(self, filename):
         with open(filename, 'w') as f:
-            # print self.toXML()
             f.write(self.toXML())
-        # TODO: Remove test
-        #self.openModel(filename)
-        #with open('1%s' % filename, 'w') as f:
-        #    print self.toXML()
-        #    f.write(self.toXML())
-        #tree.dump(tree.getroot())                
-        #tree.write(filename)
+
     
     def getData(self):        
         return self.toXML()

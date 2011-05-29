@@ -24,7 +24,6 @@ class PlayerMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(PlayerMainWindow, self).__init__(parent)
         self.__version__ = 0.5
-        self.model = LgModel()
         
         self.lgActions = LgActions(self)
         
@@ -48,7 +47,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         playerDockBar.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         playerDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, playerDockBar)
-        self.playerDockWidget = PlayerDockWidget(self.model, self, False) 
+        self.playerDockWidget = PlayerDockWidget(self.scene.model, self, False) 
         playerDockBar.setWidget(self.playerDockWidget)
         #Creating view dockbar
         viewDockBar = QtGui.QDockWidget("View control", self) # Created and set caption
@@ -89,7 +88,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
         self.connect(self.lgActions.helpAboutAction, signalTriggered, self.on_HelpAbout)
         
-        self.connect(self.gameWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)        
+        self.connect(self.gameWidget.nextTurnButton, signalClicked, self.scene.model.onNextTurnPressed)        
         self.scene.updateFromModel()
     # ==== Slots and handlers to handle actions ====
 

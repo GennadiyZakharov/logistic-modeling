@@ -62,3 +62,10 @@ class LgNode(LgAbstractItem):
     def onMoved(self, pos):
         self.pos = pos
         
+    def getDemands(self):
+        demands = {}
+        for factory in self.factories :
+            if factory is not None :
+                demands.update(factory.demands)
+        return demands
+        
