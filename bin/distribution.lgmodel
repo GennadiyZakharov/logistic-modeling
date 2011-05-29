@@ -1,78 +1,84 @@
 <model>
   <playerList>
-    <player money="0" name="Teacher" />
     <player money="0" name="Player" />
   </playerList>
   <nodeList>
-    <node capacity="0" color="#ff0000" name="Factory" owner="Player" position_x="284.0" position_y="190.0">
+    <node capacity="0" color="#aeffae" name="Factory" owner="Player" position_x="301.625334284" position_y="175.332055625">
       <viewerList>
         <viewer name="Player" />
-        <viewer name="Teacher" />
-      </viewerList>
-      <storagePackageList />
-      <enteredPackageList />
-      <factoryList />
-    </node>
-    <node capacity="10" color="#00aa00" name="Warehouse" owner="Player" position_x="300.0" position_y="399.0">
-      <viewerList>
-        <viewer name="Player" />
-        <viewer name="Teacher" />
       </viewerList>
       <storagePackageList />
       <enteredPackageList />
       <factoryList>
-        <factory activationInterval="1" currentTurn="1" name="PaperMeal" owner="&lt;None&gt;">
+        <factory activationInterval="1" currentTurn="1" name="BeerFactory" owner="&lt;None&gt;">
           <viewerList />
-          <consumeList>
-            <consume mean="5" name="Wood" variance="1" />
-          </consumeList>
+          <consumeList />
           <produceList>
-            <produce mean="2" name="Paper" variance="2" />
+            <produce mean="6" name="Beer" variance="2" />
           </produceList>
           <demandList />
         </factory>
       </factoryList>
     </node>
-    <node capacity="0" color="#ffff00" name="Shop2" owner="Player" position_x="413.0" position_y="507.0">
+    <node capacity="0" color="#feffa7" name="Shop2" owner="Player" position_x="441.873239437" position_y="500.661971831">
       <viewerList>
         <viewer name="Player" />
-        <viewer name="Teacher" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <factoryList>
+        <factory activationInterval="1" currentTurn="1" name="BeerShop" owner="&lt;None&gt;">
+          <viewerList />
+          <consumeList>
+            <consume mean="2" name="Beer" variance="2" />
+          </consumeList>
+          <produceList />
+          <demandList />
+        </factory>
+      </factoryList>
+    </node>
+    <node capacity="10" color="#71aaa8" name="Warehouse" owner="Player" position_x="300.704225352" position_y="346.887323944">
+      <viewerList>
+        <viewer name="Player" />
       </viewerList>
       <storagePackageList />
       <enteredPackageList />
       <factoryList />
     </node>
-    <node capacity="0" color="#ffff00" name="Shop1" owner="Player" position_x="178.0" position_y="505.0">
+    <node capacity="0" color="#fffb7b" name="Shop1" owner="Player" position_x="174.478873239" position_y="510.633802817">
       <viewerList>
         <viewer name="Player" />
-        <viewer name="Teacher" />
       </viewerList>
       <storagePackageList />
       <enteredPackageList />
-      <factoryList />
+      <factoryList>
+        <factory activationInterval="1" currentTurn="1" name="Beershop" owner="&lt;None&gt;">
+          <viewerList />
+          <consumeList>
+            <consume mean="4" name="Beer" variance="2" />
+          </consumeList>
+          <produceList />
+          <demandList />
+        </factory>
+      </factoryList>
     </node>
   </nodeList>
   <linkList>
-    <link color="#55ffff" inputName="Warehouse" length="3" maxCapacity="5" name="Road3" outputName="Shop2" owner="Teacher">
+    <link color="#00ffff" inputName="Factory" length="5" maxCapacity="5" name="Road1" outputName="Warehouse" owner="Player">
       <viewerList>
         <viewer name="Player" />
-        <viewer name="Teacher" />
       </viewerList>
       <packageList />
     </link>
-    <link color="#00ffff" inputName="Factory" length="5" maxCapacity="5" name="Road1" outputName="Warehouse" owner="Teacher">
+    <link color="#55ffff" inputName="Warehouse" length="4" maxCapacity="5" name="Road2" outputName="Shop1" owner="Player">
       <viewerList>
         <viewer name="Player" />
-        <viewer name="Teacher" />
       </viewerList>
-      <packageList>
-        <package name="Linux" position="5" />
-      </packageList>
+      <packageList />
     </link>
-    <link color="#55ffff" inputName="Warehouse" length="4" maxCapacity="5" name="Road2" outputName="Shop1" owner="Teacher">
+    <link color="#55ffff" inputName="Warehouse" length="3" maxCapacity="5" name="Road3" outputName="Shop2" owner="Player">
       <viewerList>
         <viewer name="Player" />
-        <viewer name="Teacher" />
       </viewerList>
       <packageList />
     </link>

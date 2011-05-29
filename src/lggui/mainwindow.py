@@ -1,19 +1,19 @@
+from __future__ import division
 from PyQt4 import QtCore, QtGui
-
+from lgcore.lglink import LgLink
 from lgcore.signals import signalTriggered, signalClicked, signalFocusIn, \
-    signalItemMoved
+    signalItemMoved, signalValueChanged
 from lggraphicsscene import LgGraphicsScene
 from lggui.lgactions import LgActions
 from lggui.linkaddwidget import LinkAddWidget
 from lggui.linkeditwidget import LinkEditWidget
-from lggui.nodeeditwidget import NodeEditWidget
 from lggui.linkgui import LinkGui
+from lggui.nodeeditwidget import NodeEditWidget
 from lggui.nodegui import NodeGui
-from lgcore.lglink import LgLink
 from lggui.playerdockwidget import PlayerDockWidget
-from lggui.toolsdockwidget import ToolsDockWidget
 from lggui.viewdockwidget import ViewDockWidget
 import sys
+
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -28,46 +28,37 @@ class MainWindow(QtGui.QMainWindow):
         self.dirty = False
         self.fileName = None        
         
-        # ==== Creating main graph view
+        # ==== Creating main view
         self.scene = LgGraphicsScene(self)
-        #self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         self.view = QtGui.QGraphicsView()
         self.view.setRenderHint(QtGui.QPainter.Antialiasing)
         self.view.setScene(self.scene)
-        #self.view.setFocusPolicy(Qt.NoFocus) 
+        self.view.setMinimumSize(640, 480) 
         self.setCentralWidget(self.view) 
-             
-        #Creating tool dockbar
-        toolsDockBar = QtGui.QDockWidget("Tools", self) # Created and set caption
-        toolsDockBar.setObjectName("toolsDockWidget")
-        toolsDockBar.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
-        toolsDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, toolsDockBar)
-        #Populating view dockbar
-        self.toolsDockWidget = ToolsDockWidget() 
-        toolsDockBar.setWidget(self.toolsDockWidget)
-        
-        #Creating view dockbar
-        viewDockBar = QtGui.QDockWidget("View control", self) # Created and set caption
-        viewDockBar.setObjectName("viewDockWidget")
-        viewDockBar.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
-        viewDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, viewDockBar)
-        #Populating view dockbar
-        self.viewDockWidget = ViewDockWidget() 
-        viewDockBar.setWidget(self.viewDockWidget)
-        
+        # Creating toolbars
+        fileToolbar = self.addToolBar("File")
+        fileToolbar.setObjectName("FileToolBar")
+        self.lgActions.addActions(fileToolbar, self.lgActions.fileActionsEditor)
+        editToolbar = self.addToolBar("File")
+        editToolbar.setObjectName("EditToolBar")
+        self.lgActions.addActions(editToolbar, self.lgActions.itemActions)
         #Creating player dockbar
         playerDockBar = QtGui.QDockWidget("Players", self) # Created and set caption
         playerDockBar.setObjectName("PlayersDockBar")
-        playerDockBar.setAllowedAreas(QtCore.Qt.RightDockWidgetArea)
+        playerDockBar.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         playerDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, playerDockBar)
-        #Populating view dockbar
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, playerDockBar)
         self.playerDockWidget = PlayerDockWidget(self.scene.model, self) 
-        playerDockBar.setWidget(self.playerDockWidget)
-        
-        
+        playerDockBar.setWidget(self.playerDockWidget)  
+        #Creating view dockbar
+        viewDockBar = QtGui.QDockWidget("View control", self) # Created and set caption
+        viewDockBar.setObjectName("viewDockWidget")
+        viewDockBar.setAllowedAreas(QtCore.Qt.TopDockWidgetArea)
+        viewDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, viewDockBar)
+        self.viewDockWidget = ViewDockWidget() 
+        viewDockBar.setWidget(self.viewDockWidget)
+        self.connect(self.viewDockWidget.zoomSpinBox, signalValueChanged, self.onScale)    
         # ==== Creating Menu
         # ---- File menu
         fileMenu = self.menuBar().addMenu("&File")
@@ -91,10 +82,12 @@ class MainWindow(QtGui.QMainWindow):
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
         self.connect(self.lgActions.helpAboutAction, signalTriggered, self.onHelpAbout)
         
-        # TEST: Creating nodes
-        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.scene.model.onNextTurnPressed)
         
     # ==== Slots and handlers to handle actions ====
+    def onScale(self, value):
+        transform = QtGui.QTransform()
+        transform.scale(value/100, value/100)
+        self.view.setTransform(transform)
 
     def fileSave(self):
         print self.dirty
@@ -117,11 +110,11 @@ class MainWindow(QtGui.QMainWindow):
             # Default ext
             if "." not in fname:
                 fname += ".lgmodel"
-
         self.fileName = fname
         self.scene.model.openModel(self.fileName)
-        print self.scene.model.toXML()
         self.scene.updateFromModel()
+        self.view.fitInView(self.scene.itemsBoundingRect(), QtCore.Qt.KeepAspectRatio)
+        self.playerDockWidget.onUpdateList()
     
     def fileSaveAs(self):
         if not self.dirty:
@@ -193,8 +186,7 @@ class MainWindow(QtGui.QMainWindow):
             self.scene.delGLink(self.scene.activeObject)
             self.dirty = True
             self.scene.activeObject = None
-    
-    
+     
     # Close Event handler
     def closeEvent(self, event):
         # Asking user to confirm
@@ -214,8 +206,6 @@ class MainWindow(QtGui.QMainWindow):
                         self.__version__, sys.platform,
                         QtCore.QT_VERSION_STR, QtCore.PYQT_VERSION_STR))
     
-    
-    
     def okToContinue(self):
         if self.dirty:
             reply = QtGui.QMessageBox.question(self,
@@ -228,8 +218,6 @@ class MainWindow(QtGui.QMainWindow):
             elif reply == QtGui.QMessageBox.Yes:
                 self.fileSave()
         return True
-
-    # ==== Service Methods
     
 
             

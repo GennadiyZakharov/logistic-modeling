@@ -42,6 +42,10 @@ class LgModel(QtCore.QObject):
             node.viewers.discard(player)
             if node.owner is player :
                 node.setOwner(None)
+        for link in self.links :
+            link.viewers.discard(player)
+            if link.owner is player :
+                link.setOwner(None)
         self.players.remove(player)
     
     def addNode(self, node):

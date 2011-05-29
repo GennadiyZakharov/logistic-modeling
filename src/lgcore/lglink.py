@@ -24,6 +24,9 @@ class LgLink(LgAbstractItem):
         self.connect(self.input, signalTransport, self.onAddPackage)
         self.connect(self, signalTransport, self.output.onPackageEntered)
     
+    def updateData(self):
+        self.emit(signalUpdateGui)
+    
     def setOwner(self, owner):
         super(LgLink, self).setOwner(owner, signal=signalNextTurnLink)
     
@@ -37,7 +40,7 @@ class LgLink(LgAbstractItem):
             # decrease by one age of good
         self.currentCapacity = self.maxCapacity
         self.emit(signalUpdateGui)
-                
+          
         
     def onAddPackage(self, package):
         '''Add new package to transport'''

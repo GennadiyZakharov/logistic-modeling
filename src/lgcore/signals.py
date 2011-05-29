@@ -7,29 +7,25 @@ signalStateChanged = SIGNAL("stateChanged(int)")
 signalTriggered = SIGNAL("triggered()")
 signalAccepted = SIGNAL("accepted()")
 signalRejected = SIGNAL("rejected()")
-
-
-signalChanged = SIGNAL('changed') 
-
 signalxChanged = SIGNAL('xChanged()') 
 signalyChanged = SIGNAL('yChanged()')
 
+signalChanged = SIGNAL('changed') 
 
 # ==== Custom signals ====
-# ---- Core signals ----
-signalNextTurn = SIGNAL("nextTurn")
-signalNextTurnLink = SIGNAL("nextTurnLink")
-
-signalCost = SIGNAL("cost(int)")
-signalTransport = SIGNAL("transport")
-
-signalUpdateGui = SIGNAL("updateGui")
-signalExecuteDialog = SIGNAL("executeDialog")
-signalPackageAdded = SIGNAL("packageAdded")
-signalPackageRemoved = SIGNAL("packageRemoved")
+# ---- Core model signals ----
+signalCost = SIGNAL("cost(int)") # Sending cost to owner
+signalNextTurn = SIGNAL("nextTurn") # Next turn -- to player node, packages
+signalNextTurnLink = SIGNAL("nextTurnLink") # Special signal to link
+signalTransport = SIGNAL("transport") # Transmit package between elements
 
 # ---- GUI signals ----
+signalUpdateGui = SIGNAL("updateGui") # reread core object 
+signalExecuteDialog = SIGNAL("executeDialog")
+
 signalNodeMoved = SIGNAL("nodeMoved()")
 signalItemMoved = SIGNAL("itemMoved")
 signalFocusIn = SIGNAL("focusIn")
+
+
 

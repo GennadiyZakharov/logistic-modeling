@@ -1,14 +1,15 @@
+from __future__ import division
 from PyQt4 import QtCore, QtGui
 from lgcore.lglink import LgLink
 from lgcore.lgmodel import LgModel
 from lgcore.lgnode import LgNode
 from lgcore.lgpackage import LgPackage
 from lgcore.signals import signalTriggered, signalClicked, signalFocusIn, \
-    signalItemMoved
+    signalItemMoved, signalValueChanged
 from lggraphicsscene import LgGraphicsScene
 from lggui.connectwidget import ConnectWidget
+from lggui.gamewidget import GameWidget
 from lggui.lgactions import LgActions
-
 from lggui.linkgui import LinkGui
 from lggui.nodegui import NodeGui
 from lggui.packagegui import PackageGui
@@ -16,6 +17,7 @@ from lggui.playerdockwidget import PlayerDockWidget
 from lggui.toolsdockwidget import ToolsDockWidget
 from lggui.viewdockwidget import ViewDockWidget
 import sys
+
 
 
 class PlayerMainWindow(QtGui.QMainWindow):
@@ -29,49 +31,42 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.setWindowTitle("Logistic player")
         self.setObjectName("MainWindow")
         self.fileName = None
-        
-        # All nodes and links will be stored in lists
-        
-        
         # ==== Creating main graph view
         self.scene = LgGraphicsScene(self)
-        #self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         self.view = QtGui.QGraphicsView()
         self.view.setRenderHint(QtGui.QPainter.Antialiasing)
         self.view.setScene(self.scene)
-        #self.view.setFocusPolicy(Qt.NoFocus) 
+        self.view.setMinimumSize(640, 480)
         self.setCentralWidget(self.view) 
-             
-        #Creating tool dockbar
-        toolsDockBar = QtGui.QDockWidget("Tools", self) # Created and set caption
-        toolsDockBar.setObjectName("toolsDockWidget")
-        toolsDockBar.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
-        toolsDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, toolsDockBar)
-        #Populating view dockbar
-        self.toolsDockWidget = ToolsDockWidget() 
-        toolsDockBar.setWidget(self.toolsDockWidget)
-        
-        #Creating view dockbar
-        viewDockBar = QtGui.QDockWidget("View control", self) # Created and set caption
-        viewDockBar.setObjectName("viewDockWidget")
-        viewDockBar.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
-        viewDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, viewDockBar)
-        #Populating view dockbar
-        self.viewDockWidget = ViewDockWidget() 
-        viewDockBar.setWidget(self.viewDockWidget)
-        
+        # Creating toolbar
+        fileToolbar = self.addToolBar("File")
+        fileToolbar.setObjectName("FileToolBar")
+        self.lgActions.addActions(fileToolbar, self.lgActions.fileActionsPlayer)
         #Creating player dockbar
         playerDockBar = QtGui.QDockWidget("Players", self) # Created and set caption
         playerDockBar.setObjectName("PlayersDockBar")
-        playerDockBar.setAllowedAreas(QtCore.Qt.RightDockWidgetArea)
+        playerDockBar.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         playerDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, playerDockBar)
-        #Populating view dockbar
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, playerDockBar)
         self.playerDockWidget = PlayerDockWidget(self.model, self, False) 
         playerDockBar.setWidget(self.playerDockWidget)
-        
+        #Creating view dockbar
+        viewDockBar = QtGui.QDockWidget("View control", self) # Created and set caption
+        viewDockBar.setObjectName("viewDockWidget")
+        viewDockBar.setAllowedAreas(QtCore.Qt.TopDockWidgetArea)
+        viewDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, viewDockBar)
+        self.viewDockWidget = ViewDockWidget() 
+        viewDockBar.setWidget(self.viewDockWidget)
+        self.connect(self.viewDockWidget.zoomSpinBox, signalValueChanged, self.onScale)
+        #Creating game dockbar
+        gameDockBar = QtGui.QDockWidget("Game control", self) # Created and set caption
+        gameDockBar.setObjectName("gameDockBar")
+        gameDockBar.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
+        gameDockBar.setFeatures(QtGui.QDockWidget.DockWidgetMovable | QtGui.QDockWidget.DockWidgetFloatable)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, gameDockBar)
+        self.gameWidget = GameWidget() 
+        gameDockBar.setWidget(self.gameWidget)
         
         # ==== Creating Menu
         # ---- File menu
@@ -94,9 +89,14 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.lgActions.addActions(helpMenu, self.lgActions.helpActions)
         self.connect(self.lgActions.helpAboutAction, signalTriggered, self.on_HelpAbout)
         
-        self.connect(self.toolsDockWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)        
+        self.connect(self.gameWidget.nextTurnButton, signalClicked, self.model.onNextTurnPressed)        
         self.scene.updateFromModel()
     # ==== Slots and handlers to handle actions ====
+
+    def onScale(self, value):
+        transform = QtGui.QTransform()
+        transform.scale(value/100, value/100)
+        self.view.setTransform(transform)
 
     def fileOpen(self):
         fname = self.fileName if self.fileName is not None else "."
@@ -109,11 +109,11 @@ class PlayerMainWindow(QtGui.QMainWindow):
             # Default ext
             if "." not in fname:
                 fname += ".lgmodel"
-
         self.fileName = fname
-        self.scene.model.openModel(self.fileName)
-        print self.scene.model.toXML()
+        self.scene.model.openModel(self.fileName)    
         self.scene.updateFromModel()
+        self.view.fitInView(self.scene.itemsBoundingRect(), QtCore.Qt.KeepAspectRatio)
+        self.playerDockWidget.onUpdateList()
     
     def fileConnect(self):
         dialog = ConnectWidget(self)
@@ -129,8 +129,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
             settings = QtCore.QSettings()            
             event.accept()
         else:
-            event.ignore()  
-    
+            event.ignore()      
     '''        
     def on_HelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",
@@ -138,9 +137,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         <p>Python %s - Qt %s - PyQt %s""" % (
                         self.__version__, sys.platform,
                         QtCore.QT_VERSION_STR, QtCore.PYQT_VERSION_STR))
-    
-    
-    
+     
     def okToContinue(self):
         if self.dirty:
             reply = QtGui.QMessageBox.question(self,
@@ -153,8 +150,6 @@ class PlayerMainWindow(QtGui.QMainWindow):
             elif reply == QtGui.QMessageBox.Yes:
                 self.fileSave()
         return True
-
-    # ==== Service Methods
     
 
             
