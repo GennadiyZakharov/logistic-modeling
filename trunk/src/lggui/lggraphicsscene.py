@@ -16,7 +16,7 @@ class LgGraphicsScene(QtGui.QGraphicsScene):
         
         self.connect(self, signalFocusIn, self.onChangeFocus)
         
-    
+        '''
         # FIXME: remove stub
         factory = LgNode('Factory')
         factory.pos = QtCore.QPointF(300, 100)
@@ -39,9 +39,9 @@ class LgGraphicsScene(QtGui.QGraphicsScene):
         self.model.addLink(link3)
       
         link1.onAddPackage(LgPackage('Linux'))
-    
+        '''
         self.updateFromModel()
-    
+        
     def addGNode(self, node):
         gnode = NodeGui(node)
         self.gnodes[node] = gnode
@@ -77,9 +77,10 @@ class LgGraphicsScene(QtGui.QGraphicsScene):
         self.activeObject=None
         for node in self.model.nodes :
             self.addGNode(node)
+        
         for link in self.model.links :
             self.addGLink(link)
-            
+        
     def onChangeFocus(self, object):
         self.activeObject = object
         
