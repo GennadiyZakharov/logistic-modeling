@@ -13,22 +13,16 @@ class NodeGui(QtGui.QGraphicsObject):
     def __init__(self, node, parent=None, scene=None):
         
         super(NodeGui, self).__init__(parent)
-        #QtCore.QObject.__init__(self) 
-        
         self.node = node
         self.connect(self.node, signalUpdateGui, self.onUpdateGui)
         #self.connect(self.node, signalExecuteDialog, self.onExecuteDialog)
-
         self.xChanged.connect(self.onMove)
         self.yChanged.connect(self.onMove)
         self.setPos(node.pos)
-        
         self.acceptDrops()
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable | 
         QtGui.QGraphicsItem.ItemIsMovable | QtGui.QGraphicsItem.ItemIsFocusable)
-        
-        self.links = []
-               
+        self.links = [] 
         self.mainwidget = NodeWidget(self.node, None)
         '''
         self.proxy = QtGui.QGraphicsProxyWidget(self)
@@ -104,11 +98,6 @@ class NodeGui(QtGui.QGraphicsObject):
         painter.drawRect(self.Rect)
         painter.setFont(QtGui.QFont('Arial', pointSize=16))
         painter.drawText(self.NameRect, QtCore.Qt.AlignCenter, self.node.name) 
-        if self.hasFocus() :
-            painter.setBrush(QtCore.Qt.NoBrush)
-            painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
-            painter.drawRect(self.Rect.adjusted(2, 2, -2, -2))
-        
         painter.setFont(QtGui.QFont('Arial', pointSize=12))
         infoText = 'Storage: {0}\n '.format(len(self.node.storage))
         demandsText = []
@@ -118,11 +107,14 @@ class NodeGui(QtGui.QGraphicsObject):
                 demandsText.append('{0} - {1} '.format(name, count))
             infoText+='\nDemands:\n'+'\n'.join(demandsText)
         painter.drawText(self.InfoRect, QtCore.Qt.AlignCenter, infoText)
-        
         if len(self.node.entered) != 0 :
             painter.setBrush(QtGui.QBrush(QtGui.QColor(255,0,0)))
             painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
             painter.drawEllipse(self.Rect.bottomRight()-QtCore.QPointF(15, 15),10,10)
+        if self.hasFocus() :
+            painter.setBrush(QtCore.Qt.NoBrush)
+            painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
+            painter.drawRect(self.Rect.adjusted(2, 2, -2, -2))
                
         
     def onExecuteDialog(self):

@@ -1,5 +1,17 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
 <file alias="penguin.png">images/penguin.png</file>
+<file alias="filenew.png">fileactions/document-new.png</file>
+<file alias="fileopen.png">fileactions/document-open.png</file>
+<file alias="filesave.png">fileactions/document-save.png</file>
+<file alias="filesaveas.png">fileactions/document-save-as.png</file>
+<file alias="fileconnect.png">fileactions/file-connect.png</file>
+<file alias="filequit.png">fileactions/document-close.png</file>
+<file alias="addlink.png">editactions/addlink.png</file>
+<file alias="addnode.png">editactions/addnode.png</file>
+<file alias="editlink.png">editactions/editlink.png</file>
+<file alias="editnode.png">editactions/editnode.png</file>
+<file alias="delete.png">editactions/delete.png</file>
+<file alias="helpabout.png">help/help-about.png</file>
 </qresource>
 </RCC>

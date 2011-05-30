@@ -59,7 +59,6 @@ class DnDTableWidget(QtGui.QTableWidget):
             
             self.setItem(row, col, item)
             event.setDropAction(self.dropAction)
-            print 'drop to col', col
             self.emit(signalItemMoved, event.source(), self, col)
             event.accept()
         else:
@@ -84,5 +83,4 @@ class DnDTableWidget(QtGui.QTableWidget):
         if (drag.start(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction):
             
             packageItem = self.takeItem(self.row(item), col)
-            print 'Drag from', col
             self.emit(signalPackage, packageItem.package, col)
