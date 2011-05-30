@@ -48,6 +48,7 @@ class  LgFactory(LgAbstractItem):
             for i in range(int(random.gauss(mean, disp))) :
                 package = LgPackage(name)
                 packageSet.add(package)
+                self.emit(signalCost, -self.cost)
             
     
     def setDemand(self):
