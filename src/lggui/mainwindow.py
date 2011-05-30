@@ -1,8 +1,8 @@
 from __future__ import division
 from PyQt4 import QtCore, QtGui
 from lgcore.lglink import LgLink
-from lgcore.signals import signalTriggered, signalClicked, signalFocusIn, \
-    signalItemMoved, signalValueChanged
+from lgcore.signals import signalTriggered, signalClicked,  \
+    signalValueChanged, signalEditNode,signalEditLink
 from lggraphicsscene import LgGraphicsScene
 from lggui.lgactions import LgActions
 from lggui.linkaddwidget import LinkAddWidget
@@ -29,12 +29,14 @@ class MainWindow(QtGui.QMainWindow):
         self.fileName = None        
         
         # ==== Creating main view
-        self.scene = LgGraphicsScene(self)
+        self.scene = LgGraphicsScene(self, editMode=True)
         self.view = QtGui.QGraphicsView()
         self.view.setRenderHint(QtGui.QPainter.Antialiasing)
         self.view.setScene(self.scene)
         self.view.setMinimumSize(640, 480) 
         self.setCentralWidget(self.view) 
+        self.connect(self.scene, signalEditNode, self.onEditNode)
+        self.connect(self.scene, signalEditLink, self.onEditLink)
         # Creating toolbars
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")

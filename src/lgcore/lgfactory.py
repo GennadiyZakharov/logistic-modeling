@@ -39,24 +39,18 @@ class  LgFactory(LgAbstractItem):
 
     def execute(self, packageSet):
         print '=== Factory {0} executing'.format(self.name)
-        totalPackages = 0
-        totalRealPackages = 0
+        koef = 1
         for name, count in self.demands.items() :
             packages, realCount = self.findPackages(name, count, packageSet)
-            totalPackages += count
-            totalRealPackages += realCount
             print 'consuming {0} packages of {1}'.format(realCount, name)
             self.emit(signalCost, +self.income * len(packages))
             packageSet -= packages
             deficit = count - realCount
+            koef *= (realCount / count)
             if deficit > 0 :
-                print 'Sending fee {0} undelivered packages'.format(deficit)
+                print 'Sending fee for {0} undelivered packages'.format(deficit)
                 self.emit(signalCost, -self.fee * deficit)
-        # Produce
-        if len(self.demands) == 0:
-            koef = 1
-        else :
-            koef = totalRealPackages / totalPackages if totalPackages != 0 else 0
+        # Produce  
         if koef != 1 and len(self.produces) > 0 :
             print 'Attenuating produce by {0}'.format(koef)
         for name, (mean, disp) in self.produces.items() :
@@ -69,9 +63,10 @@ class  LgFactory(LgAbstractItem):
             
     def setDemand(self):
         self.demands.clear()
-        for name in self.consumes.keys() :
-            mean, disp = self.consumes[name]
-            self.demands[name] = max(0, int(random.gauss(mean, disp)))
+        for name, (mean, disp) in self.consumes.items() :
+            demandCount = max(0, int(random.gauss(mean, disp)))
+            if demandCount > 0:
+                self.demands[name] = demandCount
 
     def onNextTurn(self, packageList):
         super(LgFactory, self).onNextTurn()

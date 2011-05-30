@@ -81,7 +81,10 @@ class LgNode(LgAbstractItem):
             for package in packageSet :
                 link.onAddPackage(package)
             packageSet.clear()
-        #self.entered.clear()
+        while (len(self.storage) < self.storageCapacity) and (len(self.entered)>0) :
+            self.storage.add(self.entered.pop())
+        #clear packages 
+        self.entered.clear()
         
     def onNextTurn(self): #TODO: reimplement
         self.emit(signalCost, -self.cost*len(self.storage))
