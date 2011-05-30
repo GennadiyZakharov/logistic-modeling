@@ -33,6 +33,7 @@ signalNodeMoved = SIGNAL("nodeMoved()")
 signalItemMoved = SIGNAL("itemMoved")
 signalPackage = SIGNAL("packageMoved")
 signalFocusIn = SIGNAL("focusIn")
-
+signalEditNode = SIGNAL("editNode")
+signalEditLink = SIGNAL("editLink")
 
 

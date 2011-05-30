@@ -123,6 +123,7 @@ class FactoryEditWidget(QtGui.QDialog):
         dispSpinBox = QtGui.QSpinBox()
         meanSpinBox.valueChanged.connect(dispSpinBox.setMaximum)
         meanSpinBox.setMaximum(20)
+        meanSpinBox.setMinimum(1)
         meanSpinBox.setValue(mean)
         dispSpinBox.setValue(disp)    
         table.setCellWidget(i, 1, meanSpinBox)

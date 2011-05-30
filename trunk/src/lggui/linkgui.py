@@ -1,7 +1,7 @@
 from __future__ import division
 from PyQt4 import QtCore, QtGui
 from lgcore.signals import signalUpdateGui, signalxChanged, signalyChanged, \
-    signalFocusIn
+    signalFocusIn, signalEditLink
 from lggui.packagegui import PackageGui
 from math import sqrt
 
@@ -19,10 +19,11 @@ class LinkGui(QtGui.QGraphicsObject):
     arrowPoint1 = QtCore.QPointF(-arrowSize, arrowSize)
     arrowPoint2 = QtCore.QPointF(-arrowSize, -arrowSize) 
     
-    def __init__(self, link, input, output, parent=None, scene=None):
+    def __init__(self, link, input, output, parent=None, scene=None, editMode=False):
         '''Input and output assumed to be nodegui type'''
         super(LinkGui, self).__init__(parent)
         self.link = link
+        self.editMode = editMode
         self.connect(self.link, signalUpdateGui, self.onUpdateGui)
         
         self.paintOffset = 2 / 10
@@ -40,8 +41,14 @@ class LinkGui(QtGui.QGraphicsObject):
         self.connect(self.input, signalyChanged, self.move)
         self.connect(self.output, signalxChanged, self.move)
         self.connect(self.output, signalyChanged, self.move)
-        
         self.onUpdateGui()
+    
+    def mouseDoubleClickEvent(self, event):
+        self.update()
+        if self.editMode :
+            self.emit(signalEditLink,self)
+        else :
+            pass
         
     def move(self):
         self.position = self.input.center()
@@ -84,13 +91,6 @@ class LinkGui(QtGui.QGraphicsObject):
     def focusInEvent(self, event) :
         super(LinkGui, self).focusInEvent(event)
         self.emit(signalFocusIn, self)
-    
-     
-    def mouseDoubleClickEvent(self, event):
-        #dialog = TextItemDlg(self, self.parentWidget())
-        #dialog.exec_()
-        #self.rotate(180)
-        self.update()
     
     def setBrush(self, value) :
         self.brush = value

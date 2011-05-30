@@ -1,7 +1,7 @@
 from __future__ import division
 from PyQt4 import QtCore, QtGui
 from lgcore.signals import signalUpdateGui, signalClicked, signalExecuteDialog, \
-    signalFocusIn, signalItemMoved
+    signalFocusIn, signalItemMoved, signalEditNode
 from lggui.nodewidget import NodeWidget
 
 class NodeGui(QtGui.QGraphicsObject):
@@ -10,10 +10,11 @@ class NodeGui(QtGui.QGraphicsObject):
     NameRect = QtCore.QRectF(0,0,Rect.width(),40)
     InfoRect = QtCore.QRectF(0,50,Rect.width(),100)
     
-    def __init__(self, node, parent=None, scene=None):
+    def __init__(self, node, parent=None, scene=None, editMode=False):
         
         super(NodeGui, self).__init__(parent)
         self.node = node
+        self.editMode = editMode
         self.connect(self.node, signalUpdateGui, self.onUpdateGui)
         #self.connect(self.node, signalExecuteDialog, self.onExecuteDialog)
         self.xChanged.connect(self.onMove)
@@ -29,7 +30,7 @@ class NodeGui(QtGui.QGraphicsObject):
         self.proxy.setWidget(self.mainwidget)
         self.proxy.setPos(QtCore.QPointF(0, 30))
         '''
-        
+    
     def onMove(self):
         self.emit(signalItemMoved,self.pos()) 
         
@@ -54,7 +55,10 @@ class NodeGui(QtGui.QGraphicsObject):
         return QtGui.QGraphicsTextItem.itemChange(self, change, variant)
        ''' 
     def mouseDoubleClickEvent(self, event):
-        self.onExecuteDialog()
+        if self.editMode :
+            self.emit(signalEditNode,self)
+        else :
+            self.onExecuteDialog()
     
     def setBrush(self, value) :
         self.brush = value
