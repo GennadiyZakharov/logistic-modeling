@@ -95,12 +95,14 @@ class LgModel(QtCore.QObject):
         #TODO: check for sevver part
             
     def onPlayerTurn(self):         
-        if self.players[self.currentPlayerIndex] == self.players[:-1]:
+        print self.players
+        if self.currentPlayerIndex == len(self.players)-1:
             self.currentPlayerIndex = 0
             self.onNextTurn()            
         else: 
             self.currentPlayerIndex += 1
         # TODO: Add multiplayer
+        print self.currentPlayerIndex
         self.players[self.currentPlayerIndex].onTurn()
                
     def toXML(self):
@@ -309,7 +311,8 @@ class LgModel(QtCore.QObject):
             node.viewers = nodeViewers
             node.storage = storage
             node.entered = entered
-            node.factories = factories
+            for factory in factories :
+                node.addFactory(factory)
             self.addNode(node)
         # Links
         linkListElement = modelElement.find('linkList')

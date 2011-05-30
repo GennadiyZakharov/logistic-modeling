@@ -1,5 +1,5 @@
 from PyQt4 import QtCore, QtGui
-from lgcore.signals import signalItemMoved
+from lgcore.signals import signalItemMoved, signalPackage
 
 class DnDTableWidget(QtGui.QTableWidget):
     def __init__(self, parent=None):
@@ -52,13 +52,15 @@ class DnDTableWidget(QtGui.QTableWidget):
             text = QtCore.QString()
             icon = QtGui.QIcon()
             stream >> text >> icon
-
+            row = self.rowAt(event.pos().y())
+            col = self.columnAt(event.pos().x())                
             item = QtGui.QTableWidgetItem(text, QtGui.QTableWidgetItem.Type)
             item.setIcon(icon)
-            row = self.rowAt(event.pos().y())
-            col = self.columnAt(event.pos().x())
+            
             self.setItem(row, col, item)
             event.setDropAction(self.dropAction)
+            print 'drop to col', col
+            self.emit(signalItemMoved, event.source(), self, col)
             event.accept()
         else:
             event.ignore()
@@ -69,6 +71,7 @@ class DnDTableWidget(QtGui.QTableWidget):
             return
         icon = item.icon()
         data = QtCore.QByteArray()
+        col = self.column(item)
         stream = QtCore.QDataStream(data, QtCore.QIODevice.WriteOnly)
         stream << item.text() << icon
         mimeData = QtCore.QMimeData()
@@ -79,5 +82,7 @@ class DnDTableWidget(QtGui.QTableWidget):
         drag.setHotSpot(QtCore.QPoint(12, 12))
         drag.setPixmap(pixmap)
         if (drag.start(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction):
-            self.takeItem(self.row(item), self.column(item))
-            self.emit(signalItemMoved)
+            
+            packageItem = self.takeItem(self.row(item), col)
+            print 'Drag from', col
+            self.emit(signalPackage, packageItem.package, col)

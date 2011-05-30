@@ -14,6 +14,7 @@ class LgNode(LgAbstractItem):
         self.kind = 'Node'      
         # List of links, to which product will be distributed
         self.links = set()
+        self.linksDict = {}
         
         # lists for all products
         self.entered = set() # products to be distributed
@@ -30,9 +31,11 @@ class LgNode(LgAbstractItem):
         '''
     def addLink(self, link):
         self.links.add(link)
+        self.linksDict[link]=set()
         
     def delLink(self, link):
         self.links.remove(link)
+        del self.linksDict[link]
         
     def produce(self):
         allpackages = self.entered | self.storage
@@ -44,9 +47,11 @@ class LgNode(LgAbstractItem):
         
     def addFactory(self, factory):
         self.factories.add(factory)
+        factory.setOwner(self.owner)
         
     def removeFactory(self, factory):
         self.factories.remove(factory)
+        factory.setOwner(None)
         
     def onPackageEntered(self, package):
         self.entered.add(package)
@@ -72,8 +77,12 @@ class LgNode(LgAbstractItem):
         if self.owner is not None :
             self.connect(self.owner, signalPlayerTurn, self.onPlayerTurn)
     
-    def onPrepare(self): #TODO: implement
-        pass
+    def onPrepare(self):
+        # distribute packages to links
+        for link,packageSet in self.linksDict.items() :
+            for package in packageSet :
+                link.onAddPackage(package)
+            packageSet.clear()
         #self.entered.clear()
         
     def onNextTurn(self): #TODO: reimplement

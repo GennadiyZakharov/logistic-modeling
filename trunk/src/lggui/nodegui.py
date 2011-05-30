@@ -16,8 +16,8 @@ class NodeGui(QtGui.QGraphicsObject):
         #QtCore.QObject.__init__(self) 
         
         self.node = node
-        self.connect(self.node, signalUpdateGui, self.on_updateGui)
-        self.connect(self.node, signalExecuteDialog, self.on_AssignItems)
+        self.connect(self.node, signalUpdateGui, self.onUpdateGui)
+        #self.connect(self.node, signalExecuteDialog, self.onExecuteDialog)
 
         self.xChanged.connect(self.onMove)
         self.yChanged.connect(self.onMove)
@@ -60,10 +60,7 @@ class NodeGui(QtGui.QGraphicsObject):
         return QtGui.QGraphicsTextItem.itemChange(self, change, variant)
        ''' 
     def mouseDoubleClickEvent(self, event):
-        #dialog = TextItemDlg(self, self.parentWidget())
-        #dialog.exec_()
-        self.mainwidget.exec_()
-        self.update()
+        self.onExecuteDialog()
     
     def setBrush(self, value) :
         self.brush = value
@@ -86,8 +83,8 @@ class NodeGui(QtGui.QGraphicsObject):
         else:
             QtGui.QGraphicsItem.keyPressEvent(self, event)
 
-    def on_updateGui(self):
-        pass    
+    def onUpdateGui(self):
+        self.update()    
 
     def boundingRect(self):
         return self.Rect
@@ -128,11 +125,9 @@ class NodeGui(QtGui.QGraphicsObject):
             painter.drawEllipse(self.Rect.bottomRight()-QtCore.QPointF(15, 15),10,10)
                
         
-    def on_AssignItems(self):
-        self.mainwidget.on_Update()
+    def onExecuteDialog(self):
+        self.mainwidget.onUpdateLists()
         self.mainwidget.exec_()
-        
-        pass
 
 '''
     def contextMenuEvent(self, event):

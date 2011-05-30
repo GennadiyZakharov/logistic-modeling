@@ -67,6 +67,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.gameWidget = GameWidget() 
         gameDockBar.setWidget(self.gameWidget)
         self.connect(self.gameWidget.nextTurnButton, signalClicked, self.scene.model.onPlayerTurn)
+        self.connect(self.gameWidget.nextTurnButton, signalClicked, self.playerDockWidget.onUpdateList)
         
         # ==== Creating Menu
         # ---- File menu

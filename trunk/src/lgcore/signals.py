@@ -31,6 +31,7 @@ signalExecuteDialog = SIGNAL("executeDialog")
 
 signalNodeMoved = SIGNAL("nodeMoved()")
 signalItemMoved = SIGNAL("itemMoved")
+signalPackage = SIGNAL("packageMoved")
 signalFocusIn = SIGNAL("focusIn")
 
 
