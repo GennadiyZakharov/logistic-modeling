@@ -89,21 +89,23 @@ class LgModel(QtCore.QObject):
         self.links.remove(link)
     
     def onNextTurn(self):
+        self.currentTurn += 1
+        print '///// Turn {0} begins \\\\\ '.format(self.currentTurn)
         self.emit(signalPrepareNode)
         self.emit(signalNextTurnLink)
         self.emit(signalNextTurnNode)
         #TODO: check for sevver part
             
     def onPlayerTurn(self):         
-        print self.players
         if self.currentPlayerIndex == len(self.players)-1:
             self.currentPlayerIndex = 0
             self.onNextTurn()            
         else: 
             self.currentPlayerIndex += 1
         # TODO: Add multiplayer
-        print self.currentPlayerIndex
-        self.players[self.currentPlayerIndex].onTurn()
+        currentPlayer = self.players[self.currentPlayerIndex] 
+        print '==== Player {0} turn {1}'.format(currentPlayer.name,self.currentTurn)
+        currentPlayer.onTurn()
                
     def toXML(self):
         def writeViewersList(viewers):

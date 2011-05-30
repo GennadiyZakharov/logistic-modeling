@@ -37,7 +37,7 @@ class NodeWidget(QtGui.QDialog):
         self.connect(self.storageList, signalPackage, self.onPackage)
         storageLabel.setBuddy(self.storageList)
         
-        self.okBtn = QtGui.QPushButton('&OK')
+        self.okBtn = QtGui.QPushButton('&Ok')
         self.connect(self.okBtn, signalClicked, self.accept)
                       
         layout = QtGui.QGridLayout()
@@ -102,7 +102,6 @@ class NodeWidget(QtGui.QDialog):
     def onPackage(self, package, linkNumber=-1):
         if linkNumber >=0 :
             self.linkFrom = linkNumber
-            print 'linkFrom =', linkNumber
         if (self.source is self.target) and (self.source is not self.outputList) :
             self.onUpdateLists()  
             return
@@ -144,10 +143,10 @@ class NodeWidget(QtGui.QDialog):
         self.target=target
         if linkNumber >=0 :
             self.linkTo = linkNumber
-            print 'linkTo =', linkNumber
     
     def onDistributionChanged(self):
-        self.okBtn.setEnabled(self.inputList.count() == 0)
+        pass
+        #self.okBtn.setEnabled(self.inputList.count() == 0)
         
         
         

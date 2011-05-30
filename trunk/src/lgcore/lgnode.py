@@ -42,7 +42,8 @@ class LgNode(LgAbstractItem):
         for factory in self.factories :
             factory.onNextTurn(allpackages)
             
-        self.storage &= allpackages # in storage will be all packages, which was in storage before
+        self.storage &= allpackages # in storage will be all packages, 
+                                    #which was in storage before and not consumed
         self.entered = allpackages - self.storage 
         
     def addFactory(self, factory):
@@ -55,10 +56,7 @@ class LgNode(LgAbstractItem):
         
     def onPackageEntered(self, package):
         self.entered.add(package)
-        
-    def onPropertiesChanged(self):
-        self.emit(signalUpdateGui)
-        
+               
     def onMoved(self, pos):
         self.pos = pos
         
@@ -88,6 +86,7 @@ class LgNode(LgAbstractItem):
     def onNextTurn(self): #TODO: reimplement
         self.emit(signalCost, -self.cost*len(self.storage))
         self.produce()
+        self.emit(signalUpdateGui)
     
     def onPlayerTurn(self):
         if len(self.entered) != 0 :

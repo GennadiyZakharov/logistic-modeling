@@ -199,11 +199,9 @@ class MainWindow(QtGui.QMainWindow):
             
     def onHelpAbout(self):
         QtGui.QMessageBox.about(self, "About Logistic Modeller",
-        """<b>Logistic Modeller</b> v %s
-        <p>Co.
-        Publishe under GNU GPL v3.0.
-        <p>Python %s - Qt %s - PyQt %s""" % (
-                        self.__version__, sys.platform,
+        """<b>Logistic Modeller</b> v {0}
+        <p>Published under GNU GPL v3.0.
+        <p>Python {1} - Qt {2} - PyQt {3}""".format(self.__version__, sys.platform,
                         QtCore.QT_VERSION_STR, QtCore.PYQT_VERSION_STR))
     
     def okToContinue(self):

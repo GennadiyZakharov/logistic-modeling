@@ -42,23 +42,22 @@ class LgActions(QtCore.QObject):
         '''
         # ---- Item Actions
         self.addNodeAction = self.createAction("Add node",
-                            None, "filequit", "Add node")
+                            None, "addnode", "Add node")
         self.editNodeAction = self.createAction("Edit node",
-                            None, "filequit", "Edit node")
+                            None, "editnode", "Edit node")
         self.addLinkAction = self.createAction("Add link",
-                            None, "filequit", "Add link")
+                            None, "addlink", "Add link")
         self.editLinkAction = self.createAction("Edit link",
-                            None, "filequit", "Edit link")
-        
+                            None, "editlink", "Edit link")
         self.delObjectAction = self.createAction("Delete object",
-                            None, "filequit", "Delete object")
+                            None, "delete", "Delete object")
         
         self.itemActions = (self.addNodeAction, self.editNodeAction, None,
                             self.addLinkAction, self.editLinkAction, None, 
                             self.delObjectAction)
         # ---- Help actions
         self.helpAboutAction = self.createAction("About",
-                            QtGui.QKeySequence.HelpContents, "filequit", "About Logistic Modeller") 
+                            QtGui.QKeySequence.HelpContents, "helpabout", "About Logistic Modeller") 
         self.helpActions = (self.helpAboutAction,)
         
         # This method can help in action adding
