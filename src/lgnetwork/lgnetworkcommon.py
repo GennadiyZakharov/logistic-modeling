@@ -1,4 +1,4 @@
-class NetworkCommon(object):
+class NetworkThreadCommon(object):
     def __init__(self):
         self.data = None
         self.isFinish = False

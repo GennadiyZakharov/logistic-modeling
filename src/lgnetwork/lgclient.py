@@ -1,19 +1,30 @@
 from socket import socket, AF_INET, SOCK_STREAM
-from lgnetwork.lgnetworkcommon import NetworkCommon
+from lgnetwork.lgnetworkcommon import NetworkThreadCommon
 
-class LgClient(NetworkCommon):
-    def __init__(self, serverAddress, serverPort):
+class LgClient(NetworkThreadCommon):
+    def __init__(self, serverAddress, serverPort, model):
         self.serverAddress = serverAddress
         self.serverPort = serverPort        
         self.sock = None
+        self.model = model
+        super(LgClient, self).__init__()
+        self.connect()
         
-    def connect(self, serverAddress, serverPort):
+    def connect(self):
         self.sock = socket(AF_INET, SOCK_STREAM)
-        self.sock.connect((self.serverAddress, self.serverPort))
-        
-    def runGame(self):
-        while not self.isFinish:
-            # TODO: Implement waiting for turn
-            self.receive()
-            # TODO: Execute turn
-            self.send()
+        self.sock.connect((self.serverAddress, self.serverPort))        
+        print 'Connected to {0}'.format(self.sock.getpeername())
+        self.channel = self.sock
+        # self.channe
+       
+    def send(self):
+        self.setData(self.model.getData())
+        super(LgClient, self).send()
+    
+    def receive(self):
+        super(LgClient, self).receive()
+        print self.getData()
+        self.model.setData(self.getData())
+             
+    def isServer(self):
+        return False

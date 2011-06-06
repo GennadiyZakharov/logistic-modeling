@@ -9,7 +9,7 @@ class GameWidget(QtGui.QWidget):
         
         self.turnLabel = QtGui.QLabel('Turn: N/A')
         layout.addWidget(self.turnLabel)
-        self.nextTurnButton = QtGui.QPushButton("Next Turn")
+        self.nextTurnButton = QtGui.QPushButton("End Turn")
         layout.addWidget(self.nextTurnButton)
 
         self.setLayout(layout)

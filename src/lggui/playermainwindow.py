@@ -17,6 +17,8 @@ from lggui.playerdockwidget import PlayerDockWidget
 from lggui.toolsdockwidget import ToolsDockWidget
 from lggui.viewdockwidget import ViewDockWidget
 import sys
+from lgnetwork.lgserver import LgServer
+from lgnetwork.lgclient import LgClient
 
 
 
@@ -66,7 +68,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, gameDockBar)
         self.gameWidget = GameWidget() 
         gameDockBar.setWidget(self.gameWidget)
-        self.connect(self.gameWidget.nextTurnButton, signalClicked, self.scene.model.onPlayerTurn)
+        self.connect(self.gameWidget.nextTurnButton, signalClicked, self.scene.model.onPlayerTurnEnd)
         self.connect(self.gameWidget.nextTurnButton, signalClicked, self.playerDockWidget.onUpdateList)
         
         # ==== Creating Menu
@@ -110,16 +112,26 @@ class PlayerMainWindow(QtGui.QMainWindow):
             # Default ext
             if "." not in fname:
                 fname += ".lgmodel"
-        self.fileName = fname
-        self.scene.model.openModel(self.fileName)    
-        self.scene.updateFromModel()
-        self.view.fitInView(self.scene.itemsBoundingRect(), QtCore.Qt.KeepAspectRatio)
-        self.playerDockWidget.onUpdateList()
+            self.fileName = fname
+            self.scene.model.openModel(self.fileName)    
+            self.scene.updateFromModel()
+            self.view.fitInView(self.scene.itemsBoundingRect(), QtCore.Qt.KeepAspectRatio)
+            self.playerDockWidget.onUpdateList()
+            if len(self.scene.model.players) > 1:
+                # Start network game
+                self.scene.model.setNetworkInterface(LgServer(self.scene.model))
+                # TODO: Create gui information window
+                self.scene.model.networkInterface.createGame()
+                self.scene.model.startNetworkGame() 
     
     def fileConnect(self):
         dialog = ConnectWidget(self)
         if dialog.exec_():
-            pass
+            # Connecting to network game
+            serverAddress = dialog.addressEdit.text() 
+            serverPort = int(dialog.portEdit.text())
+            self.scene.model.setNetworkInterface(LgClient(serverAddress, serverPort, self.scene.model))
+            self.scene.model.networkInterface.receive()
     
     # Close Event handler
     '''

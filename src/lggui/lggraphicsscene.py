@@ -3,7 +3,8 @@ from lgcore.lglink import LgLink
 from lgcore.lgmodel import LgModel
 from lgcore.lgnode import LgNode
 from lgcore.lgpackage import LgPackage
-from lgcore.signals import signalFocusIn, signalItemMoved, signalEditNode, signalEditLink
+from lgcore.signals import signalFocusIn, signalItemMoved, signalEditNode, signalEditLink,\
+    signalUpdateGui
 from lggui.linkgui import LinkGui
 from lggui.nodegui import NodeGui
 
@@ -12,6 +13,7 @@ class LgGraphicsScene(QtGui.QGraphicsScene):
     def __init__(self,parent=None, editMode=False):
         super(LgGraphicsScene, self).__init__()
         self.model = LgModel()
+        self.connect(self.model, signalUpdateGui, self.updateFromModel)
         self.editMode=editMode
         self.connect(self, signalFocusIn, self.onChangeFocus)
         self.updateFromModel()
