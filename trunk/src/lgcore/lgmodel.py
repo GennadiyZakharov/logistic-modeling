@@ -163,6 +163,14 @@ class LgModel(QtCore.QObject):
                 packageElement = Element('package', {'name': package.name})
                 enteredPackageListElement.append(packageElement)           
             nodeElement.append(enteredPackageListElement)
+            # Add player rules
+            ruleListElement = Element('ruleList')
+            for name,(link,count) in node.distributeList.items() :
+                ruleElement = Element('rule', {'name': name,
+                                               'link': link.name,
+                                               'count': str(count) })
+                ruleListElement.append(ruleElement)
+            nodeElement.append(ruleListElement)
             # Add factories
             factoryListElement = Element('factoryList')
             for factory in node.factories:
