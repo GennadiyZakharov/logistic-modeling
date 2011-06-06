@@ -46,9 +46,21 @@ class NodeWidget(QtGui.QDialog):
         layout.addWidget(self.inputList, 1, 0)
         layout.addWidget(self.outputList, 1, 1)
         
-        layout.addWidget(storageLabel, 2, 0, 1, 2)
-        layout.addWidget(self.storageList, 3, 0, 1, 2)
-        layout.addWidget(self.okBtn, 4, 1)
+        layout.addWidget(storageLabel, 2, 0)
+        layout.addWidget(self.storageList, 3, 0)
+        layout.addWidget(self.okBtn, 5, 0)
+        
+        self.rulesEdit = QtGui.QTableWidget()
+        rulesText = QtGui.QLabel('rules: ')
+        layout.addWidget(rulesText, 2, 1)
+        layout.addWidget(self.rulesEdit, 3, 1)
+        self.rulesEdit.setColumnCount(3)                             
+        addRowButton = QtGui.QPushButton('Add row')
+        addRowButton.clicked.connect(self.addRow)
+        layout.addWidget(addRowButton, 4, 1)
+        delRowButton = QtGui.QPushButton('Delete row')
+        delRowButton.clicked.connect(self.delRow)
+        layout.addWidget(delRowButton, 5, 1)
         
         #vSplitter = QtGui.QSplitter(QtCore.Qt.Vertical)
        
@@ -61,7 +73,32 @@ class NodeWidget(QtGui.QDialog):
             self.storageList.addItem(item)
         ''' 
         
+    def addRow(self, name='Wood', Link='<None>', count=0):
+        table = self.rulesEdit
+        i = table.rowCount()
+        print i
+        table.setRowCount(i + 1)
+        table.setItem(i, 0, QtGui.QTableWidgetItem(name))
+        linkComboBox = QtGui.QComboBox()
+        linkComboBox.addItems([link.name for link in self.node.links])
+        countSpinBox = QtGui.QSpinBox()
+        countSpinBox.setValue(count)   
+        table.setCellWidget(i, 1, linkComboBox)
+        table.setCellWidget(i, 2, countSpinBox)
+        
+    def delRow(self, table):
+        table.removeRow(self.consumeEdit.currentRow())
+        
+    def updateTable(self):
+        self.rulesEdit.clear()
+        self.rulesEdit.setRowCount(0)
+        print self.rulesEdit.rowCount()
+        print dict
+        for name, (link, count) in self.node.distributeList.items() :
+            self.addRow(name, link.name, count)
+        
     def onUpdateLists(self):
+        self.updateTable()
         self.inputList.clear()
         self.storageList.clear()
         self.outputList.clear()
@@ -84,23 +121,23 @@ class NodeWidget(QtGui.QDialog):
             names = []
             self.linksList = []
             maxCapacity = 0
-            for link,packages in self.node.linksDict.items():
+            for link, packages in self.node.linksDict.items():
                 names.append(link.name)
                 self.linksList.append(link)
                 maxCapacity = max(maxCapacity, link.maxCapacity)
-                i=0
+                i = 0
                 for package in packages :
-                    self.outputList.setItem(i,linkNumber,PackageTableItem(package))
-                    i+=1
-                linkNumber +=1
+                    self.outputList.setItem(i, linkNumber, PackageTableItem(package))
+                    i += 1
+                linkNumber += 1
                 
             self.outputList.setRowCount(maxCapacity)            
             self.outputList.setHorizontalHeaderLabels(names)
             
         self.onDistributionChanged()
     
-    def onPackage(self, package, linkNumber=-1):
-        if linkNumber >=0 :
+    def onPackage(self, package, linkNumber= -1):
+        if linkNumber >= 0 :
             self.linkFrom = linkNumber
         if (self.source is self.target) and (self.source is not self.outputList) :
             self.onUpdateLists()  
@@ -138,15 +175,33 @@ class NodeWidget(QtGui.QDialog):
         self.onUpdateLists()
         
     
-    def onPackageMoved(self, source, target, linkNumber=-1):
-        self.source=source
-        self.target=target
-        if linkNumber >=0 :
+    def onPackageMoved(self, source, target, linkNumber= -1):
+        self.source = source
+        self.target = target
+        if linkNumber >= 0 :
             self.linkTo = linkNumber
     
     def onDistributionChanged(self):
         pass
         #self.okBtn.setEnabled(self.inputList.count() == 0)
+    
+    def writeDictionary(self, table, dict):
+        dict.clear()
+        for row in range(table.rowCount()) :
+            name = str(table.item(row, 0).text())
+            if name == '' : continue
+            linkComboBox = table.cellWidget(row, 1)
+            countSpinBox = table.cellWidget(row, 2)
+            linkName = str(linkComboBox.currentText())
+            for link in self.node.links :
+                if link.name == linkName :
+                    dict[name] = (link, countSpinBox.value())
+                    break
+        print dict
+        
+    def accept(self):
+        self.writeDictionary(self.rulesEdit, self.node.distributeList)
+        return super(NodeWidget, self).accept()
         
         
         
