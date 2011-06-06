@@ -9,7 +9,7 @@ from lgcore.lgnode import LgNode
 from lgcore.lgpackage import LgPackage
 from lgcore.lgplayer import LgPlayer
 from lgcore.signals import signalTransport, signalPrepareNode, \
-    signalNextTurnLink, signalNextTurnNode, signalPlayerTurn
+    signalNextTurnLink, signalNextTurnNode, signalPlayerTurn, signalUpdateGui
 from xml.etree.cElementTree import ElementTree, Element, tostring
 
 class LgModel(QtCore.QObject):
@@ -23,6 +23,7 @@ class LgModel(QtCore.QObject):
     def __init__(self):
         super(LgModel, self).__init__()
         self.clear()   
+        self.networkInterface = None
         
     def clear(self):
         self.players = []        
@@ -94,18 +95,39 @@ class LgModel(QtCore.QObject):
         self.emit(signalPrepareNode)
         self.emit(signalNextTurnLink)
         self.emit(signalNextTurnNode)
-        #TODO: check for sevver part
+        #TODO: check for sevver part         
+       
+    def onPlayerTurnEnd(self):        
+        '''
+        Calls when current player ends his turn
+        '''
+        currentPlayer = self.players[self.currentPlayerIndex]
+        if self.networkInterface is None:
+            # single player game         
+            self.onNextTurn() # Factories and links works
+            currentPlayer.onTurn()
+        else:
+            # Client in multiplayer game
+            self.networkInterface.send()
+            # TODO: GUI to wait for new turn
+            self.networkInterface.receive()
+            if not self.networkInterface.isFinish:
+                currentPlayer.onTurn()                
+            else:
+                self.channel.close()
             
-    def onPlayerTurn(self):         
-        if self.currentPlayerIndex == len(self.players)-1:
-            self.currentPlayerIndex = 0
-            self.onNextTurn()            
-        else: 
-            self.currentPlayerIndex += 1
-        # TODO: Add multiplayer
-        currentPlayer = self.players[self.currentPlayerIndex] 
-        print '==== Player {0} turn {1}'.format(currentPlayer.name,self.currentTurn)
-        currentPlayer.onTurn()
+        
+    def startNetworkGame(self):
+        '''
+        Calls when current player ends his turn
+        '''
+        while not self.isFinished():
+            for self.currentPlayerIndex in range(len(self.players)):
+                print '==== Player {0} turn {1}'.format(self.currentPlayerIndex,self.currentTurn)
+                self.networkInterface.processNetworkCommuncation(self.currentPlayerIndex)           
+            self.onNextTurn()
+        self.networkInterface.endNetworkCommunication()
+            
                
     def toXML(self):
         def writeViewersList(viewers):
@@ -134,7 +156,7 @@ class LgModel(QtCore.QObject):
         # Add players
         playerListElement = Element('playerList')
         for player in self.players:
-            playerElement = Element('player', {'name': player.name, 'money': str(player.money)})
+            playerElement = Element('player', {'name': str(player.name), 'money': str(player.money)})
             playerListElement.append(playerElement)
         modelElement.append(playerListElement)
         # Add nodes
@@ -241,8 +263,8 @@ class LgModel(QtCore.QObject):
             return viewers
         
         self.clear()
-        tree = ElementTree()
-        tree.parse(source)
+        tree = ElementTree(file=source)
+        # tree.parse(source)
         modelElement = tree.getroot()
         # Read players
         playerListElement = modelElement.find('playerList')
@@ -259,6 +281,13 @@ class LgModel(QtCore.QObject):
             for packageElement in list(storagePackageListElement):
                 package = LgPackage(packageElement.get('name'))
                 storage.append(package)
+            # Player Rules
+            ruleListElement = nodeElement.find('ruleList')
+            rulesDict = {}
+            if ruleListElement is not None:
+                for ruleElement in list(ruleListElement):
+                    rulesDict[ruleElement.get('name')] = (ruleElement.get('link'), int(ruleElement.get('count')))
+            
             # Entered
             entered = set()
             enteredPackageListElement = nodeElement.find('enteredPackageList')
@@ -321,6 +350,7 @@ class LgModel(QtCore.QObject):
             node.viewers = nodeViewers
             node.storage = storage
             node.entered = entered
+            node.distributeList = rulesDict
             for factory in factories :
                 node.addFactory(factory)
             self.addNode(node)
@@ -360,6 +390,13 @@ class LgModel(QtCore.QObject):
             link.packages = packages
             link.viewers = linkViewers
             self.addLink(link)
+        for node in self.nodes :
+            rulesList = {}
+            for name,(linkName,count) in node.distributeList.items():
+                for link in node.links:
+                    if link.name == linkName:
+                        rulesList[name] = (link,count)
+            node.distributeList = rulesList                
             
     def openModel(self, filename):
         self.fromXML(filename)
@@ -367,18 +404,18 @@ class LgModel(QtCore.QObject):
     def saveModel(self, filename):
         with open(filename, 'w') as f:
             f.write(self.toXML())
-
     
     def getData(self):        
         return self.toXML()
     
     def setData(self, data):
-        #fileStub = StringIO()
-        #fileStub.write(data)
-        #self.fromXML(fileStub)
-        self.fromXML(data)
+        fileStub = StringIO(data)
+        self.fromXML(fileStub)        
+        self.emit(signalUpdateGui)
     
     def isFinished(self):
         # TODO: Implement
-        pass
-        
+        return False
+    
+    def setNetworkInterface(self, ni):
+        self.networkInterface = ni    
