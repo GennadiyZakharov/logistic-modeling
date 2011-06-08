@@ -104,8 +104,9 @@ class LgModel(QtCore.QObject):
         currentPlayer = self.players[self.currentPlayerIndex]
         if self.networkInterface is None:
             # single player game         
-            self.onNextTurn() # Factories and links works
+            # Factories and links works
             currentPlayer.onTurn()
+            self.onNextTurn()
         else:
             # Client in multiplayer game
             self.networkInterface.send()
@@ -125,6 +126,7 @@ class LgModel(QtCore.QObject):
             for self.currentPlayerIndex in range(len(self.players)):
                 print '==== Player {0} turn {1}'.format(self.currentPlayerIndex,self.currentTurn)
                 self.networkInterface.processNetworkCommuncation(self.currentPlayerIndex)           
+            self.currentTurn += 1
             self.onNextTurn()
         self.networkInterface.endNetworkCommunication()
             
@@ -136,6 +138,13 @@ class LgModel(QtCore.QObject):
                 viewerElement = Element('viewer', {'name': viewer.name})
                 viewerListElement.append(viewerElement)
             return viewerListElement
+        
+        def createPackageSetElement(name, packageSet):
+            packageListElement = Element(name)
+            for package in packageSet:
+                packageElement = Element('package', {'name': package.name})
+                packageListElement.append(packageElement)
+            return packageListElement
         
         def indent(elem, level=0):
             i = "\n" + level * "  "
@@ -174,16 +183,10 @@ class LgModel(QtCore.QObject):
            
             nodeElement.append(writeViewersList(node.viewers))
             # Add packages from storage
-            storagePackageListElement = Element('storagePackageList')
-            for package in node.storage:
-                packageElement = Element('package', {'name': package.name})
-                storagePackageListElement.append(packageElement)
+            storagePackageListElement = createPackageSetElement('storagePackageList', node.storage)
             nodeElement.append(storagePackageListElement)
             # Add packages from entered
-            enteredPackageListElement = Element('enteredPackageList')
-            for package in node.entered:
-                packageElement = Element('package', {'name': package.name})
-                enteredPackageListElement.append(packageElement)           
+            enteredPackageListElement = createPackageSetElement('enteredPackageList', node.entered)
             nodeElement.append(enteredPackageListElement)
             # Add player rules
             ruleListElement = Element('ruleList')
@@ -193,6 +196,14 @@ class LgModel(QtCore.QObject):
                                                'count': str(count) })
                 ruleListElement.append(ruleElement)
             nodeElement.append(ruleListElement)
+            # Distributed packages
+            distributedPackagesListElement = Element('distributedPackagesList')
+            for link,packageSet in node.linksDict.items() :
+                distributedPackagesElement = Element('distributedPackages',{'name':link.name})
+                packageSetElement = createPackageSetElement('packageSet', packageSet)
+                distributedPackagesElement.append(packageSetElement)
+                distributedPackagesListElement.append(distributedPackagesElement)
+            nodeElement.append(distributedPackagesListElement)
             # Add factories
             factoryListElement = Element('factoryList')
             for factory in node.factories:
@@ -280,20 +291,33 @@ class LgModel(QtCore.QObject):
             storagePackageListElement = nodeElement.find('storagePackageList')
             for packageElement in list(storagePackageListElement):
                 package = LgPackage(packageElement.get('name'))
-                storage.append(package)
+                storage.add(package)
             # Player Rules
             ruleListElement = nodeElement.find('ruleList')
             rulesDict = {}
             if ruleListElement is not None:
                 for ruleElement in list(ruleListElement):
                     rulesDict[ruleElement.get('name')] = (ruleElement.get('link'), int(ruleElement.get('count')))
-            
+            # Distributed packages
+            distributedPackagesListElement = nodeElement.find('distributedPackagesList')
+            distributedPackagesDict = {}
+            if distributedPackagesListElement is not None:
+                for distributedPackagesElement in list(distributedPackagesListElement) :
+                    linkName = distributedPackagesElement.get('name')
+                    packageSetElement = distributedPackagesElement.find('packageSet')
+                    packageSet = set()   
+                    if packageSetElement is not None:
+                        for packageElement in list(packageSetElement) :
+                            packageSet.add(LgPackage(packageElement.get('name')))
+        
+                    
+                    distributedPackagesDict[linkName]=packageSet
             # Entered
             entered = set()
             enteredPackageListElement = nodeElement.find('enteredPackageList')
             for packageElement in list(enteredPackageListElement):
                 package = LgPackage(packageElement.get('name'))
-                entered.append(package)
+                entered.add(package)
             # Factories
             factories = set()
             factoryListElement = nodeElement.find('factoryList')
@@ -350,10 +374,13 @@ class LgModel(QtCore.QObject):
             node.viewers = nodeViewers
             node.storage = storage
             node.entered = entered
-            node.distributeList = rulesDict
+            
+            node.tempDistributeList = rulesDict
+            node.tempDistributedPackagesDict = distributedPackagesDict
             for factory in factories :
                 node.addFactory(factory)
             self.addNode(node)
+            print node.distributeList
         # Links
         linkListElement = modelElement.find('linkList')
         for linkElement in list(linkListElement):
@@ -390,13 +417,23 @@ class LgModel(QtCore.QObject):
             link.packages = packages
             link.viewers = linkViewers
             self.addLink(link)
+        
         for node in self.nodes :
             rulesList = {}
-            for name,(linkName,count) in node.distributeList.items():
+            for name,(linkName,count) in node.tempDistributeList.items():
                 for link in node.links:
                     if link.name == linkName:
                         rulesList[name] = (link,count)
-            node.distributeList = rulesList                
+            node.distributeList = rulesList
+            del node.tempDistributeList   
+            distributedPackagesDict = {}
+            for linkName, packageSet in node.tempDistributedPackagesDict.items():
+                for link in node.links:
+                    if link.name == linkName:
+                        distributedPackagesDict[link] = packageSet
+            node.linksDict = distributedPackagesDict
+            del node.tempDistributedPackagesDict
+                      
             
     def openModel(self, filename):
         self.fromXML(filename)

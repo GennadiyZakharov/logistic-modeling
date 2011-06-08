@@ -92,7 +92,6 @@ class MainWindow(QtGui.QMainWindow):
         self.view.setTransform(transform)
 
     def fileSave(self):
-        print self.dirty
         if not self.dirty :
             return
         if self.fileName is None :

@@ -77,6 +77,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.lgActions.addActions(fileMenu, self.lgActions.fileActionsPlayer)
         self.connect(self.lgActions.fileOpenAction, signalTriggered, self.fileOpen)
         self.connect(self.lgActions.fileConnectAction, signalTriggered, self.fileConnect)
+        self.connect(self.lgActions.fileSaveAsAction, signalTriggered, self.fileSaveAs)
         self.connect(self.lgActions.fileQuitAction, signalTriggered, self.close)
         
         '''
@@ -132,6 +133,22 @@ class PlayerMainWindow(QtGui.QMainWindow):
             serverPort = int(dialog.portEdit.text())
             self.scene.model.setNetworkInterface(LgClient(serverAddress, serverPort, self.scene.model))
             self.scene.model.networkInterface.receive()
+            
+    def fileSaveAs(self):
+        fname = self.fileName if self.fileName is not None else "."
+        formats = ["*.lgmodel"]
+        # Invoking dialog
+        fname = unicode(QtGui.QFileDialog.getSaveFileName(self,
+                            "LgModeller - Save model", fname,
+                            "Logistic models (%s)" % " ".join(formats)))
+        if fname:
+            # Default ext
+            if "." not in fname:
+                fname += ".lgmodel"
+        # Saving file
+        # self.addRecentFile(fname)
+        self.fileName = fname
+        self.scene.model.saveModel(self.fileName)
     
     # Close Event handler
     '''

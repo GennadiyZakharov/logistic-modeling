@@ -104,7 +104,9 @@ class NodeGui(QtGui.QGraphicsObject):
         if len(factoryTips)>0:
             toolTip += '<p text-indent:-.0.5cm><b>Factories:</b><br />'+'<br />'.join(factoryTips)
         self.setToolTip(toolTip)
+        #self.mainwidget.onUpdateLists()
         self.update()    
+        
 
     def boundingRect(self):
         return self.Rect

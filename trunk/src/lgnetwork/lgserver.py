@@ -13,9 +13,12 @@ class LgServer(object):
             self.details = details
             NetworkThreadCommon.__init__(self)
             Thread.__init__(self)       
+            self.isGameStarted = False
             
         def run(self):
-            if not self.isFinish:
+            if not self.isGameStarted:
+                return
+            if not self.isFinish:                
                 self.send()
                 self.receive()
             else:
@@ -31,17 +34,19 @@ class LgServer(object):
         while not playersSet:
             channel, details = s.accept()
             print 'Accepted connection from {0}'.format(str(details))           
-            self.playerDict[self.model.players[playerID]] = self.ClientThread(channel, details)
+            self.playerDict[playerID] = self.ClientThread(channel, details)
+            self.playerDict[playerID].start()
             playerID += 1
             if len(self.playerDict) == len(self.model.players):
                 playersSet = True
-    
+        for player in self.playerDict.values():
+            player.isGameStarted = True
+            
     def processNetworkCommuncation(self, currentPlayerIndex):
-        currentPlayer = self.model.players[currentPlayerIndex]
-        self.playerDict[currentPlayer].setData(self.model.getData())
-        self.playerDict[currentPlayer].start()
-        self.playerDict[currentPlayer].join()
-        self.model.setData(self.playerDict[currentPlayer].getData())
+        self.playerDict[currentPlayerIndex].setData(self.model.getData())
+        self.playerDict[currentPlayerIndex].run()
+        self.playerDict[currentPlayerIndex].join()
+        self.model.setData(self.playerDict[currentPlayerIndex].getData())
         
     def endNetworkCommunication(self):
         for id in xrange(len(self.playerDict)):
