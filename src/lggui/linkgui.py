@@ -15,7 +15,7 @@ class LinkGui(QtGui.QGraphicsObject):
     the target is treated like line direction
     size and angle will be calculated according to this values
     '''
-    arrowSize = 5
+    arrowSize = 10
     arrowPoint1 = QtCore.QPointF(-arrowSize, arrowSize)
     arrowPoint2 = QtCore.QPointF(-arrowSize, -arrowSize) 
     
@@ -77,16 +77,23 @@ class LinkGui(QtGui.QGraphicsObject):
         for p in self.gPackages.keys():
             if not self.link.packages.has_key(p):                
                 self.gPackages[p].setParentItem(None)
-                self.gPackages.pop(p) # TODO: Check correctness
+                self.gPackages.pop(p)
             else :
                 self.setPackageUpdateAge(self.gPackages[p], self.link.packages[p])
         # Add new packages
         for p in self.link.packages.keys():
             if not self.gPackages.has_key(p):
                 self.gPackages[p] = PackageGui(p, self)
-                self.setPackageUpdateAge(self.gPackages[p], self.link.packages[p])
-                
+                self.setPackageUpdateAge(self.gPackages[p], self.link.packages[p])       
+        toolTip = ('''<b>{0}</b>
+                   <br />Length: {1}
+                   <br />Cost: {2}
+                   <br />Packages: {3}'''.format(self.link.name,
+                                self.link.length,self.link.cost,len(self.link.packages)))
+        self.setToolTip(toolTip)
         self.update()
+        
+        
             
     def focusInEvent(self, event) :
         super(LinkGui, self).focusInEvent(event)
@@ -108,8 +115,15 @@ class LinkGui(QtGui.QGraphicsObject):
         return path
 
     def paint(self, painter, option, widget=None):
-        painter.setPen(QtGui.QPen(QtGui.QBrush(self.link.color), 2.5))
+        painter.setPen(QtGui.QPen(QtGui.QBrush(self.link.color), 5))
         painter.setBrush(QtGui.QBrush(self.link.color))
         painter.drawLine(QtCore.QPointF(0, 0), self.point2)
         painter.drawLine(self.point2, self.point2 + self.arrowPoint1)
         painter.drawLine(self.point2, self.point2 + self.arrowPoint2)
+        painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(0,0,0)), 2))
+        painter.drawText(self.boundingRect(),QtCore.Qt.AlignCenter,self.link.name)
+        if self.hasFocus():
+            painter.setBrush(QtCore.Qt.NoBrush)
+            painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
+            painter.drawEllipse(QtCore.QPointF(0, 0),3,3)
+            painter.drawEllipse(self.point2,3,3)
