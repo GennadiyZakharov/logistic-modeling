@@ -26,7 +26,7 @@ class LgActions(QtCore.QObject):
         
         self.fileActionsEditor = (self.fileNewAction, self.fileOpenAction, self.fileSaveAction,
                                   self.fileSaveAsAction, None, self.fileQuitAction)
-        self.fileActionsPlayer = (self.fileOpenAction, self.fileConnectAction, None, self.fileQuitAction)
+        self.fileActionsPlayer = (self.fileOpenAction, self.fileConnectAction, self.fileSaveAsAction, None, self.fileQuitAction)
         
         '''
         # ==== Mode actons
