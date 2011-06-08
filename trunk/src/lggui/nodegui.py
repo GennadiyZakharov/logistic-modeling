@@ -25,6 +25,7 @@ class NodeGui(QtGui.QGraphicsObject):
         QtGui.QGraphicsItem.ItemIsMovable | QtGui.QGraphicsItem.ItemIsFocusable)
         self.links = [] 
         self.mainwidget = NodeWidget(self.node, None)
+        self.onUpdateGui()
         '''
         self.proxy = QtGui.QGraphicsProxyWidget(self)
         self.proxy.setWidget(self.mainwidget)
@@ -82,6 +83,27 @@ class NodeGui(QtGui.QGraphicsObject):
             QtGui.QGraphicsItem.keyPressEvent(self, event)
 
     def onUpdateGui(self):
+        toolTip = ('''<b>{0}</b>
+                   <br />Storage cost: {1}
+                   <br />Waiting for distribute: {2}'''.format(self.node.name,
+                                self.node.cost,len(self.node.entered)))
+        factoryTips = []
+        for factory in self.node.factories:
+            consumesText = '<br />'.join(['{0} - {1}'.format(name,mean) for name,(mean,disp) in factory.consumes.items()])
+            produceText = '<br />'.join(['{0} - {1}'.format(name,mean) for name,(mean,disp) in factory.produces.items()])
+            tipText = '''<b>{0}</b>
+                       <br />Consume income: {1}
+                       <br />Produce cost: {2}
+                       <br />Indelivering fee: {3}
+                       '''.format(factory.name,factory.income,factory.cost,factory.fee)
+            if consumesText != '':
+                tipText += '<br />Consumes:<br />' + consumesText 
+            if produceText != '':
+                tipText += '<br />Produces:<br />' + produceText
+            factoryTips.append(tipText) 
+        if len(factoryTips)>0:
+            toolTip += '<p text-indent:-.0.5cm><b>Factories:</b><br />'+'<br />'.join(factoryTips)
+        self.setToolTip(toolTip)
         self.update()    
 
     def boundingRect(self):
@@ -103,7 +125,7 @@ class NodeGui(QtGui.QGraphicsObject):
         painter.setFont(QtGui.QFont('Arial', pointSize=16))
         painter.drawText(self.NameRect, QtCore.Qt.AlignCenter, self.node.name) 
         painter.setFont(QtGui.QFont('Arial', pointSize=12))
-        infoText = 'Storage: {0}\n '.format(len(self.node.storage))
+        infoText = 'Storage: {0}/{1}\n '.format(len(self.node.storage),self.node.storageCapacity)
         demandsText = []
         demandsDict = self.node.getDemands()
         if demandsDict != {} :
@@ -124,6 +146,7 @@ class NodeGui(QtGui.QGraphicsObject):
     def onExecuteDialog(self):
         self.mainwidget.onUpdateLists()
         self.mainwidget.exec_()
+        self.onUpdateGui()
 
 '''
     def contextMenuEvent(self, event):
