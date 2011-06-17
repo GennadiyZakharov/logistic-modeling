@@ -33,7 +33,7 @@ class MainWindow(QtGui.QMainWindow):
         self.view = QtGui.QGraphicsView()
         self.view.setRenderHint(QtGui.QPainter.Antialiasing)
         self.view.setScene(self.scene)
-        self.view.setMinimumSize(640, 480) 
+        self.view.setMinimumSize(320, 200) 
         self.setCentralWidget(self.view) 
         self.connect(self.scene, signalEditNode, self.onEditNode)
         self.connect(self.scene, signalEditLink, self.onEditLink)

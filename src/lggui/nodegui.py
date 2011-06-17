@@ -9,12 +9,16 @@ class NodeGui(QtGui.QGraphicsObject):
     Rect = QtCore.QRectF(0, 0, 120, 150)
     NameRect = QtCore.QRectF(0,0,Rect.width(),40)
     InfoRect = QtCore.QRectF(0,50,Rect.width(),100)
+    SelectColor = QtGui.QColor(255,0,0)
+    InactiveColor = QtGui.QColor(128,128,128)
     
-    def __init__(self, node, parent=None, scene=None, editMode=False):
+    def __init__(self, node, model, parent=None, scene=None, editMode=False):
         
         super(NodeGui, self).__init__(parent)
         self.node = node
         self.editMode = editMode
+        self.model = model
+        self.currentPlayer = model.players[model.currentPlayerIndex]
         self.connect(self.node, signalUpdateGui, self.onUpdateGui)
         #self.connect(self.node, signalExecuteDialog, self.onExecuteDialog)
         self.xChanged.connect(self.onMove)
@@ -59,7 +63,9 @@ class NodeGui(QtGui.QGraphicsObject):
         if self.editMode :
             self.emit(signalEditNode,self)
         else :
-            self.onExecuteDialog()
+            # Verify for owner
+            if self.node.owner == self.currentPlayer:
+                self.onExecuteDialog()
     
     def setBrush(self, value) :
         self.brush = value
@@ -83,26 +89,29 @@ class NodeGui(QtGui.QGraphicsObject):
             QtGui.QGraphicsItem.keyPressEvent(self, event)
 
     def onUpdateGui(self):
-        toolTip = ('''<b>{0}</b>
-                   <br />Storage cost: {1}
-                   <br />Waiting for distribute: {2}'''.format(self.node.name,
-                                self.node.cost,len(self.node.entered)))
-        factoryTips = []
-        for factory in self.node.factories:
-            consumesText = '<br />'.join(['{0} - {1}'.format(name,mean) for name,(mean,disp) in factory.consumes.items()])
-            produceText = '<br />'.join(['{0} - {1}'.format(name,mean) for name,(mean,disp) in factory.produces.items()])
-            tipText = '''<b>{0}</b>
-                       <br />Consume income: {1}
-                       <br />Produce cost: {2}
-                       <br />Indelivering fee: {3}
-                       '''.format(factory.name,factory.income,factory.cost,factory.fee)
-            if consumesText != '':
-                tipText += '<br />Consumes:<br />' + consumesText 
-            if produceText != '':
-                tipText += '<br />Produces:<br />' + produceText
-            factoryTips.append(tipText) 
-        if len(factoryTips)>0:
-            toolTip += '<p text-indent:-.0.5cm><b>Factories:</b><br />'+'<br />'.join(factoryTips)
+        if self.editMode or (self.currentPlayer in self.node.viewers) :
+            toolTip = ('''<b>{0}</b>
+                       <br />Storage cost: {1}
+                       <br />Waiting for distribute: {2}'''.format(self.node.name,
+                                    self.node.cost,len(self.node.entered)))
+            factoryTips = []
+            for factory in self.node.factories:
+                consumesText = '<br />'.join(['{0} - {1}'.format(name,mean) for name,(mean,disp) in factory.consumes.items()])
+                produceText = '<br />'.join(['{0} - {1}'.format(name,mean) for name,(mean,disp) in factory.produces.items()])
+                tipText = '''<b>{0}</b>
+                           <br />Consume income: {1}
+                           <br />Produce cost: {2}
+                           <br />Indelivering fee: {3}
+                           '''.format(factory.name,factory.income,factory.cost,factory.fee)
+                if consumesText != '':
+                    tipText += '<br />Consumes:<br />' + consumesText 
+                if produceText != '':
+                    tipText += '<br />Produces:<br />' + produceText
+                factoryTips.append(tipText) 
+            if len(factoryTips)>0:
+                toolTip += '<p text-indent:-.0.5cm><b>Factories:</b><br />'+'<br />'.join(factoryTips)
+        else :
+            toolTip = 'You are not allowed <br />to see object properties'
         self.setToolTip(toolTip)
         #self.mainwidget.onUpdateLists()
         self.update()    
@@ -127,26 +136,32 @@ class NodeGui(QtGui.QGraphicsObject):
         painter.setFont(QtGui.QFont('Arial', pointSize=16))
         painter.drawText(self.NameRect, QtCore.Qt.AlignCenter, self.node.name) 
         painter.setFont(QtGui.QFont('Arial', pointSize=12))
-        infoText = 'Storage: {0}/{1}\n '.format(len(self.node.storage),self.node.storageCapacity)
-        demandsText = []
-        demandsDict = self.node.getDemands()
-        if demandsDict != {} :
-            for name,count in demandsDict.items() :
-                demandsText.append('{0} - {1} '.format(name, count))
-            infoText+='\nDemands:\n'+'\n'.join(demandsText)
-        painter.drawText(self.InfoRect, QtCore.Qt.AlignCenter, infoText)
-        if len(self.node.entered) != 0 :
-            painter.setBrush(QtGui.QBrush(QtGui.QColor(255,0,0)))
-            painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
-            painter.drawEllipse(self.Rect.bottomRight()-QtCore.QPointF(15, 15),10,10)
+        if self.currentPlayer in self.node.viewers:
+            infoText = 'Storage: {0}/{1}\n '.format(len(self.node.storage),self.node.storageCapacity)
+            demandsText = []
+            demandsDict = self.node.getDemands()
+            if demandsDict != {} :
+                for name,count in demandsDict.items() :
+                    demandsText.append('{0} - {1} '.format(name, count))
+                infoText+='\nDemands:\n'+'\n'.join(demandsText)
+            painter.drawText(self.InfoRect, QtCore.Qt.AlignCenter, infoText)
+            if len(self.node.entered) != 0 :
+                painter.setBrush(QtGui.QBrush(self.SelectColor))
+                painter.setPen(QtGui.QPen(QtGui.QBrush(self.SelectColor), 3))
+                painter.drawEllipse(self.Rect.bottomRight()-QtCore.QPointF(15, 15),10,10)
         if self.hasFocus() :
             painter.setBrush(QtCore.Qt.NoBrush)
-            painter.setPen(QtGui.QPen(QtGui.QBrush(QtGui.QColor(255,0,0)), 3))
+            painter.setPen(QtGui.QPen(QtGui.QBrush(self.SelectColor), 3))
             painter.drawRect(self.Rect.adjusted(2, 2, -2, -2))
-               
+        if self.node.owner != self.currentPlayer:
+            painter.setBrush(QtCore.Qt.NoBrush)
+            painter.setPen(QtGui.QPen(QtGui.QBrush(self.InactiveColor), 3))
+            painter.drawRect(self.Rect.adjusted(2, 2, -2, -2))
         
     def onExecuteDialog(self):
+        print 'updating lists'
         self.mainwidget.onUpdateLists()
+        print 'execute'
         self.mainwidget.exec_()
         self.onUpdateGui()
 

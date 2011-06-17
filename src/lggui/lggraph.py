@@ -6,7 +6,7 @@ class LgGraph(QtCore.QObject):
     def __init__(self, parent=None):
         super(LgGraph, self).__init__(parent)
         self.shiftTo = 0
-        self.clearPlot()
+        #self.clearPlot()
     
     def setTitle(self, title):
         plt.title(title)
@@ -29,7 +29,9 @@ class LgGraph(QtCore.QObject):
         
         for name,dataSet in data.items() :
             x = range(self.shiftTo,self.shiftTo+len(dataSet)) 
-            plt.plot(x, dataSet,'-bo')#or,fmt=linestyles[i],lw=linewidth,ms=marksize,label=datasettitle)
+            print 'Plot',x,dataSet
+            plt.plot(x, dataSet,'-bo')
+            #fmt=linestyles[i],lw=linewidth,ms=marksize,label=datasettitle)
             # set some legend properties.  All the code below is optional.  The
             # defaults are usually sensible but if you need more control, this
             # shows you how
@@ -37,7 +39,7 @@ class LgGraph(QtCore.QObject):
         
 if __name__ == '__main__' :
     graph = LgGraph()
-    graph.setShiftTo(10)
+    #graph.setShiftTo(10)
     graph.plotGraph({'player1':[9,8,7,6,5],'player2':[1,2,3,4,5]}, 'test.png')
         
     

@@ -24,6 +24,7 @@ class LgModel(QtCore.QObject):
         super(LgModel, self).__init__()
         self.clear()   
         self.networkInterface = None
+        self.currentPlayerIndex = 0
         
     def clear(self):
         self.players = []        
@@ -95,13 +96,14 @@ class LgModel(QtCore.QObject):
         self.emit(signalPrepareNode)
         self.emit(signalNextTurnLink)
         self.emit(signalNextTurnNode)
-        #TODO: check for sevver part         
+        self.emit(signalUpdatePlayerData)       
        
     def onPlayerTurnEnd(self):        
         '''
         Calls when current player ends his turn
         '''
         currentPlayer = self.players[self.currentPlayerIndex]
+        print 'Player',self.currentPlayerIndex, 'end his turn'
         if self.networkInterface is None:
             # single player game         
             # Factories and links works
@@ -122,6 +124,7 @@ class LgModel(QtCore.QObject):
         '''
         Calls when current player ends his turn
         '''
+        self.currentPlayerIndex = 0
         while not self.isFinished():
             for self.currentPlayerIndex in range(len(self.players)):
                 print '==== Player {0} turn {1}'.format(self.currentPlayerIndex,self.currentTurn)
@@ -161,7 +164,7 @@ class LgModel(QtCore.QObject):
                 if level and (not elem.tail or not elem.tail.strip()):
                     elem.tail = i
                     
-        modelElement = Element('model')
+        modelElement = Element('model', {'currentPlayer':str(self.currentPlayerIndex)})
         # Add players
         playerListElement = Element('playerList')
         for player in self.players:
@@ -277,6 +280,8 @@ class LgModel(QtCore.QObject):
         tree = ElementTree(file=source)
         # tree.parse(source)
         modelElement = tree.getroot()
+        self.currentPlayerIndex = int(modelElement.get('currentPlayer'))
+        #self.currentPlayerIndex =
         # Read players
         playerListElement = modelElement.find('playerList')
         for playerElement in list(playerListElement):
@@ -419,6 +424,7 @@ class LgModel(QtCore.QObject):
             self.addLink(link)
         
         for node in self.nodes :
+            print 'loaded node', node.name
             rulesList = {}
             for name,(linkName,count) in node.tempDistributeList.items():
                 for link in node.links:
@@ -426,12 +432,15 @@ class LgModel(QtCore.QObject):
                         rulesList[name] = (link,count)
             node.distributeList = rulesList
             del node.tempDistributeList   
-            distributedPackagesDict = {}
+            #distributedPackagesDict = {}
             for linkName, packageSet in node.tempDistributedPackagesDict.items():
+                #print linkName, packageSet
                 for link in node.links:
                     if link.name == linkName:
-                        distributedPackagesDict[link] = packageSet
-            node.linksDict = distributedPackagesDict
+                        node.linksDict[link] = packageSet
+            print 'Loaded distributin',node.name
+            print node.linksDict
+            #node.linksDict = distributedPackagesDict
             del node.tempDistributedPackagesDict
                       
             

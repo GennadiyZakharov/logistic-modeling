@@ -19,11 +19,13 @@ class LinkGui(QtGui.QGraphicsObject):
     arrowPoint1 = QtCore.QPointF(-arrowSize, arrowSize)
     arrowPoint2 = QtCore.QPointF(-arrowSize, -arrowSize) 
     
-    def __init__(self, link, input, output, parent=None, scene=None, editMode=False):
+    def __init__(self, link, input, output, model, parent=None, scene=None, editMode=False):
         '''Input and output assumed to be nodegui type'''
         super(LinkGui, self).__init__(parent)
         self.link = link
         self.editMode = editMode
+        self.model = model
+        self.currentPlayer = model.players[model.currentPlayerIndex]
         self.connect(self.link, signalUpdateGui, self.onUpdateGui)
         
         self.paintOffset = 2 / 10
@@ -85,11 +87,14 @@ class LinkGui(QtGui.QGraphicsObject):
             if not self.gPackages.has_key(p):
                 self.gPackages[p] = PackageGui(p, self)
                 self.setPackageUpdateAge(self.gPackages[p], self.link.packages[p])       
-        toolTip = ('''<b>{0}</b>
-                   <br />Length: {1}
-                   <br />Cost: {2}
-                   <br />Packages: {3}'''.format(self.link.name,
-                                self.link.length,self.link.cost,len(self.link.packages)))
+        if self.currentPlayer in self.link.viewers:
+            toolTip = ('''<b>{0}</b>
+                       <br />Length: {1}
+                       <br />Cost: {2}
+                       <br />Packages: {3}'''.format(self.link.name,
+                                    self.link.length,self.link.cost,len(self.link.packages)))
+        else:
+            toolTip = 'You are not allowed <br />to see object properties'
         self.setToolTip(toolTip)
         self.update()
         

@@ -1,29 +1,25 @@
-<model>
+<model currentPlayer="0">
   <playerList>
     <player money="0" name="Player" />
   </playerList>
   <nodeList>
-    <node capacity="5" color="#aeffae" cost="5" name="Factory" owner="Player" position_x="-8.59920031342" position_y="287.954823961">
+    <node capacity="0" color="#fffb7b" cost="0" name="Shop 1" owner="Player" position_x="424.296650275" position_y="98.0249333689">
       <viewerList>
         <viewer name="Player" />
       </viewerList>
       <storagePackageList />
       <enteredPackageList />
       <ruleList />
-      <distributedPackagesList>
-        <distributedPackages name="Road to Warehouse">
-          <packageSet />
-        </distributedPackages>
-      </distributedPackagesList>
+      <distributedPackagesList />
       <factoryList>
-        <factory activationInterval="1" cost="10" currentTurn="1" fee="0" income="0" name="BeerFactory" owner="Player">
+        <factory activationInterval="1" cost="0" currentTurn="1" fee="3" income="15" name="Beershop 1" owner="Player">
           <viewerList>
             <viewer name="Player" />
           </viewerList>
-          <consumeList />
-          <produceList>
-            <produce mean="6" name="Beer" variance="2" />
-          </produceList>
+          <consumeList>
+            <consume mean="5" name="Beer" variance="1" />
+          </consumeList>
+          <produceList />
           <demandList />
         </factory>
       </factoryList>
@@ -49,23 +45,27 @@
         </factory>
       </factoryList>
     </node>
-    <node capacity="0" color="#fffb7b" cost="0" name="Shop 1" owner="Player" position_x="424.296650275" position_y="98.0249333689">
+    <node capacity="5" color="#aeffae" cost="5" name="Factory" owner="Player" position_x="-8.59920031342" position_y="287.954823961">
       <viewerList>
         <viewer name="Player" />
       </viewerList>
       <storagePackageList />
       <enteredPackageList />
       <ruleList />
-      <distributedPackagesList />
+      <distributedPackagesList>
+        <distributedPackages name="Road to Warehouse">
+          <packageSet />
+        </distributedPackages>
+      </distributedPackagesList>
       <factoryList>
-        <factory activationInterval="1" cost="0" currentTurn="1" fee="3" income="15" name="Beershop 1" owner="Player">
+        <factory activationInterval="1" cost="10" currentTurn="1" fee="0" income="0" name="BeerFactory" owner="Player">
           <viewerList>
             <viewer name="Player" />
           </viewerList>
-          <consumeList>
-            <consume mean="5" name="Beer" variance="1" />
-          </consumeList>
-          <produceList />
+          <consumeList />
+          <produceList>
+            <produce mean="6" name="Beer" variance="2" />
+          </produceList>
           <demandList />
         </factory>
       </factoryList>
@@ -78,10 +78,10 @@
       <enteredPackageList />
       <ruleList />
       <distributedPackagesList>
-        <distributedPackages name="Road 1">
+        <distributedPackages name="Road 2">
           <packageSet />
         </distributedPackages>
-        <distributedPackages name="Road 2">
+        <distributedPackages name="Road 1">
           <packageSet />
         </distributedPackages>
       </distributedPackagesList>
@@ -89,12 +89,6 @@
     </node>
   </nodeList>
   <linkList>
-    <link color="#ffa16a" cost="5" inputName="Warehouse" length="1" maxCapacity="10" name="Road 1" outputName="Shop 1" owner="Player">
-      <viewerList>
-        <viewer name="Player" />
-      </viewerList>
-      <packageList />
-    </link>
     <link color="#55ffff" cost="0" inputName="Warehouse" length="1" maxCapacity="10" name="Road 2" outputName="Shop 2" owner="Player">
       <viewerList>
         <viewer name="Player" />
@@ -102,6 +96,12 @@
       <packageList />
     </link>
     <link color="#00ffff" cost="0" inputName="Factory" length="2" maxCapacity="10" name="Road to Warehouse" outputName="Warehouse" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#ffa16a" cost="5" inputName="Warehouse" length="1" maxCapacity="10" name="Road 1" outputName="Shop 1" owner="Player">
       <viewerList>
         <viewer name="Player" />
       </viewerList>
