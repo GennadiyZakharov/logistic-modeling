@@ -113,6 +113,8 @@ class LgNode(LgAbstractItem):
             self.storage.add(self.entered.pop())
         #clear packages 
         self.entered.clear()
+        print 'node',self.name,'prepared'
+        print self.linksDict
         
     def onNextTurn(self):
         self.emit(signalCost, -self.cost*len(self.storage))

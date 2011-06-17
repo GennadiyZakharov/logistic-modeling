@@ -16,6 +16,7 @@ from lggui.packagegui import PackageGui
 from lggui.playerdockwidget import PlayerDockWidget
 from lggui.toolsdockwidget import ToolsDockWidget
 from lggui.viewdockwidget import ViewDockWidget
+from lggui.lggraph import LgGraph
 import sys
 from lgnetwork.lgserver import LgServer
 from lgnetwork.lgclient import LgClient
@@ -37,7 +38,7 @@ class PlayerMainWindow(QtGui.QMainWindow):
         self.view = QtGui.QGraphicsView()
         self.view.setRenderHint(QtGui.QPainter.Antialiasing)
         self.view.setScene(self.scene)
-        self.view.setMinimumSize(640, 480)
+        self.view.setMinimumSize(320, 200)
         self.setCentralWidget(self.view) 
         # Creating toolbar
         fileToolbar = self.addToolBar("File")
@@ -95,6 +96,8 @@ class PlayerMainWindow(QtGui.QMainWindow):
         
                 
         self.scene.updateFromModel()
+        
+        
     # ==== Slots and handlers to handle actions ====
 
     def onScale(self, value):

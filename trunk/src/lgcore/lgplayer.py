@@ -20,6 +20,9 @@ class LgPlayer(QtCore.QObject):
         self.kind = 'Player'
         self.name = name
         self.money = money
+        self.currentIncome = 0
+        self.currentCost = 0
+        self.balanceHistory = []
         
     def __hash__(self):
         return self.hashValue
@@ -29,8 +32,15 @@ class LgPlayer(QtCore.QObject):
     
     def onCost(self, value):
         self.money += value
+        if value > 0 :
+            self.currentIncome += value
+        else:
+            self.currentCost -= value
         
     def onTurn(self):
         self.emit(signalPlayerTurn)
-        # TODO : wait for end turn button
+        self.balanceHistory.append((self.currentCost,
+                                    self.currentIncome))
+        self.currentCost = 0
+        self.currentIncome = 0
         

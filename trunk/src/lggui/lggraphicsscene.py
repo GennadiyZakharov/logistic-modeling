@@ -19,7 +19,7 @@ class LgGraphicsScene(QtGui.QGraphicsScene):
         self.updateFromModel()
     
     def addGNode(self, node):
-        gnode = NodeGui(node, editMode=self.editMode)
+        gnode = NodeGui(node, self.model, editMode=self.editMode)
         self.gnodes[node] = gnode
         self.addItem(gnode)
         self.connect(gnode, signalFocusIn, self.onChangeFocus)
@@ -31,7 +31,7 @@ class LgGraphicsScene(QtGui.QGraphicsScene):
     def addGLink(self, link):
         ginput = self.gnodes[link.input]
         goutput = self.gnodes[link.output]
-        glink = LinkGui(link, ginput, goutput, editMode=self.editMode)
+        glink = LinkGui(link, ginput, goutput, self.model, editMode=self.editMode)
         self.connect(glink, signalEditLink, self.onChangeFocus)
         self.connect(glink, signalEditLink, self.onEditLink)
         self.glinks[link] = glink

@@ -28,6 +28,7 @@ signalTransport = SIGNAL("transport") # Transmit package between elements
 # ---- GUI signals ----
 signalUpdateGui = SIGNAL("updateGui") # reread core object 
 signalExecuteDialog = SIGNAL("executeDialog")
+signalUpdatePlayerData = SIGNAL("updatePlayerData")
 
 signalNodeMoved = SIGNAL("nodeMoved()")
 signalItemMoved = SIGNAL("itemMoved")

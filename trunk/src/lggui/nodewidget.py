@@ -102,6 +102,7 @@ class NodeWidget(QtGui.QDialog):
         self.inputList.clear()
         self.storageList.clear()
         self.outputList.clear()
+        
         for package in self.node.entered :
             self.inputList.addItem(PackageListItem(package))
             
@@ -115,13 +116,18 @@ class NodeWidget(QtGui.QDialog):
         if self.node.links == set() :
             self.outputList.setEnabled(False)
         else :
+            print self.node.links
+            print self.node.linksDict
             self.outputList.setEnabled(True)
             self.outputList.setColumnCount(len(self.node.links))     
+            self.outputList.setRowCount(30)
             linkNumber = 0
             names = []
             self.linksList = []
             maxCapacity = 0
+            
             for link, packages in self.node.linksDict.items():
+                print 'creating packages', link.name, packages
                 names.append(link.name)
                 self.linksList.append(link)
                 maxCapacity = max(maxCapacity, link.maxCapacity)
