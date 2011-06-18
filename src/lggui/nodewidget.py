@@ -92,10 +92,9 @@ class NodeWidget(QtGui.QDialog):
     def updateTable(self):
         self.rulesEdit.clear()
         self.rulesEdit.setRowCount(0)
-        print self.rulesEdit.rowCount()
-        print dict
         for name, (link, count) in self.node.distributeList.items() :
             self.addRow(name, link.name, count)
+        self.rulesEdit.setHorizontalHeaderLabels(['Package name','Link','Count'])
         
     def onUpdateLists(self):
         self.updateTable()
@@ -116,8 +115,6 @@ class NodeWidget(QtGui.QDialog):
         if self.node.links == set() :
             self.outputList.setEnabled(False)
         else :
-            print self.node.links
-            print self.node.linksDict
             self.outputList.setEnabled(True)
             self.outputList.setColumnCount(len(self.node.links))     
             self.outputList.setRowCount(30)

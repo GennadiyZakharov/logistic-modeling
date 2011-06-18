@@ -61,22 +61,27 @@ class PlayerDockWidget(QtGui.QWidget):
     
     def onUpdateGraph(self):
         if self.playerList.currentRow() == -1 :
+            
             self.graphLabel.setText('graph')
             return
         player = self.playerList.currentItem().player
         graphData = [income - cost for cost, income in player.balanceHistory]
-        graph = LgGraph() 
-        #graph.setTitle(player.name + ' balance')
-        #graph.setXLabel('Turn')
-        #graph.setYLabel('Money')
-        print player.name,graphData
-        #graph.plotGraph({'pl1':graphData, 'pl2':graphData}, 'graph.png')
-        # TODO: FixMe
-        plt.plot([1,2,3,4,5],[9,8,7,6,5])
+        if graphData == []:
+            return 
+        #graph = LgGraph() 
+        plt.close('all')
+        F = plt.figure(figsize=(4,4), dpi=72)
+        ax = F.add_subplot(111)
+        ax.set_title(player.name + ' balance')
+        ax.set_xlabel('Turn')
+        ax.format_xdata = lambda x: "1-{0}".format(x) 
+        ax.set_ylabel('Money')
+        ax.plot(graphData)
+        F.savefig(self.tempFileName, dpi=72)
         
         image = QtGui.QImage(self.tempFileName)
         if image.isNull():
-            print "Failed to read {0}".format(fname)
+            print "Failed to read {0}".format(self.tempFileName)
         else:
             self.graphLabel.setPixmap(QtGui.QPixmap.fromImage(image))
 

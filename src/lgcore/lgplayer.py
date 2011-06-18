@@ -35,7 +35,7 @@ class LgPlayer(QtCore.QObject):
         if value > 0 :
             self.currentIncome += value
         else:
-            self.currentCost -= value
+            self.currentCost += abs(value)
         
     def onTurn(self):
         self.emit(signalPlayerTurn)
