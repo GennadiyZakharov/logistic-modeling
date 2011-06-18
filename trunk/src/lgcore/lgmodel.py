@@ -9,7 +9,7 @@ from lgcore.lgnode import LgNode
 from lgcore.lgpackage import LgPackage
 from lgcore.lgplayer import LgPlayer
 from lgcore.signals import signalTransport, signalPrepareNode, \
-    signalNextTurnLink, signalNextTurnNode, signalPlayerTurn, signalUpdateGui
+    signalNextTurnLink, signalNextTurnNode, signalPlayerTurn, signalUpdateGui, signalUpdatePlayerData
 from xml.etree.cElementTree import ElementTree, Element, tostring
 
 class LgModel(QtCore.QObject):

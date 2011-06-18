@@ -39,6 +39,7 @@ class FactoryEditWidget(QtGui.QDialog):
         layout.addWidget(self.activateEdit, 1, 1)
         
         self.consumeEdit = QtGui.QTableWidget()
+        
         consumeText = QtGui.QLabel('Consumes: ')
         layout.addWidget(consumeText, 2, 0)
         layout.addWidget(self.consumeEdit, 3, 0)
@@ -86,7 +87,7 @@ class FactoryEditWidget(QtGui.QDialog):
         self.costEdit.setMaximum(100)
         self.costEdit.setValue(self.factory.cost)
         self.costEdit.valueChanged.connect(self.onCostChanged)
-        costText = QtGui.QLabel('Produce cost per tpackage:')
+        costText = QtGui.QLabel('Produce cost per package:')
         costText.setBuddy(self.costEdit)
         layout.addWidget(costText, 8, 1)
         layout.addWidget(self.costEdit, 9, 1)
@@ -146,6 +147,7 @@ class FactoryEditWidget(QtGui.QDialog):
     
     def updateTable(self, dict, table):
         table.clear()
+        table.setHorizontalHeaderLabels(['Package name', 'Mean count', 'Dispersion'])
         for name in dict.keys() :
             mean, disp = dict[name]
             self.addRow(table, name, mean, disp)
