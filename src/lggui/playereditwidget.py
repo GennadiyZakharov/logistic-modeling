@@ -55,7 +55,7 @@ class PlayerEditWidget(QtGui.QDialog):
     
     
     def onUpdateName(self, text):
-        self.player.name = text
+        self.player.name = str(text)
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(text != '')
         
     def onUpdateMoney(self, value):

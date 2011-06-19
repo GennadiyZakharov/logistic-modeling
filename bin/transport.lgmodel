@@ -1,0 +1,208 @@
+<model currentPlayer="0">
+  <playerList>
+    <player money="0" name="Player" />
+  </playerList>
+  <nodeList>
+    <node capacity="0" color="#fffb7b" cost="0" name="Shop" owner="Player" position_x="757.513517745" position_y="223.350234574">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <ruleList />
+      <distributedPackagesList />
+      <factoryList>
+        <factory activationInterval="1" cost="0" currentTurn="1" fee="3" income="15" name="Beershop 1" owner="Player">
+          <viewerList>
+            <viewer name="Player" />
+          </viewerList>
+          <consumeList>
+            <consume mean="5" name="Beer" variance="1" />
+          </consumeList>
+          <produceList />
+          <demandList />
+        </factory>
+      </factoryList>
+    </node>
+    <node capacity="3" color="#c3d9ff" cost="0" name="Warehouse 2" owner="Player" position_x="66.0" position_y="401.0">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <ruleList />
+      <distributedPackagesList>
+        <distributedPackages name="Warehouse 2.2">
+          <packageSet />
+        </distributedPackages>
+        <distributedPackages name="Warehouse 2.1">
+          <packageSet />
+        </distributedPackages>
+      </distributedPackagesList>
+      <factoryList />
+    </node>
+    <node capacity="20" color="#c3d9ff" cost="5" name="Warehouse 1" owner="Player" position_x="67.701384077" position_y="125.456723034">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <ruleList />
+      <distributedPackagesList>
+        <distributedPackages name="Warehouse 1.1">
+          <packageSet />
+        </distributedPackages>
+        <distributedPackages name="Warehouse 1.2">
+          <packageSet />
+        </distributedPackages>
+      </distributedPackagesList>
+      <factoryList />
+    </node>
+    <node capacity="5" color="#aeffae" cost="5" name="Factory" owner="Player" position_x="-183.599200313" position_y="259.954823961">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <ruleList />
+      <distributedPackagesList>
+        <distributedPackages name="Warehouse 1">
+          <packageSet />
+        </distributedPackages>
+        <distributedPackages name="Warehouse 2">
+          <packageSet />
+        </distributedPackages>
+      </distributedPackagesList>
+      <factoryList>
+        <factory activationInterval="1" cost="10" currentTurn="1" fee="0" income="0" name="BeerFactory" owner="Player">
+          <viewerList>
+            <viewer name="Player" />
+          </viewerList>
+          <consumeList />
+          <produceList>
+            <produce mean="6" name="Beer" variance="2" />
+          </produceList>
+          <demandList />
+        </factory>
+      </factoryList>
+    </node>
+    <node capacity="3" color="#c3d9ff" cost="0" name="Warehouse 2.1" owner="Player" position_x="401.0" position_y="312.0">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <ruleList />
+      <distributedPackagesList>
+        <distributedPackages name="Shop 2.1">
+          <packageSet />
+        </distributedPackages>
+      </distributedPackagesList>
+      <factoryList />
+    </node>
+    <node capacity="0" color="#c3d9ff" cost="0" name="Warehouse 1.2" owner="Player" position_x="403.501010646" position_y="124.490202821">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <ruleList />
+      <distributedPackagesList>
+        <distributedPackages name="Shop 1.2">
+          <packageSet />
+        </distributedPackages>
+      </distributedPackagesList>
+      <factoryList />
+    </node>
+    <node capacity="0" color="#c3d9ff" cost="0" name="Warehouse 1.1" owner="Player" position_x="402.771084337" position_y="-42.3975903614">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <ruleList />
+      <distributedPackagesList>
+        <distributedPackages name="Shop 1.1">
+          <packageSet />
+        </distributedPackages>
+      </distributedPackagesList>
+      <factoryList />
+    </node>
+    <node capacity="3" color="#c3d9ff" cost="0" name="Warehouse 2.2" owner="Player" position_x="401.0" position_y="488.0">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <storagePackageList />
+      <enteredPackageList />
+      <ruleList />
+      <distributedPackagesList>
+        <distributedPackages name="Shop 2.2">
+          <packageSet />
+        </distributedPackages>
+      </distributedPackagesList>
+      <factoryList />
+    </node>
+  </nodeList>
+  <linkList>
+    <link color="#00ffff" cost="1" inputName="Factory" length="2" maxCapacity="10" name="Warehouse 1" outputName="Warehouse 1" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#cdeb8b" cost="0" inputName="Warehouse 1.2" length="5" maxCapacity="5" name="Shop 1.2" outputName="Shop" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#ff0000" cost="0" inputName="Warehouse 2" length="5" maxCapacity="5" name="Warehouse 2.2" outputName="Warehouse 2.2" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#ff0000" cost="0" inputName="Warehouse 2.2" length="5" maxCapacity="5" name="Shop 2.2" outputName="Shop" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#ff0000" cost="0" inputName="Warehouse 2" length="5" maxCapacity="5" name="Warehouse 2.1" outputName="Warehouse 2.1" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#00ffff" cost="0" inputName="Warehouse 1" length="5" maxCapacity="5" name="Warehouse 1.1" outputName="Warehouse 1.1" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#00ffff" cost="0" inputName="Warehouse 1.1" length="5" maxCapacity="5" name="Shop 1.1" outputName="Shop" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#ff0000" cost="0" inputName="Factory" length="5" maxCapacity="5" name="Warehouse 2" outputName="Warehouse 2" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#aaff7f" cost="0" inputName="Warehouse 1" length="1" maxCapacity="10" name="Warehouse 1.2" outputName="Warehouse 1.2" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+    <link color="#cdeb8b" cost="0" inputName="Warehouse 2.1" length="5" maxCapacity="5" name="Shop 2.1" outputName="Shop" owner="Player">
+      <viewerList>
+        <viewer name="Player" />
+      </viewerList>
+      <packageList />
+    </link>
+  </linkList>
+</model>

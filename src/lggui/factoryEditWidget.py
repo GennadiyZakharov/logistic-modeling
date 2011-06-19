@@ -159,7 +159,6 @@ class FactoryEditWidget(QtGui.QDialog):
             self.addRow(self.consumeEdit, name, mean, disp)
         
     def onNameChanged(self, text):
-        self.factory.caption = text
         self.onUpdateData()
         
     def onActivateChanged(self, value):
@@ -170,7 +169,7 @@ class FactoryEditWidget(QtGui.QDialog):
         if self.nameEdit.text() == '' :
             self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(False)
             return
-        self.factory.name = self.nameEdit.text() 
+        self.factory.name = str(self.nameEdit.text()) 
         self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
 
     def writeDictionary(self, table, dict):
