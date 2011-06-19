@@ -6,7 +6,7 @@ from lggui.nodewidget import NodeWidget
 
 class NodeGui(QtGui.QGraphicsObject):
     '''This class containes all gui functionality for node'''
-    Rect = QtCore.QRectF(0, 0, 120, 150)
+    Rect = QtCore.QRectF(0, 0, 150, 170)
     NameRect = QtCore.QRectF(0,0,Rect.width(),40)
     InfoRect = QtCore.QRectF(0,50,Rect.width(),100)
     SelectColor = QtGui.QColor(255,0,0)

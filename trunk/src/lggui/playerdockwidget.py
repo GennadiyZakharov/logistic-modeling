@@ -25,11 +25,11 @@ class PlayerDockWidget(QtGui.QWidget):
             layout.addWidget(self.removePlayerButton, 1, 1)
             self.editPlayerButton = QtGui.QPushButton('Edit Player')
             self.editPlayerButton.clicked.connect(self.onEditPlayer)
-            layout.addWidget(self.editPlayerButton)
+            layout.addWidget(self.editPlayerButton, 2, 0)
         self.graphLabel = QtGui.QLabel('Graph')
         self.playerList.currentRowChanged.connect(self.onUpdateGraph)
         #self.playerList.cu
-        layout.addWidget(self.graphLabel, 2, 0, 1, 2)
+        layout.addWidget(self.graphLabel, 3, 0, 1, 2)
         self.setLayout(layout)
         
         self.onUpdateList()
