@@ -1,17 +1,17 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
-from lgnetwork.lgnetworkcommon import NetworkThreadCommon
+from lgnetwork.lgnetworkcommon import LgNetworkCommon
 
 class LgServer(object):
     def __init__(self, model):
         self.playerDict = {}
         self.model = model
         
-    class ClientThread(Thread, NetworkThreadCommon):
+    class ClientThread(Thread, LgNetworkCommon):
         def __init__(self, channel, details):
             self.channel = channel
             self.details = details
-            NetworkThreadCommon.__init__(self)
+            LgNetworkCommon.__init__(self)
             Thread.__init__(self)       
             self.isGameStarted = False
             

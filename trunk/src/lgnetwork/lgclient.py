@@ -1,7 +1,7 @@
 from socket import socket, AF_INET, SOCK_STREAM
-from lgnetwork.lgnetworkcommon import NetworkThreadCommon
+from lgnetwork.lgnetworkcommon import LgNetworkCommon
 
-class LgClient(NetworkThreadCommon):
+class LgClient(LgNetworkCommon):
     def __init__(self, serverAddress, serverPort, model):
         self.serverAddress = serverAddress
         self.serverPort = serverPort        
